@@ -1,0 +1,6 @@
+p {
+    background-color: red;
+    &::after {
+        content: ">>> SASS IS WORKING AS WELL";
+    }
+}
