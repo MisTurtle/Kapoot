@@ -9,7 +9,7 @@ app.get('/', (req, res) => {
         <html>
         <head>
             <link href="/static/styles/test.css" rel="stylesheet">
-            <script defer src="/static/bundle.js"></script>
+            <script defer src="/static/scripts/bundle.js"></script>
         </head>
         <body>
             <p>Hello world !</p>

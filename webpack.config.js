@@ -4,7 +4,7 @@ export default {
     entry: './src/client/index.js',
     output: {
         filename: 'bundle.js',
-        path: rootPath("src/static")
+        path: rootPath("src/static/scripts")
     },
     module: {
         rules: [
