@@ -1,1 +1,6 @@
-p{background-color:red}p::after{content:">>> SASS IS WORKING AS WELL"}
+p {
+  background-color: red;
+}
+p::after {
+  content: ">>> SASS IS WORKING AS WELL";
+}
