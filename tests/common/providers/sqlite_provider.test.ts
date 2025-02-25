@@ -1,17 +1,19 @@
+import fs from 'fs';
 import { SqliteDataProvider } from '../../../src/server/database/providers/sqlite_provider';
 
-
+const sqlitePath = __dirname + "/test_db.sqlite";
 describe('SQLiteProvider', () => {
     let db: SqliteDataProvider;
 
     beforeAll(async () => {
-        db = new SqliteDataProvider(__dirname + "/test_db.sqlite");
+        db = new SqliteDataProvider(sqlitePath);
         await db.connect();
     });
 
     afterAll(async () => {
         await db.execute('DROP TABLE IF EXISTS users');
         await db.disconnect();
+        fs.rmSync(sqlitePath);
     });
 
     beforeEach(async () => {

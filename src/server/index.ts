@@ -9,7 +9,7 @@ import { router as apiRouter } from './routes/api_routes.js';
  * Database initiator
  */
 const db = new DatabaseController("./dev-db.sqlite", undefined); // TODO : Add MySQL credentials to be used during prod (external file)
-await db.endpoints.createTables();
+await db.endpoints.init();
 
 /**
  * Express Server

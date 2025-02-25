@@ -1,6 +1,6 @@
 import { open, Database } from 'sqlite';
 import sqlite3 from 'sqlite3';
-import { DataProvider } from "./data_provider.js";
+import { DataProvider, DIALECT_SQLITE } from "./data_provider.js";
 
 export class SqliteDataProvider implements DataProvider
 {
@@ -13,6 +13,7 @@ export class SqliteDataProvider implements DataProvider
     }
 
     get connected(): boolean { return this.source !== undefined; }
+    get dialect(): string { return DIALECT_SQLITE; }
 
     async connect(): Promise<void> {
         if(this.connected) return;
@@ -35,8 +36,8 @@ export class SqliteDataProvider implements DataProvider
         return await this.source!.all(query, params);
     }
 
-    async execute(query: string, params?: any[]): Promise<void> {
-        if(!this.connected) return;
-        await this.source!.run(query, params);
+    async execute(query: string, params?: any[]): Promise<any> {
+        if(!this.connected) throw new Error('Executing query on closed provider');
+        return await this.source!.run(query, params);
     }
 }

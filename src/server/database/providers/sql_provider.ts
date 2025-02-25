@@ -1,4 +1,4 @@
-import { DataProvider } from "./data_provider.js";
+import { DataProvider, DIALECT_MySQL } from "./data_provider.js";
 import mysql from 'mysql2/promise';
 
 export class SqlDataProvider implements DataProvider
@@ -12,6 +12,7 @@ export class SqlDataProvider implements DataProvider
     }
 
     get connected(): boolean { return this.source !== undefined; }
+    get dialect(): string { return DIALECT_MySQL; }
 
     async connect(): Promise<void> {
         if(this.connected) return;
@@ -33,9 +34,8 @@ export class SqlDataProvider implements DataProvider
         return rows as T[];
     }
     
-    async execute(query: string, params?: any[]): Promise<void> {
-        if(!this.connected) return;
-
-        await this.source!.execute(query, params);
+    async execute(query: string, params?: any[]): Promise<any> {
+        if(!this.connected) throw new Error('Executing query on closed provider');
+        return await this.source!.execute(query, params);
     }
 }
