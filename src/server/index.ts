@@ -1,29 +1,30 @@
 import express from 'express';
-import { router as sessionRouter } from './session/session_pipeline.js';
 import { production, rootPath } from '../common/utils.js';
 import { DatabaseController } from './database/database_controller.js';
 
+import { router as sessionRouter } from './session/session_pipeline.js';
+import { router as apiRouter } from './routes/api_routes.js';
 
 /**
  * Database initiator
  */
-const db = new DatabaseController("./dev-db.sqlite", undefined);
+const db = new DatabaseController("./dev-db.sqlite", undefined); // TODO : Add MySQL credentials to be used during prod (external file)
 await db.endpoints.createTables();
-// TODO
 
 /**
  * Express Server
  */
 const app = express();
 
-if (production) app.use("/", express.static(rootPath('dist', 'frontend')));
+// Register routes
+if (production)  // On production, redirect to static files
+    app.use("/", express.static(rootPath('dist', 'frontend')));
 app.use(sessionRouter);
+app.use('/api', apiRouter);
 
-app.get('/api', (req, res) => {
-  res.json({ message: 'Hello from server ee!' });
-});
-
-const PORT = process.env.PORT || 8000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+const HOST = "0.0.0.0";
+const PORT: number = parseInt(process.env.PORT || "8000");
+app.listen(PORT, HOST, () => {
+    if(production) console.log(`Server running on port ${HOST}:${PORT}`);
+    else console.log(`Backend server started on ${HOST}:${PORT}`);
 });
