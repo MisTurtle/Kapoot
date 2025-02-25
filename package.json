@@ -6,14 +6,11 @@
   "main": "src/server/index.ts",
   "scripts": {
     "dev": "concurrently \"webpack serve\" \"nodemon --watch src --ext ts,tsx --exec tsx src/server/index.ts\"",
-    
     "build": "npm run build:client && npm run build:server",
     "build:client": "cross-env NODE_ENV=production webpack --mode production",
     "build:server": "tsc -p .",
     "prod": "npm run build && cross-env NODE_ENV=production node dist/backend/server/index.js",
-    
     "start": "cross-env NODE_ENV=production node dist/backend/server/index.js",
-  
     "test": "jest"
   },
   "dependencies": {
@@ -23,7 +20,8 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "sqlite": "^5.1.1",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^5.1.7",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.26.9",

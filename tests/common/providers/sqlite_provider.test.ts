@@ -1,11 +1,11 @@
-import { SqliteDataProvider } from '../../src/server/database/sqlite_provider';
+import { SqliteDataProvider } from '../../../src/server/database/providers/sqlite_provider';
 
 
 describe('SQLiteProvider', () => {
     let db: SqliteDataProvider;
 
     beforeAll(async () => {
-        db = new SqliteDataProvider("./test_db.sqlite");
+        db = new SqliteDataProvider(__dirname + "/test_db.sqlite");
         await db.connect();
     });
 

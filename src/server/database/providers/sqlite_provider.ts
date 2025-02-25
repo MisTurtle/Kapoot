@@ -10,7 +10,6 @@ export class SqliteDataProvider implements DataProvider
     constructor(sourcePath: string)
     {
         this.sourcePath = sourcePath;
-        this.connect();
     }
 
     get connected(): boolean { return this.source !== undefined; }

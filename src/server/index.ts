@@ -1,7 +1,19 @@
 import express from 'express';
 import { router as sessionRouter } from './session/session_pipeline.js';
 import { production, rootPath } from '../common/utils.js';
+import { DatabaseController } from './database/database_controller.js';
 
+
+/**
+ * Database initiator
+ */
+const db = new DatabaseController("./dev-db.sqlite", undefined);
+await db.endpoints.createTables();
+// TODO
+
+/**
+ * Express Server
+ */
 const app = express();
 
 if (production) app.use("/", express.static(rootPath('dist', 'frontend')));

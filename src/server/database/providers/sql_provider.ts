@@ -9,7 +9,6 @@ export class SqlDataProvider implements DataProvider
     constructor(options: mysql.ConnectionOptions)
     {
         this.options = options;
-        this.connect();
     }
 
     get connected(): boolean { return this.source !== undefined; }
