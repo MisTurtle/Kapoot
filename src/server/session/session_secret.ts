@@ -12,7 +12,7 @@ interface Secret {
 }
 
 const secretValidity = { year: 0, months: 1, days: 0 };
-const pathToSecret = rootPath("session-secrets.json");
+const pathToSecret = rootPath("private", "session-secrets.json");
 export const allValidSecrets: string[] = [];
 export const sessionCookieLifetime = 60 * 60 * 24;
 

@@ -1,18 +1,40 @@
 {
-    "compilerOptions": {
-        "target": "ES2024",
-        "module": "Node16",
-        "moduleResolution": "node16",
-        "esModuleInterop": true,
-        "strict": true,
-        "jsx": "react-jsx",
-        "outDir": "./dist/backend",
-        "rootDir": "./src",
-        "baseUrl": "./src",
-        "paths": {
-            "*": ["*"]
-        }
+  "compilerOptions": {
+    "target": "ESNext",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": false,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "jsx": "preserve",
+    "baseUrl": ".",
+    "outDir": "./dist",
+    "paths": {
+      "*": [
+        "node_modules/*",
+        "src/types/*"
+      ]
     },
-    "include": ["src/**/*"],
-    "exclude": ["node_modules"]
+    "incremental": true
+  },
+  "include": [
+    "src/**/*",
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
