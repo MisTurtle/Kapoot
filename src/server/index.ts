@@ -33,14 +33,12 @@ const PORT: number = parseInt(process.env.PORT || "8000");
  */
 app.prepare().then(() => {
 
-    server.use(sessionRouter);
-    server.use('/', (req, res, next) => {
-        console.log("Passed through express");
-        next();
-    })
+    server.use(sessionRouter);  // Add a session cookie to the user, no matter what
+    server.use("/api", apiRouter);  // Handle api requests before dispatching to Next.js
+
     server.all('*', (req, res) => {
         return handler(req, res);
-    }); // NextJS handles every request, but we still need express middlewares
+    });  // NextJS handles every request, but we still need express middlewares
     server.listen(PORT, HOST, () => {
         if(production) console.log(`Server running on port ${HOST}:${PORT}`);
         else console.log(`Backend server started on ${HOST}:${PORT}`);

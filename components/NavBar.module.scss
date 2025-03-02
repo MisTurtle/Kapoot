@@ -1,0 +1,65 @@
+@use "../styles/variables" as *;
+
+.navContainer {
+
+    /* Items placement */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    /* Spacing */
+    margin: 1rem;
+    padding-inline: 1rem;
+    padding-block: 0.25rem;
+    
+    /* Borders */
+    border-radius: 0.5rem;
+    box-shadow: 4px 5px 5px rgba(0, 0, 0, 0.3);
+    
+    background-color: $primary;
+
+    .logoContainer {
+
+        .logoLink {
+            
+        }
+        .logo {
+            width: 150px;
+            height: auto;
+            margin-block: 0.1rem;
+        }
+
+    }
+
+
+    .linkContainer {
+
+        display: flex;
+        gap: 2rem;
+        list-style: none;
+
+        .linkListItem {
+
+            .link {
+                /* Placement */
+                display: flex;
+                align-items: center;
+                gap: 4px;
+
+                /* Text Appearance */
+                text-decoration: none;
+                color: $darker;
+                font-family: $text;
+            }
+            .icon {
+                
+            }
+            .label {
+                
+            }
+
+        }
+
+    }
+
+}

@@ -7,6 +7,6 @@ export const router = express.Router();
 /**
  * Get information about a user
  */
-router.get('/user/:userId', (req, res) => {
+router.get('/:userId', (req, res) => {
 
 });

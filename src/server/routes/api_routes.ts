@@ -7,7 +7,7 @@ export const router = express.Router();
 
 
 // URL: /api/user
-router.use('/', userRoutes);
+router.use('/user', userRoutes);
 // URL: /api/editor/*
 router.use('/editor', quizzRoutes);
 
