@@ -7,6 +7,7 @@ import { router as apiRouter } from './routes/api_routes.js';
 // Other imports
 import { production, rootPath } from '../common/utils.js';
 import { DatabaseController } from './database/database_controller.js';
+import { unless } from './utils/utils.js';
 
 /**
  * Database initiator
@@ -33,7 +34,9 @@ const PORT: number = parseInt(process.env.PORT || "8000");
  */
 app.prepare().then(() => {
 
-    server.use(sessionRouter);  // Add a session cookie to the user, no matter what
+    server.use(express.json());  // Support JSON encoded bodies
+    server.use(express.urlencoded({ extended: true }));  // Support URL encoded bodies
+    server.use(unless(["_next/*"], sessionRouter));  // Add a session cookie to the user and try to fetch the associated account
     server.use("/api", apiRouter);  // Handle api requests before dispatching to Next.js
 
     server.all('*', (req, res) => {

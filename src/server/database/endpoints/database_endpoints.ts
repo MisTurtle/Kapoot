@@ -2,7 +2,8 @@ import { sessionCookieLifetime } from "../../../server/session/session_secret.js
 import { DataProvider, DIALECT_MySQL, DIALECT_SQLITE } from "../providers/data_provider.js";
 import { v4 as uuidv4 } from 'uuid';
 
-export class DatabaseEndpoints
+
+export class DatabaseEndpointsContainer
 {
     private provider: DataProvider;
 
@@ -23,9 +24,9 @@ export class DatabaseEndpoints
         statements.push(
             // --- Create Registered Accounts Table
             `CREATE TABLE IF NOT EXISTS userAccounts(
-                username VARCHAR(31) PRIMARY KEY,
+                user_id CHAR(36) UNIQUE PRIMARY KEY,
+                username VARCHAR(32) UNIQUE NOT NULL,
                 mail VARCHAR(255) UNIQUE NOT NULL,
-                user_id CHAR(36) UNIQUE NOT NULL,
                 pwd_hash VARCHAR(60) NOT NULL,
                 client_salt CHAR(16) NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -35,7 +36,7 @@ export class DatabaseEndpoints
             // --- Create Session to user id links
             `CREATE TABLE IF NOT EXISTS userSessions(
                 sess_id CHAR(32) NOT NULL PRIMARY KEY,
-                user_id CHAR(36),
+                user_id CHAR(36) DEFAULT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (user_id) REFERENCES userAccounts(user_id)
             );`
@@ -60,17 +61,38 @@ export class DatabaseEndpoints
         cleanup();
     }
 
-    public async createAccount(username: string, mail: string, pwd_hash: string, client_salt: string): Promise<any>
+    // --- TODO : Tests for all the functions below
+    public async createAccount(username: string, mail: string, pwd_hash: string, client_salt: string): Promise<UserIdentifier>
     {
         const uuid = uuidv4();
         const sql = "INSERT INTO userAccounts(username, mail, user_id, pwd_hash, client_salt) VALUES (?, ?, ?, ?, ?)";
-        return this.provider.execute(sql, [ username, mail, uuid, pwd_hash, client_salt ]);
+        return this.provider.execute(sql, [ username, mail, uuid, pwd_hash, client_salt ]).then(() => { return { username: username, identifier: uuid }; });
     }
 
-    public async deleteAccount(username: string): Promise<any>
+    public async accountExists(user: UserIdentifier): Promise<UserIdentifier | undefined>
     {
-        const sql = "DELETE FROM userAccounts WHERE username=?";
-        return this.provider.execute(sql, [ username ]);
+        const sql = "SELECT username, user_id, mail FROM userAccounts WHERE UPPER(username)=UPPER(?) OR UPPER(user_id)=UPPER(?) OR UPPER(mail)=UPPER(?) LIMIT 1";
+        return this.provider.select(sql, [ user.username, user.identifier, user.mail ]).then((result: any[]) => { 
+            if(result.length === 0) return undefined;
+            return { username: result[0].username, identifier: result[0].user_id };
+         });
     }
 
+    public async deleteAccount(user: UserIdentifier): Promise<any>
+    {
+        const sql = "DELETE FROM userAccounts WHERE UPPER(username)=UPPER(?) OR UPPER(user_id)=UPPER(?) OR UPPER(mail)=UPPER(?)";
+        return this.provider.execute(sql, [ user.username, user.identifier, user.mail ]);
+    }
+
+    public async getAccountFromSession(sessionID: string, full: boolean = false): Promise<UserIdentifier | undefined>
+    {
+        let sql = "SELECT user_id FROM userSessions WHERE sess_id=? LIMIT 1";
+        if(full) sql = "SELECT b.user_id as user_id, b.username as username, b.mail as mail FROM userSessions a LEFT JOIN userAccounts b ON a.user_id=b.user_id W AND a.sess_id=?";
+        
+        return this.provider.select(sql, [ sessionID ]).then((result: any) => { 
+            if(result.length === 0) return undefined;
+            if(!full) return { identifier: result[0].user_id };
+            return { identifier: result[0].user_id, username: result[0].username, mail: result[0].mail };
+        });
+    }
 }

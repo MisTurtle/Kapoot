@@ -12,7 +12,7 @@ const Page = () => {
     { label: "Home", href: "#", icon: Home },
     { label: "Sign In", href: "#", icon: UserPen },
     { label: "Register", href: "#", icon: UserPlus },
-  ]
+  ];
 
   return (
     <header className={styles.pageContainer}>
