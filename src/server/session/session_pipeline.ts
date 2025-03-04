@@ -23,10 +23,7 @@ router.use(session({
 router.use((req, res, next) => {
     if(!req.sessionID) next();
     getEndpoints().getAccountFromSession(req.sessionID).then((user) => {
-        console.log(req.sessionID)
-        console.log(user);
         req.user = user;
-        console.log("Set user: " + req.user);
         next();
     });
 });

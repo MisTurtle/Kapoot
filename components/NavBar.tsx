@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Image, { StaticImageData } from 'next/image';
 import { FC } from 'react';
-import { LucideIcon, Home, UserPen, UserPlus, User } from 'lucide-react';
+import { LucideIcon, Home, UserPen, UserPlus, User, DoorClosedIcon } from 'lucide-react';
 
 /* Resource file imports */
 import styles from './NavBar.module.scss';
@@ -65,7 +65,8 @@ export const NavBarSignedOut = () => {
 export const NavBarSignedIn = () => {
   const links = [
     { label: "Home", href: "/", icon: Home },
-    { label: "Account", href: "/account", icon: User }
+    { label: "Account", href: "/account", icon: User },
+    { label: "Logout", href: "/api/account/logout", icon: DoorClosedIcon }
   ];
 
   return <CustomNavBar logo={logo} links={links} />;

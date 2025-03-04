@@ -2,6 +2,7 @@ import session from "express-session";
 import { sessionCookieLifetime } from "../../../server/session/session_secret.js";
 import { DataProvider, DIALECT_MySQL, DIALECT_SQLITE } from "../providers/data_provider.js";
 import { v4 as uuidv4 } from 'uuid';
+import { verify } from "../../../../src/server/utils/security.js";
 
 
 export class DatabaseEndpointsContainer
@@ -45,11 +46,34 @@ export class DatabaseEndpointsContainer
             `CREATE TABLE IF NOT EXISTS userSessions(
                 sess_id CHAR(32) UNIQUE NOT NULL,
                 user_id CHAR(36) NOT NULL,
-                FOREIGN KEY (user_id) REFERENCES userAccounts(user_id),
-                FOREIGN KEY (sess_id) REFERENCES allSessions(sess_id)
+                FOREIGN KEY (user_id) REFERENCES userAccounts(user_id) ON DELETE CASCADE,
+                FOREIGN KEY (sess_id) REFERENCES allSessions(sess_id) ON DELETE CASCADE
             );`
         );
         await Promise.all(statements.map((sql) => this.provider.execute(sql)));
+    
+        this.startSessionCleanupLoop();
+    }
+
+    /**
+     * @param period Delay in seconds between each automatic session cleanup
+     */
+    public startSessionCleanupLoop(period: number = 3600)
+    {
+        let sql: string;
+        let args: any[];
+
+        if(this.sqlite) {
+            sql = "DELETE FROM allSessions WHERE created_at < DATETIME('now', ?);";
+            args = [`-${Math.floor(sessionCookieLifetime / 1000)} seconds`];
+        } else {
+            sql = "DELETE FROM allSessions WHERE created_at < NOW - INTERVAL ? SECOND;";
+            args = [Math.floor(sessionCookieLifetime / 1000)];
+        }
+
+        const cleanup = () => this.provider.execute(sql, args);
+        setInterval(cleanup, period * 1000);
+        cleanup();
     }
 
     // --- TODO : Tests for all the functions below
@@ -92,16 +116,35 @@ export class DatabaseEndpointsContainer
         return this.provider.execute(sql, [ user.username, user.identifier, user.mail ]);
     }
 
+    public async verifyLogin(user: UserIdentifier, raw_password: string): Promise<UserIdentifier | undefined>
+    {
+        const sql = "SELECT user_id, username, mail, pwd_hash FROM userAccounts WHERE user_id=? OR username=? OR mail=?";
+        return this.provider.select(sql, [ user.identifier, user.username, user.mail ]).then((result: any[]) => {
+            if(result.length !== 1) return undefined;
+            if(!verify(raw_password, result[0].pwd_hash)) return undefined;
+            return { identifier: result[0].user_id, username: result[0].username, mail: result[0].mail };
+        });
+    }
+
     /**
      * All sessions management (even for unregistered users)
      */
     public async loadSession(sid: string): Promise<session.SessionData | undefined>
     {
         const sql = "SELECT * FROM allSessions WHERE sess_id=? LIMIT 1";
-        return this.provider.select(sql, [ sid ]).then((rows) => {
-            if(rows.length === 0) return undefined;
-            return { 'cookie': new session.Cookie() };
-        })
+        const rows = await this.provider.select(sql, [ sid ]);
+        if(rows.length === 0) return undefined;
+
+        const info: any = rows[0];
+        const last_access = new Date(info.last_access);
+        last_access.setTime(last_access.getTime() + sessionCookieLifetime);
+        if(last_access.getTime() < Date.now()) return undefined; // Expired cookie
+        
+        // Renew the last access time
+        const sql2 = "UPDATE allSessions SET last_access=CURRENT_TIMESTAMP WHERE sess_id=?";
+        await this.provider.execute(sql2, [ sid ]);
+
+        return { 'cookie': new session.Cookie() };
     }
 
     public async allSessions(): Promise<any[]>
@@ -110,10 +153,16 @@ export class DatabaseEndpointsContainer
         return this.provider.select(sql);
     }
 
-    public async saveSession(sid: string): Promise<null>
+    public async saveSession(sid: string): Promise<void>
     {
         const sql = "INSERT INTO allSessions (sess_id) VALUES (?)";
         return this.provider.execute(sql, [ sid ]);
+    }
+
+    public async closeSessions(user: UserIdentifier): Promise<void>
+    {
+        const sql = "DELETE FROM allSessions WHERE sess_id IN (SELECT sess_id FROM userSessions WHERE user_id=?)";
+        return this.provider.execute(sql, [ user.identifier ]);
     }
 
     /**
@@ -126,8 +175,8 @@ export class DatabaseEndpointsContainer
         const sql1 = "DELETE FROM userSessions WHERE sess_id=?";
         const sql2 = "INSERT INTO userSessions (sess_id, user_id) VALUES (?, ?)";
 
-        return this.provider.execute(sql1, [ sessionId ])
-        .then(result => this.provider.execute(sql2, [ sessionId, user.identifier ]));
+        await this.provider.execute(sql1, [ sessionId ]);
+        await this.provider.execute(sql2, [ sessionId, user.identifier ]);
     }
 
     public async getAccountFromSession(sessionID: string, full: boolean = false): Promise<UserIdentifier | undefined>

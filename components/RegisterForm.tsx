@@ -5,13 +5,15 @@ import { usernameRegex, emailRegex, passwordRegex } from '../src/server/utils/sa
 import styles from './LoginForm.module.scss';
 import React, { FormEvent, useState } from 'react';
 
-const LoginForm = () => {
+const RegisterForm = () => {
     // TODO : Accept some redirection parameter to redirect the user once logged in
     // TODO : Redirect to the page if the user is already logged in
 
     const [ formData, setFormData ] = useState({
-        login: "",
+        username: "",
+        mail: "",
         password: "",
+        passwordVerif: ""
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -22,14 +24,14 @@ const LoginForm = () => {
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
 
-        fetch('/api/account/login', {
+        fetch('/api/account', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ login: formData.login, password: formData.password })
+            body: JSON.stringify({ username: formData.username, mail: formData.mail, password: formData.password })
         }).then(
             (res) => {
                 if(res.status === 200) {
-                    alert('Logged in');
+                    alert('Account created');
                 } else {
                     res.json().then((cnt) => alert(JSON.stringify(cnt)));
                 }
@@ -43,20 +45,26 @@ const LoginForm = () => {
             <NavBarSignedOut />
 
             <div>
-                <h1>Login page</h1>
+                <h1>Register page</h1>
 
                 <form onSubmit={handleSubmit}>
-                    <label htmlFor='login'>Username or Email</label>
-                    <input name='login' id='login' type='text' onChange={handleChange} required /> <br />
+                    <label htmlFor='username'>Username</label>
+                    <input name='username' id='username' type='text' pattern={usernameRegex.source} onChange={handleChange} required /> <br />
+
+                    <label htmlFor='mail'>Email Address</label>
+                    <input name='mail' id='mail' type='text' pattern={emailRegex.source} onChange={handleChange} required /> <br />
 
                     <label htmlFor='password'>Password</label>
                     <input name='password' id='password' type='password' pattern={passwordRegex.source} onChange={handleChange} required /> <br />
 
-                    <button type='submit'>Log in</button>
+                    <label htmlFor='passwordVerif'>Retype your password</label>
+                    <input name='passwordVerif' id='passwordVerif' type='password' pattern={passwordRegex.source} onChange={handleChange} required /> <br />
+
+                    <button type='submit'>Register</button>
                 </form>
             </div>
         </div>
     );
 };
 
-export default LoginForm;
+export default RegisterForm;

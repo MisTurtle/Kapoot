@@ -26,6 +26,7 @@ function createSecret(): Secret
 
 function reloadSecrets(): void
 {
+    fs.mkdirSync(rootPath('private'), { recursive: true });
     if(!fs.existsSync(pathToSecret)) fs.writeFileSync(pathToSecret, "[]");
     
     const currentTime = (new Date()).getTime();

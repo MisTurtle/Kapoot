@@ -36,6 +36,7 @@ app.prepare().then(() => {
 
     server.use(express.json());  // Support JSON encoded bodies
     server.use(express.urlencoded({ extended: true }));  // Support URL encoded bodies
+    server.use('/favicon.ico', express.static(rootPath('public/images/Logo_Compact.png')));  // Serve favicon
     server.use(unless(["_next/*"], sessionRouter));  // Add a session cookie to the user and try to fetch the associated account
     server.use("/api", apiRouter);  // Handle api requests before dispatching to Next.js
 
