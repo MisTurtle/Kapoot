@@ -12,6 +12,8 @@
     "test": "jest"
   },
   "dependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "bcrypt": "^5.1.1",
     "express": "^4.21.2",
     "express-session": "^1.18.1",
     "lucide-react": "^0.477.0",

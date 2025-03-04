@@ -1,10 +1,11 @@
 import Link from 'next/link';
 import Image, { StaticImageData } from 'next/image';
 import { FC } from 'react';
-import { LucideIcon } from 'lucide-react';
+import { LucideIcon, Home, UserPen, UserPlus, User } from 'lucide-react';
 
 /* Resource file imports */
 import styles from './NavBar.module.scss';
+import logo from '../public/images/Logo_Big.png';
 
 
 export interface NavLink {
@@ -18,7 +19,11 @@ interface NavBarProps {
   links: NavLink[];
 }
 
-const NavBar: FC<NavBarProps> = ({ logo, links }) => {
+interface AutoNavBarProps {
+  user?: UserIdentifier; // Identifier to the current user
+}
+
+export const CustomNavBar: FC<NavBarProps> = ({ logo, links }) => {
   return (
     <nav className={styles.navContainer}>
 
@@ -44,7 +49,30 @@ const NavBar: FC<NavBarProps> = ({ logo, links }) => {
       </ul>
 
     </nav>
-  )
+  );
 };
 
-export default NavBar;
+export const NavBarSignedOut = () => {
+  const links = [
+    { label: "Home", href: "/", icon: Home },
+    { label: "Sign In", href: "/login?page=sign", icon: UserPen },
+    { label: "Register", href: "/login?page=register", icon: UserPlus }
+  ];
+
+  return <CustomNavBar logo={logo} links={links} />;
+};
+
+export const NavBarSignedIn = () => {
+  const links = [
+    { label: "Home", href: "/", icon: Home },
+    { label: "Account", href: "/account", icon: User }
+  ];
+
+  return <CustomNavBar logo={logo} links={links} />;
+}
+
+// TODO : Use this once utilities for user account retrieval have been made (Adding user account fetching here would make useless requests)
+export const NavBarAuto: FC<AutoNavBarProps> = ( { user } ) => {
+  if(!user) return <NavBarSignedOut />;
+  return <NavBarSignedIn />;
+};

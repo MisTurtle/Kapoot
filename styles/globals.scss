@@ -1,6 +1,13 @@
-$primaryColor: "red";
+@use './variables' as *;
 
 * {
     margin: 0;
     padding: 0;
+}
+
+p, input, pre, a, span, label {
+    color: $lighter;
+}
+input { 
+    color: $dark;
 }
