@@ -196,4 +196,8 @@ export class DatabaseEndpointsContainer
         let sql = "SELECT * FROM userSessions";
         return this.provider.select(sql);
     }
+
+    /**
+     * 
+     */
 }

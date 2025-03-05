@@ -2,7 +2,6 @@ import express from 'express';
 import { usernameChecker, emailChecker, FormInputChecker, passwordChecker } from '../../utils/sanitizers.js';
 import { getEndpoints } from '../../database/database_controller.js';
 import { hash } from '../../../../src/server/utils/security.js';
-import { verify } from 'crypto';
 
 export const router = express.Router();
 
