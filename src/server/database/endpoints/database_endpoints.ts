@@ -50,6 +50,26 @@ export class DatabaseEndpointsContainer
                 FOREIGN KEY (sess_id) REFERENCES allSessions(sess_id) ON DELETE CASCADE
             );`
         );
+        statements.push(
+            // --- Table to store quizz
+            `CREATE TABLE IF NOT EXISTS quizz(
+                quizz_id CHAR(36) UNIQUE PRIMARY KEY,
+                name VARCHAR(255) UNIQUE NOT NULL,
+                description VARCHAR(500) NOT NULL,
+                param TEXT NOT NULL, 
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );`
+        );
+        statements.push(
+            // --- Table to store question
+            `CREATE TABLE IF NOT EXISTS question(
+                question_id CHAR(36) UNIQUE PRIMARY KEY,
+                quizz_id CHAR(36) UNIQUE NOT NULL,
+                question TEXT UNIQUE NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (quizz_id) REFERENCES quizz(quizz_id)
+            );`
+        );
         await Promise.all(statements.map((sql) => this.provider.execute(sql)));
     
         this.startSessionCleanupLoop();
@@ -197,6 +217,18 @@ export class DatabaseEndpointsContainer
         return this.provider.select(sql);
     }
 
+    // Quizz
+    public async addQuizz(name: string, desc: string, param: string): Promise<any[]>
+    {        
+        const sql = "INSERT INTO quizz (name, description, param) VALUES (?, ?, ?)";
+        return this.provider.execute(sql, [ name, desc, param ]);
+    }
+    public async getQuizz(): Promise<any[]>
+    {        
+        const sql = "SELECT * from  quizz";
+
+        return this.provider.select(sql);
+    }
     /**
      * 
      */
