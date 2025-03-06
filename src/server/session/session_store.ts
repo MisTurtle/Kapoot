@@ -7,7 +7,6 @@ export default class CustomSessionStore extends session.Store
 
         try {
             const session = await getEndpoints().loadSession(sid);
-            console.log(session);
             callback(null, session);
         } catch (err) { callback(err); }
     }
@@ -20,9 +19,6 @@ export default class CustomSessionStore extends session.Store
         }
     }
     destroy(sid: string, callback?: (err?: any) => void): void {
-        console.log("Destroying session id cookie");
-
-        console.log(sid);
-        console.log(callback);
+        
     }
 }

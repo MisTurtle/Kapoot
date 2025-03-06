@@ -44,8 +44,7 @@ app.prepare().then(() => {
         return handler(req, res);
     });  // NextJS handles every request, but we still need express middlewares
     server.listen(PORT, HOST, () => {
-        if(production) console.log(`Server running on port ${HOST}:${PORT}`);
-        else console.log(`Backend server started on ${HOST}:${PORT}`);
+        console.log(`Server running on port ${HOST}:${PORT}`);
     });
 
 });

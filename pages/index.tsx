@@ -15,7 +15,7 @@ const Page = () => {
         if(res.status !== 200) return undefined;
         return res.json();
       })
-      .then((data) => { console.log(data); setUser(data) })
+      .then(data => setUser(data))
       .catch(() => setUser(undefined));
   }, []);
 

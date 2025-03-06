@@ -9,7 +9,9 @@ declare global {
         username: string,
         mail: string,
         // TODO : Add more information about the user
-    }
+    };
+
+    type QuizzIdentifier = string;
 }
 
 export {};

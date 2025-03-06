@@ -97,8 +97,6 @@ Le ``useRouter`` de React permet notamment de récupérer les paramètres inscri
 
 Si la page demandée est ``=== "register"``, on affiche le form pour créer un compte. Sinon celui pour se connecter. 
 
-**TODO: Retirer les console.log et les alertes de debug**
-
 **TODO: Rajouter un composant pour avoir une tab-view et switch entre Login et Register facilement**
 
 **TODO: Rajouter un paramètre de redirection (e.g. ?redirect={url}) pour rediriger l'utilisateur après le Login / Enregistrement. (Voir comment faire avec NextJS et useRouter)**

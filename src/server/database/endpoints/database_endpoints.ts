@@ -4,6 +4,8 @@ import { DataProvider, DIALECT_MySQL, DIALECT_SQLITE } from "../providers/data_p
 import { v4 as uuidv4 } from 'uuid';
 import { verify } from "../../../../src/server/utils/security.js";
 
+import { Quizz } from "../../../../src/server/quizz_components/quizz.js";
+
 
 export class DatabaseEndpointsContainer
 {
@@ -24,9 +26,9 @@ export class DatabaseEndpointsContainer
         let statements: string[] = [];
 
         statements.push(
-            // --- Create registered accounts table
+            // --- User accounts table
             `CREATE TABLE IF NOT EXISTS userAccounts(
-                user_id CHAR(36) UNIQUE PRIMARY KEY,
+                user_id CHAR(36) PRIMARY KEY,
                 username VARCHAR(32) UNIQUE NOT NULL,
                 mail VARCHAR(255) UNIQUE NOT NULL,
                 pwd_hash VARCHAR(60) NOT NULL,
@@ -34,7 +36,7 @@ export class DatabaseEndpointsContainer
             );`
         );
         statements.push(
-            // --- Table to store every session id (data source for express-session)
+            // --- Every session id created and that are still valid (or at least that haven't been cleaned up yet)
             `CREATE TABLE IF NOT EXISTS allSessions(
                 sess_id CHAR(32) PRIMARY KEY,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -42,26 +44,36 @@ export class DatabaseEndpointsContainer
             );`
         );
         statements.push(
-            // --- Create session to user id links
+            // --- Link between session ids and user accounts
             `CREATE TABLE IF NOT EXISTS userSessions(
-                sess_id CHAR(32) UNIQUE NOT NULL,
+                sess_id CHAR(32) PRIMARY KEY,
                 user_id CHAR(36) NOT NULL,
                 FOREIGN KEY (user_id) REFERENCES userAccounts(user_id) ON DELETE CASCADE,
                 FOREIGN KEY (sess_id) REFERENCES allSessions(sess_id) ON DELETE CASCADE
             );`
         );
         statements.push(
-            // --- Table to store quizz
-            `CREATE TABLE IF NOT EXISTS quizz(
-                quizz_id CHAR(36) UNIQUE PRIMARY KEY,
-                name VARCHAR(255) UNIQUE NOT NULL,
-                description VARCHAR(500) NOT NULL,
-                param TEXT NOT NULL, 
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            // --- Store quizzes created by users
+            `CREATE TABLE IF NOT EXISTS quizzes(
+                quizz_id CHAR(36) PRIMARY KEY,
+                user_id CHAR(36) NOT NULL,
+                params TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES userAccounts(user_id) ON DELETE CASCADE
             );`
         );
         statements.push(
-            // --- Table to store question
+            // --- Create trigger to automatically update quizzes last change time (FIXME: SQLITE syntaxe, won't work for MySQL)
+            `CREATE TRIGGER IF NOT EXISTS quizz_last_update
+             AFTER UPDATE ON quizzes
+             FOR EACH ROW
+             BEGIN
+                UPDATE quizzes SET updated_at=CURRENT_TIMESTAMP WHERE quizz_id=OLD.quizz_id;
+             END;`
+        );
+        statements.push(
+            // --- Table to store questions (Maybe useless though, we might store everything in quizzes)
             `CREATE TABLE IF NOT EXISTS question(
                 question_id CHAR(36) UNIQUE PRIMARY KEY,
                 quizz_id CHAR(36) UNIQUE NOT NULL,
@@ -111,17 +123,18 @@ export class DatabaseEndpointsContainer
     {
         const uuid = uuidv4();
         const sql = "INSERT INTO userAccounts(username, mail, user_id, pwd_hash) VALUES (?, ?, ?, ?)";
-        return this.provider.execute(sql, [ username, mail, uuid, pwd_hash ]).then(() => { return { username: username, identifier: uuid }; });
+        await this.provider.execute(sql, [ username, mail, uuid, pwd_hash ]);
+        return { username: username, identifier: uuid };
     }
 
     public async accountExists(user: UserIdentifier): Promise<UserIdentifier | undefined>
     {
         const sql = "SELECT username, user_id, mail FROM userAccounts WHERE UPPER(username)=UPPER(?) OR UPPER(user_id)=UPPER(?) OR UPPER(mail)=UPPER(?) LIMIT 1";
     
-        return this.provider.select(sql, [ user.username, user.identifier, user.mail ]).then((result: any[]) => { 
-            if(result.length === 0) return undefined;
-            return { username: result[0].username, identifier: result[0].user_id };
-         });
+        const result: any[] = await this.provider.select(sql, [ user.username, user.identifier, user.mail ]);
+         
+        if(result.length === 0) return undefined;
+        return { username: result[0].username, identifier: result[0].user_id };
     }
 
     public async accountDetails(user: UserIdentifier): Promise<AccountDetails | undefined>
@@ -139,11 +152,13 @@ export class DatabaseEndpointsContainer
     public async verifyLogin(user: UserIdentifier, raw_password: string): Promise<UserIdentifier | undefined>
     {
         const sql = "SELECT user_id, username, mail, pwd_hash FROM userAccounts WHERE user_id=? OR username=? OR mail=?";
-        return this.provider.select(sql, [ user.identifier, user.username, user.mail ]).then((result: any[]) => {
-            if(result.length !== 1) return undefined;
-            if(!verify(raw_password, result[0].pwd_hash)) return undefined;
-            return { identifier: result[0].user_id, username: result[0].username, mail: result[0].mail };
-        });
+        const result: any[] = await this.provider.select(sql, [ user.identifier, user.username, user.mail ]);
+       
+        if(result.length !== 1) return undefined;
+        const valid = await verify(raw_password, result[0].pwd_hash);
+        if(!valid) return undefined;
+        
+        return { identifier: result[0].user_id, username: result[0].username, mail: result[0].mail };
     }
 
     /**
@@ -204,11 +219,11 @@ export class DatabaseEndpointsContainer
         let sql = "SELECT user_id FROM userSessions WHERE sess_id=? LIMIT 1";
         if(full) sql = "SELECT b.user_id as user_id, b.username as username, b.mail as mail FROM userSessions a LEFT JOIN userAccounts b ON a.user_id=b.user_id W AND a.sess_id=?";
         
-        return this.provider.select(sql, [ sessionID ]).then((result: any) => { 
-            if(result.length === 0) return undefined;
-            if(!full) return { identifier: result[0].user_id };
-            return { identifier: result[0].user_id, username: result[0].username, mail: result[0].mail };
-        });
+        const result: any = await this.provider.select(sql, [ sessionID ]); 
+
+        if(result.length === 0) return undefined;
+        if(!full) return { identifier: result[0].user_id };
+        return { identifier: result[0].user_id, username: result[0].username, mail: result[0].mail };
     }
 
     public async allUserSessions(): Promise<any[]>
@@ -217,19 +232,33 @@ export class DatabaseEndpointsContainer
         return this.provider.select(sql);
     }
 
-    // Quizz
-    public async addQuizz(name: string, desc: string, param: string): Promise<any[]>
-    {        
-        const sql = "INSERT INTO quizz (name, description, param) VALUES (?, ?, ?)";
-        return this.provider.execute(sql, [ name, desc, param ]);
-    }
-    public async getQuizz(): Promise<any[]>
-    {        
-        const sql = "SELECT * from  quizz";
+    /**
+     * Quizz creation and modifications
+     */
+    public async createQuizz(owner: UserIdentifier, params: string): Promise<QuizzIdentifier | undefined>
+    {
+        if(!owner.identifier) return undefined;
+        // TODO : Add a limit to the number of quizzes a user can have? (Store that limit in a constant.ts file in utils, probably)
 
+        const quizz_id = uuidv4();
+        const sql = "INSERT INTO quizzes (quizz_id, user_id, params) VALUES (?, ?, ?)";
+        await this.provider.execute(sql, [ quizz_id, owner.identifier, params ]);
+
+        return quizz_id;
+    }
+
+    public async getQuizz(quizz_id: QuizzIdentifier): Promise<Quizz | undefined>
+    {
+        const sql = "SELECT * FROM quizzes WHERE quizz_id=? LIMIT 1";
+        const result: any[] = await this.provider.select(sql, [ quizz_id ]);
+
+        if(result.length === 0) return undefined;
+        return { };
+    }
+
+    public async allQuizzes(): Promise<Quizz[]>
+    {        
+        const sql = "SELECT * from quizzes";
         return this.provider.select(sql);
     }
-    /**
-     * 
-     */
 }

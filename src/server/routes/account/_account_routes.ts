@@ -11,7 +11,6 @@ export const router = express.Router();
  * Check if a session is connected to a user account, and return information about that user if it's the case
  */
 router.get('/', (req, res) => {
-    console.log(req.sessionID);
     if(!req.user) return res.status(404).json({ 'error': 'Not logged in' });
     getEndpoints().accountDetails(req.user!).then((details) => res.status(200).json({ 'data': details }));
 });
@@ -70,7 +69,6 @@ router.post('/login', (req, res) => {
     getEndpoints().verifyLogin({ username: req.body.login, mail: req.body.login }, req.body.password)
     .then(async user_value => {
         if(!user_value) return res.status(401).json({ 'error': 'Incorrect identifier or password' });
-        console.log(user_value);
         await getEndpoints().linkAccountToSession(user_value, req.sessionID);
         res.status(200).json({ 'result': 'Logged in' });
     })
