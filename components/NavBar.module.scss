@@ -46,6 +46,10 @@
                 align-items: center;
                 gap: 4px;
 
+                /* Box appearance */
+                padding-inline: 8px;
+                padding-block: 3px;
+
                 /* Text Appearance */
                 text-decoration: none;
                 color: $darker;

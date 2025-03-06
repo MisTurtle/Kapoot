@@ -7,10 +7,12 @@ import { LucideIcon, Home, UserPen, UserPlus, User, DoorClosedIcon } from 'lucid
 import styles from './NavBar.module.scss';
 import logo from '../public/images/Logo_Big.png';
 
+// TODO : Ability to pass in some extra class to apply styles on specific buttons (copy Quizlet's layout ?)
+// TODO : System to access the user and setUser from any component / page
 
 export interface NavLink {
   label: string; // Text to display when hovered 
-  href: string; // where to redirect the user when clicked
+  target: string | (() => any); // Where to redirect the user when clicked (if a string is passed), or a javascript function to call
   icon: LucideIcon; // A lucide-react icon (An icon library)
 }
 
@@ -24,6 +26,12 @@ interface AutoNavBarProps {
 }
 
 export const CustomNavBar: FC<NavBarProps> = ({ logo, links }) => {
+
+  const handleClick = (target: string | (() => any)) => {
+    if(typeof target === 'string') window.location.href = target;  // Redirect the user to the URL
+    else if(typeof target === 'function') target();  // Call the JavaScript function
+  };
+
   return (
     <nav className={styles.navContainer}>
 
@@ -36,13 +44,13 @@ export const CustomNavBar: FC<NavBarProps> = ({ logo, links }) => {
 
       { /* Navigation Links */}
       <ul className={styles.linkContainer}>
-        { links.map( ({ label, href, icon: IconComponent }) => (
+        { links.map( ({ label, target, icon: IconComponent }) => (
 
-            <li key={href} className={styles.linkListItem}>
-              <Link href={href} className={styles.link}>
+            <li key={label} className={styles.linkListItem}>
+              <button className={styles.link} onClick={ () => handleClick(target) }>
                 <IconComponent className={styles.icon} />
                 <span className={styles.label}>{label}</span>
-              </Link>
+              </button>
             </li>
         
         ))}
@@ -54,19 +62,24 @@ export const CustomNavBar: FC<NavBarProps> = ({ logo, links }) => {
 
 export const NavBarSignedOut = () => {
   const links = [
-    { label: "Home", href: "/", icon: Home },
-    { label: "Sign In", href: "/login?page=sign", icon: UserPen },
-    { label: "Register", href: "/login?page=register", icon: UserPlus }
+    { label: "Home", target: "/", icon: Home },
+    { label: "Sign In", target: "/login?page=sign", icon: UserPen },
+    { label: "Register", target: "/login?page=register", icon: UserPlus }
   ];
 
   return <CustomNavBar logo={logo} links={links} />;
 };
 
+const logoutCallback = () => {
+  // TODO : Display confirmation prompt, somehow
+  fetch("/api/account/logout", { 'method': 'POST' }).then(() => location.reload());
+};
+
 export const NavBarSignedIn = () => {
   const links = [
-    { label: "Home", href: "/", icon: Home },
-    { label: "Account", href: "/account", icon: User },
-    { label: "Logout", href: "/api/account/logout", icon: DoorClosedIcon }
+    { label: "Home", target: "/", icon: Home },
+    { label: "Account", target: "/account", icon: User },
+    { label: "Logout", target: logoutCallback, icon: DoorClosedIcon }
   ];
 
   return <CustomNavBar logo={logo} links={links} />;
