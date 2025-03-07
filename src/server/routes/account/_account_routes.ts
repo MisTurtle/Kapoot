@@ -1,5 +1,5 @@
 import express from 'express';
-import { usernameChecker, emailChecker, FormInputChecker, passwordChecker } from '../../utils/sanitizers.js';
+import { usernameChecker, emailChecker, FormInputChecker, passwordChecker } from '../../../common/sanitizers.js';
 import { getEndpoints } from '../../database/database_controller.js';
 import { hash } from '../../../../src/server/utils/security.js';
 
@@ -12,7 +12,7 @@ export const router = express.Router();
  */
 router.get('/', (req, res) => {
     if(!req.user) return res.status(404).json({ 'error': 'Not logged in' });
-    getEndpoints().accountDetails(req.user!).then((details) => res.status(200).json({ 'data': details }));
+    getEndpoints().accountDetails(req.user!).then((details) => res.status(200).json(details));
 });
 
 /**

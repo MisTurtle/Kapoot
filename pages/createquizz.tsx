@@ -1,28 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import LoginForm from '../components/LoginForm';
+import React from 'react';
 import NewQuizz from '../components/NewQuizz';
+import { ProtectedRoute } from '../components/wrappers/ProtectedRoute';
 
-const Page = () =>  {
-
-    // TODO : Turn this into a utility to reduce boilerplate
-    const [user, setUser] = useState<UserIdentifier | undefined>(undefined);
-    useEffect(() => {
-      // Fetch auth status from the express API
-      fetch('/api/account')
-        .then((res) => {
-          if(res.status !== 200) return undefined;
-          return res.json();
-        })
-        .then(data => setUser(data))
-        .catch(() => setUser(undefined));
-    }, []);
-
-    return (
-        <div className="">
-          { user ? <NewQuizz /> : <LoginForm /> }
-        </div>
-      );
+const CreateQuizzContent = () =>  {
+  return <NewQuizz />; // TODO : See if this wouldn't be better as a page, not a component
 }
 
+const CreateQuizzPage = () => {
+  return (
+    <ProtectedRoute>
+      <CreateQuizzContent />
+    </ProtectedRoute>
+  );
+}
 
-export default Page;
+export default CreateQuizzPage;

@@ -1,9 +1,6 @@
-import Form from 'next/form';
-import { NavBarSignedOut } from './NavBar';
-import { usernameRegex, emailRegex, passwordRegex } from '../src/server/utils/sanitizers';
-
-import styles from './LoginForm.module.scss';
+import { passwordRegex } from '../src/common/sanitizers';
 import React, { FormEvent, useState } from 'react';
+import styles from './LoginForm.module.scss';
 
 const LoginForm = () => {
     // TODO : Accept some redirection parameter to redirect the user once logged in
@@ -40,21 +37,17 @@ const LoginForm = () => {
 
     return (
         <div>
-            <NavBarSignedOut />
+            <h1>Login page</h1>
 
-            <div>
-                <h1>Login page</h1>
+            <form onSubmit={handleSubmit}>
+                <label htmlFor='login'>Username or Email</label>
+                <input name='login' id='login' type='text' onChange={handleChange} required /> <br />
 
-                <form onSubmit={handleSubmit}>
-                    <label htmlFor='login'>Username or Email</label>
-                    <input name='login' id='login' type='text' onChange={handleChange} required /> <br />
+                <label htmlFor='password'>Password</label>
+                <input name='password' id='password' type='password' pattern={passwordRegex.source} onChange={handleChange} required /> <br />
 
-                    <label htmlFor='password'>Password</label>
-                    <input name='password' id='password' type='password' pattern={passwordRegex.source} onChange={handleChange} required /> <br />
-
-                    <button type='submit'>Log in</button>
-                </form>
-            </div>
+                <button type='submit'>Log in</button>
+            </form>
         </div>
     );
 };

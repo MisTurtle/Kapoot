@@ -1,5 +1,3 @@
-// TODO : Move this to commons as it is also used by the client side
-
 export type FormInputChecker = (value: string) => { valid: boolean, error?: string };
 
 const invalid = (reason: string) => ({ valid: false, error: reason });

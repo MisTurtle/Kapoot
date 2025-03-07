@@ -6,6 +6,7 @@ import { LucideIcon, Home, UserPen, UserPlus, User, DoorClosedIcon } from 'lucid
 /* Resource file imports */
 import styles from './NavBar.module.scss';
 import logo from '../public/images/Logo_Big.png';
+import { useAuth } from '../contexts/AuthContext';
 
 // TODO : Ability to pass in some extra class to apply styles on specific buttons (copy Quizlet's layout ?)
 // TODO : System to access the user and setUser from any component / page
@@ -86,7 +87,9 @@ export const NavBarSignedIn = () => {
 }
 
 // TODO : Use this once utilities for user account retrieval have been made (Adding user account fetching here would make useless requests)
-export const NavBarAuto: FC<AutoNavBarProps> = ( { user } ) => {
+export const NavBarAuto: FC<AutoNavBarProps> = ( ) => {
+  const { user } = useAuth();
+
   if(!user) return <NavBarSignedOut />;
   return <NavBarSignedIn />;
 };

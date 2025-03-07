@@ -1,6 +1,6 @@
 
 import { NavBarSignedIn, NavBarSignedOut } from './NavBar';
-import { usernameRegex, emailRegex, passwordRegex } from '../src/server/utils/sanitizers';
+import { usernameRegex, emailRegex, passwordRegex } from '../src/common/sanitizers';
 
 import React, { FormEvent, useState, useEffect } from 'react';
 

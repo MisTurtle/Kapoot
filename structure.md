@@ -83,7 +83,6 @@ La fonction ``useEffect(callback)`` de React exécute un code côté client pend
 
 Par défaut la page d'accueil est affichée avec un composant NavBar. Le ``useEffect`` prévoit un fetch de ``GET /api/account`` pour voir si l'utilisateur est connecté. Si c'est le cas, le composant NavBarSignedIn prend la place de NavBarSignedOut.
 
-**TODO: Changer le système pour qu'une fonction javascript puisse être appelée au lieu de toujours rediriger l'utilisateur vers un lien statique (dans ``components\NavBar.tsx``) --> Nécessaire pour le Logout qui attend une méthode POST, pas GET**
 
 **TODO: Ajouter un prompt de confirmation avant de logout (En faire un composant, probablement). Je sais pas comment faire, peut être avec un ``useState``**
 

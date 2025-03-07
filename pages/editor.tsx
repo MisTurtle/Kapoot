@@ -1,5 +1,16 @@
+import { ProtectedRoute } from '../components/wrappers/ProtectedRoute';
 import React from 'react';
 
-export default function Page() {
+const EditorContent = () => {
   return <h1>Hello, Editor!</h1>
+};
+
+const EditorPage = () => {
+  return (
+    <ProtectedRoute>
+      <EditorContent />
+    </ProtectedRoute>
+  );
 }
+
+export default EditorPage;

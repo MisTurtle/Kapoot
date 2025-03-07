@@ -1,27 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { NavBarSignedIn, NavBarSignedOut } from '../components/NavBar';
+import React from 'react';
 
+import { NavBarAuto } from '../components/NavBar';
+import { AuthProvider } from '../contexts/AuthContext';
 import styles from './index.module.scss';
 
 
-const Page = () => {
-
-  // TODO : Turn this into a utility to reduce boilerplate
-  const [user, setUser] = useState<UserIdentifier | undefined>(undefined);
-  useEffect(() => {
-    // Fetch auth status from the express API
-    fetch('/api/account')
-      .then((res) => {
-        if(res.status !== 200) return undefined;
-        return res.json();
-      })
-      .then(data => setUser(data))
-      .catch(() => setUser(undefined));
-  }, []);
-
+const LoginContent = () => {
   return (
     <div className={styles.pageContainer}>
-      { user ? <NavBarSignedIn /> : <NavBarSignedOut /> }
+      <NavBarAuto />
 
       <div className={styles.pageContent}>
 
@@ -39,4 +26,12 @@ const Page = () => {
   );
 };
 
-export default Page;
+const LoginPage = () => {
+  return (
+    <AuthProvider>
+      <LoginContent />
+    </AuthProvider>
+  );
+}
+
+export default LoginPage;
