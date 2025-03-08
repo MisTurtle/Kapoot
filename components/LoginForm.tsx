@@ -1,5 +1,6 @@
 import { passwordRegex } from '../src/common/sanitizers';
 import React, { FormEvent, useState } from 'react';
+import { useRouter } from 'next/router'; 
 import styles from './LoginForm.module.scss';
 
 const LoginForm = () => {
@@ -10,6 +11,7 @@ const LoginForm = () => {
         login: "",
         password: "",
     });
+    const router = useRouter();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -27,6 +29,7 @@ const LoginForm = () => {
             (res) => {
                 if(res.status === 200) {
                     alert('Logged in');
+                    router.push('/');
                 } else {
                     res.json().then((cnt) => alert(JSON.stringify(cnt)));
                 }
@@ -36,6 +39,29 @@ const LoginForm = () => {
 
 
     return (
+        <div className={styles.mainContainer}>
+            <div className={styles.formContainer}>
+                <p className={styles.title}>Sign in</p>
+                <form className={styles.form} onSubmit={handleSubmit}>
+                    <div className={styles.inputContainer}>
+                        <label htmlFor="login">Username or Email</label>
+                        <input name='login' id='login' type='text' onChange={handleChange} required /> <br />
+
+                        <label htmlFor="password">Password</label>
+                        <input name='password' id='password' type='password' pattern={passwordRegex.source} onChange={handleChange} required />
+                        <div className={styles.forgot}>
+                            <a rel="noopener noreferrer" href="#">Forgot Password ?</a>
+                        </div>
+                    </div>
+                    <button className={styles.sign} type='submit'>Sign in</button>
+                </form>
+                <div className={styles.line} />
+                <p className={styles.signup}>Don't have an account? 
+                <a rel="noopener noreferrer" href="login?page=register">Register</a>
+                </p>
+            </div>
+        </div>
+        /*
         <div>
             <h1>Login page</h1>
 
@@ -48,7 +74,7 @@ const LoginForm = () => {
 
                 <button type='submit'>Log in</button>
             </form>
-        </div>
+        </div>*/
     );
 };
 
