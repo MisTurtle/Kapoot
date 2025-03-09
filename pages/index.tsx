@@ -4,25 +4,26 @@ import { NavBarAuto } from '../components/NavBar';
 import { AuthProvider } from '../contexts/AuthContext';
 import styles from './index.module.scss';
 
+// TODO : Add onSubmit={handleSubmit} on form to start the game with a quizz according entered PIN
 
 const LoginContent = () => {
   return (
+
     <div className={styles.pageContainer}>
       <NavBarAuto />
-
       <div className={styles.pageContent}>
-
         <h1 className={styles.pageTitle}>Kapoot - Spice up your Quizz</h1>
-        <div className="code-input">
+        <div className={styles.codeInput}>
           <form>
-            <input className="enter-code" name="quizzId" placeholder="Code PIN du quizz" type="numeric" />
-            <button className="start-button" type="submit" value="start">Validate</button>
+            <input className={styles.enterCode} name="quizzId" placeholder="Code PIN du jeu" type="numeric" />
+            <button className={styles.startButton} type="submit">Validate</button>
           </form>
-          <a href="createquizz">Create your own quizz</a>
+          <a className={styles.ownQuizz} href="createquizz">Create your own quizz</a>
         </div>
-
       </div>
     </div>
+
+
   );
 };
 
