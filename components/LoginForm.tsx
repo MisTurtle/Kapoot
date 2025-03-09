@@ -28,9 +28,9 @@ const LoginForm = () => {
         }).then(
             (res) => {
                 if(res.status === 200) {
-                    alert('Logged in');
                     router.push('/');
                 } else {
+                    // TODO : Make this prettier, an actual error message
                     res.json().then((cnt) => alert(JSON.stringify(cnt)));
                 }
             }
@@ -61,20 +61,6 @@ const LoginForm = () => {
                 </p>
             </div>
         </div>
-        /*
-        <div>
-            <h1>Login page</h1>
-
-            <form onSubmit={handleSubmit}>
-                <label htmlFor='login'>Username or Email</label>
-                <input name='login' id='login' type='text' onChange={handleChange} required /> <br />
-
-                <label htmlFor='password'>Password</label>
-                <input name='password' id='password' type='password' pattern={passwordRegex.source} onChange={handleChange} required /> <br />
-
-                <button type='submit'>Log in</button>
-            </form>
-        </div>*/
     );
 };
 

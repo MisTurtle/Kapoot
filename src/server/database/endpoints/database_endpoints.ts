@@ -4,8 +4,6 @@ import { DataProvider, DIALECT_MySQL, DIALECT_SQLITE } from "../providers/data_p
 import { v4 as uuidv4 } from 'uuid';
 import { verify } from "../../../../src/server/utils/security.js";
 
-import { Quizz } from "../../../../src/server/quizz_components/quizz.js";
-
 
 export class DatabaseEndpointsContainer
 {
@@ -235,6 +233,11 @@ export class DatabaseEndpointsContainer
     /**
      * Quizz creation and modifications
      */
+    /**
+     * @param owner Quizz owner, needs to contain the user identifier
+     * @param params Default serialized values for the quizz
+     * @returns An identifier to the quizz entry
+     */
     public async createQuizz(owner: UserIdentifier, params: string): Promise<QuizzIdentifier | undefined>
     {
         if(!owner.identifier) return undefined;
@@ -247,16 +250,20 @@ export class DatabaseEndpointsContainer
         return quizz_id;
     }
 
-    public async getQuizz(quizz_id: QuizzIdentifier): Promise<Quizz | undefined>
+    /**
+     * @param quizz_id An identifier to the quizz
+     * @returns The serialized data to reconstruct the quizz
+     */
+    public async getSerializedQuizz(quizz_id: QuizzIdentifier): Promise<string | undefined>
     {
-        const sql = "SELECT * FROM quizzes WHERE quizz_id=? LIMIT 1";
+        const sql = "SELECT params FROM quizzes WHERE quizz_id=? LIMIT 1";
         const result: any[] = await this.provider.select(sql, [ quizz_id ]);
 
         if(result.length === 0) return undefined;
-        return { };
+        return result[0].params;
     }
 
-    public async allQuizzes(): Promise<Quizz[]>
+    public async allQuizzes(): Promise<{ user_id: string; quizz_id: string; params: string; }[]>
     {        
         const sql = "SELECT * from quizzes";
         return this.provider.select(sql);

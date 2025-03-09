@@ -1,5 +1,6 @@
 import express from 'express';
 import { getEndpoints } from '../../database/database_controller.js';
+import { emptyQuizz } from '../../../../src/server/quizz_components/components.jsx';
 
 export const router = express.Router();
 
@@ -25,7 +26,10 @@ router.get('/addQuizz', (req, res) => {
     if(!req.query.title) return res.status(400).json({ 'error': 'Missing field \"title\"' });
     if(!req.query.desc) return res.status(400).json({ 'error': 'Missing field \"desc\"' });
 
-    getEndpoints().createQuizz(req.user, JSON.stringify({ title: req.query.title, desc: req.query.desc })).then(data => res.status(200).json(data));
+    const quizz = emptyQuizz();
+    quizz.set('label', req.query.title as string);
+    quizz.set('description', req.query.desc as string);
+    getEndpoints().createQuizz(req.user, JSON.stringify(quizz)).then(data => res.status(200).json(data));
 });
 /**
  * List all quizzes registered in the database
