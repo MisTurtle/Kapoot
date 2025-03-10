@@ -41,7 +41,7 @@ const LoginForm = () => {
     return (
         <div className={styles.mainContainer}>
             <div className={styles.formContainer}>
-                <p className={styles.title}>Sign in</p>
+                <h1 className={styles.title}>Sign in</h1>
                 <form className={styles.form} onSubmit={handleSubmit}>
                     <div className={styles.inputContainer}>
                         <label htmlFor="login">Username or Email</label>
@@ -49,9 +49,9 @@ const LoginForm = () => {
 
                         <label htmlFor="password">Password</label>
                         <input name='password' id='password' type='password' pattern={passwordRegex.source} onChange={handleChange} required />
-                        <div className={styles.forgot}>
+                        {/* <div className={styles.forgot}>
                             <a rel="noopener noreferrer" href="#">Forgot Password ?</a>
-                        </div>
+                        </div> */}
                     </div>
                     <button className={styles.sign} type='submit'>Sign in</button>
                 </form>

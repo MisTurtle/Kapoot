@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router';
 import { AuthProvider, useAuth } from '../../contexts/AuthContext';
 import { useEffect } from 'react';
+import Loading from '../Loading';
 
 
 const ProtectedRouteWrapper = ({ children }: { children: React.ReactNode }) => {
@@ -11,7 +12,7 @@ const ProtectedRouteWrapper = ({ children }: { children: React.ReactNode }) => {
         if(!loading && !user) router.push('/login');
     }, [ user, loading, router ]);
 
-    if (loading || !user) return <p>Loading...</p>;  // TODO : Replace this with a fullscreen component
+    if (loading || !user) return <Loading />;
     return <>{children}</>;
 };
 

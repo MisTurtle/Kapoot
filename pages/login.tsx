@@ -3,18 +3,22 @@ import { useRouter } from 'next/router';
 import { UnprotectedRoute } from '../components/wrappers/UnprotectedRoute';
 import LoginForm from '../components/LoginForm';
 import RegisterForm from '../components/RegisterForm';
+import Loading from '../components/Loading';
 import { NavBarAuto } from '../components/NavBar';
 
 
 const LoginContent = () => {
-    const router = useRouter();
-    const { page } = router.query;  // Fetch the `page` GET parameter
+    const { query, isReady } = useRouter();
+    const { page } = query;  // Fetch the `page` GET parameter
+    let content;
+
+    if(!isReady) content = <Loading />;
+    else content = page === 'register' ? <RegisterForm /> : <LoginForm />;
     
-    // TODO : Tab view to switch between register and login, to remove on button
     return (
         <div>
             <NavBarAuto />
-            { page === 'register' ? <RegisterForm /> : <LoginForm /> }
+            { content }
         </div>
     );
 };

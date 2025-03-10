@@ -70,16 +70,16 @@ export class DatabaseEndpointsContainer
                 UPDATE quizzes SET updated_at=CURRENT_TIMESTAMP WHERE quizz_id=OLD.quizz_id;
              END;`
         );
-        statements.push(
-            // --- Table to store questions (Maybe useless though, we might store everything in quizzes)
-            `CREATE TABLE IF NOT EXISTS question(
-                question_id CHAR(36) UNIQUE PRIMARY KEY,
-                quizz_id CHAR(36) UNIQUE NOT NULL,
-                question TEXT UNIQUE NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (quizz_id) REFERENCES quizz(quizz_id)
-            );`
-        );
+        // statements.push(
+        //     // --- Table to store questions (Maybe useless though, we might store everything in quizzes)
+        //     `CREATE TABLE IF NOT EXISTS question(
+        //         question_id CHAR(36) UNIQUE PRIMARY KEY,
+        //         quizz_id CHAR(36) UNIQUE NOT NULL,
+        //         question TEXT UNIQUE NOT NULL,
+        //         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        //         FOREIGN KEY (quizz_id) REFERENCES quizz(quizz_id)
+        //     );`
+        // );
         await Promise.all(statements.map((sql) => this.provider.execute(sql)));
     
         this.startSessionCleanupLoop();
