@@ -1,6 +1,7 @@
 import express from 'express';
 import { getEndpoints } from '../../../../src/server/database/database_controller';
 import { QuizzComponent, emptyQuizz } from '../../../../src/server/quizz_components/components';
+import { uuidChecker } from '../../../../src/common/sanitizers';
 
 export const router = express.Router();
 
@@ -28,13 +29,23 @@ router.post('/quizz', (req, res) => {
  * Action: Get a quizz details
  */
 router.get('/quizz/:id', (req, res) => {
+    if(!req.user) return res.status(404).json({ 'error': 'Not logged in' });
+    
+    const quizz_id: string = req.params.id;
+    if(!quizz_id) return res.status(400).json({ 'error': 'Incomplete request data (Missing quizz id)' });
+    if(!uuidChecker(quizz_id).valid) return res.status(400).json({ 'error': 'Invalid quizz ID' });
 
+    getEndpoints().getSerializedQuizz(quizz_id)
+    .then((params) => {
+        if(!params) return res.status(404).json({ 'error': 'Quizz does not exist' });
+        return res.status(200).send(params);
+    });
 });
 
 /**
  * Action: Update an existing quizz's details
  */
-router.put('/quizz/:id', (req, res) => {
+router.patch('/quizz/:id', (req, res) => {
 
 });
 

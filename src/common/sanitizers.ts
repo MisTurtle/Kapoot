@@ -30,3 +30,8 @@ export const passwordChecker: FormInputChecker = (password: string) => {
     return valid();
 }
 
+export const uuidv4Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+export const uuidChecker: FormInputChecker = (uuid: string) => {
+    if(uuid.match(uuidv4Regex)) return valid();
+    return invalid('Invalid UUID');
+}
