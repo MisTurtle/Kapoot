@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Header, } from '@components/EditorComponents';
+import { Header } from '@components/EditorComponents';
 import { ProtectedRoute } from '@components/wrappers/ProtectedRoute';
 import styles from './editor.module.scss';
 import { useRouter } from 'next/router';
@@ -54,7 +54,8 @@ const EditorContent = () =>  {
   return (
     <div className={styles.pageContainer}>
       { /* Debug interface to test functionnalities */ }
-      { loading ? <Loading /> : <p>{JSON.stringify(quizz)}</p>}
+      { loading ? <Loading /> : <div><p>{JSON.stringify(quizz)}</p> <Header /></div>}
+
     </div>
   );
 }

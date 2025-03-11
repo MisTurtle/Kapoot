@@ -268,4 +268,10 @@ export class DatabaseEndpointsContainer
         const sql = "SELECT * from quizzes";
         return this.provider.select(sql);
     }
+
+    public async deleteQuizz(quizz_id: QuizzIdentifier): Promise<void>
+    {        
+        const sql = "DELETE FROM quizzes WHERE quizz_id =?";
+        return this.provider.execute(sql, [ quizz_id ]);
+    }
 }

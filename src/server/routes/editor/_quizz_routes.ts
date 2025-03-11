@@ -52,8 +52,16 @@ router.patch('/quizz/:id', (req, res) => {
 /**
  * Action: Delete a quizz
  */
+// TODO : Try ths function, didn't do since there is no quizz in database
 router.delete('/quizz/:id', (req, res) => {
+    if(!req.user) return res.status(404).json({ 'error': 'Not logged in' });
+    
+    const quizz_id: string = req.params.id;
+    if(!quizz_id) return res.status(400).json({ 'error': 'Incomplete request data (Missing quizz id)' });
+    if(!uuidChecker(quizz_id).valid) return res.status(400).json({ 'error': 'Invalid quizz ID' });
 
+    getEndpoints().deleteQuizz(quizz_id);
+    
 });
 
 /**
