@@ -5,7 +5,7 @@ import express from 'express';
 import { router as sessionRouter } from './session/session_pipeline.js';
 import { router as apiRouter } from './routes/api_routes.js';
 // Other imports
-import { production, rootPath } from '../common/utils.js';
+import { production, rootPath } from '@common/utils.js';
 import { DatabaseController } from './database/database_controller.js';
 import { unless } from './utils/utils.js';
 

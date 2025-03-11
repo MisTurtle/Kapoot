@@ -2,7 +2,7 @@ import express from 'express';
 import session from 'express-session';
 import CustomSessionStore from './session_store';
 import { allValidSecrets, sessionCookieLifetime } from './session_secret.js';
-import { getEndpoints } from '../database/database_controller.js';
+import { getEndpoints } from '@server/database/database_controller.js';
 
 /** Setup session cookie generation routes */
 export const router = express.Router();

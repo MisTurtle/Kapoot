@@ -39,7 +39,7 @@ export const AuthProvider = ( { children } : { children: React.ReactNode } ) => 
     }
     
     // Schedule user account retrieval by fetching to the server.
-    useEffect(() => { checkAuthenticated() }, [ router ]);
+    useEffect(() => { checkAuthenticated(); }, [ router ]);
 
     return <AuthContext.Provider value={{ user, loading, setUser }}> {children} </AuthContext.Provider>;
 };

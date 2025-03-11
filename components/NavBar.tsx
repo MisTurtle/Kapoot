@@ -2,11 +2,11 @@ import Link from 'next/link';
 import Image, { StaticImageData } from 'next/image';
 import { FC } from 'react';
 import { LucideIcon, Home, UserPen, UserPlus, User, DoorClosedIcon } from 'lucide-react';
+import { useAuth } from '@contexts/AuthContext';
 
 /* Resource file imports */
 import styles from './NavBar.module.scss';
-import logo from '../public/images/Logo_Big.png';
-import { useAuth } from '../contexts/AuthContext';
+import logo from '@public/images/Logo_Big.png';
 
 // TODO : Ability to pass in some extra class to apply styles on specific buttons (copy Quizlet's layout ?)
 // TODO : System to access the user and setUser from any component / page

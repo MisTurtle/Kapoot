@@ -5,10 +5,10 @@
   "type": "module",
   "main": "src/server/index.ts",
   "scripts": {
-    "dev": "nodemon --watch src --ext ts,tsx --exec tsx src/server/index.ts",
+    "dev": "nodemon --watch src --ext ts,tsx --exec tsx --require tsconfig-paths/register src/server/index.ts",
     "build": "next build && tsc",
     "prod": "npm run build && npm run start",
-    "start": "cross-env NODE_ENV=production node dist/src/server/index.js",
+    "start": "cross-env NODE_ENV=production node --require tsconfig-paths/register dist/src/server/index.js",
     "test": "jest"
   },
   "dependencies": {
@@ -23,6 +23,7 @@
     "react-dom": "^19.0.0",
     "sqlite": "^5.1.1",
     "sqlite3": "^5.1.7",
+    "tsconfig-paths": "^4.2.0",
     "uuid": "^11.1.0"
   },
   "devDependencies": {

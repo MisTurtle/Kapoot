@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { rootPath } from '../../common/utils.js';
+import { rootPath } from '@common/utils.js';
 
 /**
  * Generate a new session secret if none is found locally

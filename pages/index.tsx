@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { NavBarAuto } from '../components/NavBar';
-import { AuthProvider } from '../contexts/AuthContext';
+import { NavBarAuto } from '@components/NavBar';
+import { AuthProvider } from '@contexts/AuthContext';
 import styles from './index.module.scss';
 import { useRouter } from 'next/router';
 

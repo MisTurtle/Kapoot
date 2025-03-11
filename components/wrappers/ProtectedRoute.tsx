@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
-import { AuthProvider, useAuth } from '../../contexts/AuthContext';
+import { AuthProvider, useAuth } from '@contexts/AuthContext';
 import { useEffect } from 'react';
-import Loading from '../Loading';
+import Loading from '@components/misc/Loading';
 
 
 const ProtectedRouteWrapper = ({ children }: { children: React.ReactNode }) => {

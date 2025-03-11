@@ -1,6 +1,6 @@
 import express from 'express';
-import { getEndpoints } from '../../database/database_controller.js';
-import { emptyQuizz } from '../../../../src/server/quizz_components/components.jsx';
+import { getEndpoints } from '@server/database/database_controller.js';
+import { emptyQuizz } from '@server/quizz_components/components.jsx';
 
 export const router = express.Router();
 

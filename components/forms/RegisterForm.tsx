@@ -1,4 +1,4 @@
-import { usernameRegex, emailRegex, passwordRegex } from '../src/common/sanitizers';
+import { usernameRegex, emailRegex, passwordRegex } from '@common/sanitizers';
 import React, { FormEvent, useState } from 'react';
 
 import styles from './LoginForm.module.scss';

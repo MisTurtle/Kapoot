@@ -1,5 +1,5 @@
-import { ProtectedRoute } from "../components/wrappers/ProtectedRoute";
-import { useAuth } from "../contexts/AuthContext";
+import { ProtectedRoute } from "@components/wrappers/ProtectedRoute";
+import { useAuth } from "@contexts/AuthContext";
 
 const AccountContent = () => {
     const { user } = useAuth();

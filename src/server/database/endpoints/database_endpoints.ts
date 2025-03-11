@@ -1,8 +1,8 @@
 import session from "express-session";
-import { sessionCookieLifetime } from "../../../server/session/session_secret.js";
+import { sessionCookieLifetime } from "@server/session/session_secret.js";
 import { DataProvider, DIALECT_MySQL, DIALECT_SQLITE } from "../providers/data_provider.js";
 import { v4 as uuidv4 } from 'uuid';
-import { verify } from "../../../../src/server/utils/security.js";
+import { verify } from "@server/utils/security.js";
 
 
 export class DatabaseEndpointsContainer

@@ -1,4 +1,4 @@
-import { passwordRegex } from '../src/common/sanitizers';
+import { passwordRegex } from '@common/sanitizers';
 import React, { FormEvent, useState } from 'react';
 import { useRouter } from 'next/router'; 
 import styles from './LoginForm.module.scss';

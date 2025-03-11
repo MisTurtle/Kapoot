@@ -1,4 +1,4 @@
-import { production } from "../../common/utils.js";
+import { production } from "@common/utils";
 import { DataProvider } from "./providers/data_provider.js";
 import { SqlDataProvider } from "./providers/sql_provider.js";
 import { SqliteDataProvider } from "./providers/sqlite_provider.js";

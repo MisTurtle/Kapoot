@@ -21,6 +21,12 @@
     "baseUrl": ".",
     "outDir": "./dist",
     "paths": {
+      "@components/*": ["components/*"],
+      "@contexts/*": ["contexts/*"],
+      "@styles/*": ["styles/*"],
+      "@common/*": ["src/common/*"],
+      "@server/*": ["src/server/*"],
+      "@public/*": ["public/*"],
       "*": [
         "node_modules/*",
         "src/types/*"

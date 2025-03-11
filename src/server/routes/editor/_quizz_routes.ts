@@ -1,7 +1,7 @@
 import express from 'express';
-import { getEndpoints } from '../../../../src/server/database/database_controller';
-import { QuizzComponent, emptyQuizz } from '../../../../src/server/quizz_components/components';
-import { uuidChecker } from '../../../../src/common/sanitizers';
+import { getEndpoints } from '@server/database/database_controller';
+import { QuizzComponent, emptyQuizz } from '@server/quizz_components/components';
+import { uuidChecker } from '@common/sanitizers';
 
 export const router = express.Router();
 

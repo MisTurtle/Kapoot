@@ -1,7 +1,7 @@
 import express from 'express';
-import { usernameChecker, emailChecker, FormInputChecker, passwordChecker } from '../../../common/sanitizers.js';
-import { getEndpoints } from '../../database/database_controller.js';
-import { hash } from '../../../../src/server/utils/security.js';
+import { usernameChecker, emailChecker, FormInputChecker, passwordChecker } from '@common/sanitizers.js';
+import { getEndpoints } from '@server/database/database_controller.js';
+import { hash } from '@server/utils/security.js';
 
 export const router = express.Router();
 

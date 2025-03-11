@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Header, } from '../components/EditorComponents';
-import { ProtectedRoute } from '../components/wrappers/ProtectedRoute';
+import { Header, } from '@components/EditorComponents';
+import { ProtectedRoute } from '@components/wrappers/ProtectedRoute';
 import styles from './editor.module.scss';
 import { useRouter } from 'next/router';
-import Loading from '../components/Loading';
-import { SimpleQuizzComponent } from '../src/server/quizz_components/components';
-import { uuidChecker } from '../src/common/sanitizers';
+import Loading from '@components/misc/Loading';
+import { SimpleQuizzComponent } from '@server/quizz_components/components';
+import { uuidChecker } from '@common/sanitizers';
 
 const EditorContent = () =>  {
   // TODO : Merge styles with index styles (or at least recurring classes)

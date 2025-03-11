@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { SqliteDataProvider } from '../../../src/server/database/providers/sqlite_provider';
+import { SqliteDataProvider } from '@server/database/providers/sqlite_provider';
 
 const sqlitePath = __dirname + "/test_db.sqlite";
 describe('SQLiteProvider', () => {

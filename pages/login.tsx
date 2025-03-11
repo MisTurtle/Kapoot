@@ -1,10 +1,10 @@
 import React from 'react';
 import { useRouter } from 'next/router';
-import { UnprotectedRoute } from '../components/wrappers/UnprotectedRoute';
-import LoginForm from '../components/LoginForm';
-import RegisterForm from '../components/RegisterForm';
-import Loading from '../components/Loading';
-import { NavBarAuto } from '../components/NavBar';
+import { UnprotectedRoute } from '@components/wrappers/UnprotectedRoute';
+import LoginForm from '@components/forms/LoginForm';
+import RegisterForm from '@components/forms/RegisterForm';
+import Loading from '@components/misc/Loading';
+import { NavBarAuto } from '@components/NavBar';
 
 
 const LoginContent = () => {

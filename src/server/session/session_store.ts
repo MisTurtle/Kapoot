@@ -1,5 +1,5 @@
 import session from 'express-session';
-import { getEndpoints } from '../database/database_controller';
+import { getEndpoints } from '@server/database/database_controller';
 
 export default class CustomSessionStore extends session.Store
 {
