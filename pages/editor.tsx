@@ -6,6 +6,7 @@ import { useRouter } from 'next/router';
 import Loading from '@components/misc/Loading';
 import { SimpleQuizzComponent } from '@server/quizz_components/components';
 import { uuidChecker } from '@common/sanitizers';
+import { deserialize } from 'v8';
 
 const EditorContent = () =>  {
   // TODO : Merge styles with index styles (or at least recurring classes)
@@ -31,6 +32,21 @@ const EditorContent = () =>  {
       setQuizz(new SimpleQuizzComponent({}));  // TODO : Actually deserialize the data (Write deserializer classes in src/server/quizz_components)
       setLoading(false);
       console.log(data);
+      
+      // Test to deserialize a quizz
+      const monQuizzData = {
+        id: "12345",
+        title: "Quiz test",
+        questions: [
+            { type: "q:open", text: "Test qu1", answer: "this is open"},
+            { type: "q:bin", text: "Test qu2", answerTrue: true, answerFalse: false },
+            { type: "q:simple", text: "Test qu3", answers: ["answer1", 1, 4, "answer4"]},
+            { type: "q:mcq", text: "Test qu4", answers: [5]}
+        ]
+      };
+      const quizz2 = SimpleQuizzComponent.deserialize(monQuizzData); 
+      console.log("Quiz désérialisé :", quizz2.children);
+
       return;
     })
   }, [query]);

@@ -86,6 +86,22 @@ export class SimpleQuizzComponent extends QuizzComponent<types.SimpleQuizzProps>
     {
         super(properties, ...questions);
     }
+
+    static deserialize(data: any): SimpleQuizzComponent {
+        const ques = (data.questions || []).map((q: any) => {
+            switch (q.type) {
+                case 'q:open': return new OpenQuestionComponent(q, new OpenAnswerComponent(q.answer));
+                case 'q:bin': return new BinaryQuestionComponent(q, new BinaryAnswerComponent(q.answerTrue), new BinaryAnswerComponent(q.answerFalse));
+                case 'q:simple': return new SimpleQuestionComponent(q, ...(q.answers || []).map((a: any) => new SimpleAnswerComponent(a)));
+                case 'q:mcq': return new McqQuestionComponent(q, ...(q.answers || []).map((a: any) => new McqAnswerComponent(a)));
+                default: throw new Error(`Unknown question type: ${q.type}`);
+            }
+        });
+        
+        return new SimpleQuizzComponent(data, ...ques);
+    }
+    
 }
+
 
 export function emptyQuizz() { return new SimpleQuizzComponent({}); }

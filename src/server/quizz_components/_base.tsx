@@ -1,3 +1,5 @@
+import { Children } from "react";
+
 export const FIELD_PROPERTIES = 'p';
 export const FIELD_CHILDREN = 'c';
 export const FIELD_TYPE = 't';
@@ -42,6 +44,10 @@ export abstract class KapootComponentContainer<T extends Record<string, any>> ex
     constructor(properties: T, ...children: KapootLeafComponent<any>[]) {
         super(properties);
         this._children = children;
+    }
+
+    public get children() {
+        return this._children; 
     }
     
     public toJSON(): object 
