@@ -4,17 +4,20 @@ import { NavBarAuto } from '@components/NavBar';
 import { AuthProvider } from '@contexts/AuthContext';
 import styles from './index.module.scss';
 import { useRouter } from 'next/router';
+import { usePopup } from '@contexts/PopupContext';
 
 // TODO : Add onSubmit={handleSubmit} on form to start the game with a quizz according entered PIN
 
 const IndexContent = () => {
   const router = useRouter();
+  const { showPopup } = usePopup();
 
   const createQuizz = () => {
     fetch('/api/editor/quizz', { method: 'POST' })
     .then(async (res) => {
       const result = await res.json();
-      
+
+      if(!res.ok) return showPopup('error', 'Uwu error ^^', 5);
       if(!res.ok && result.error === 'Not logged in') return router.push('/login'); // TODO : Make a better system (through constants) to check why an api call failed
       if(!res.ok || !result.identifier) return;  // TODO: Handle error
 
