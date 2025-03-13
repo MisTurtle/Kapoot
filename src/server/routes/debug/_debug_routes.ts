@@ -35,3 +35,20 @@ router.get('/addQuizz', (req, res) => {
  * List all quizzes registered in the database
  */
 router.get('/quizzes', (req, res) => getEndpoints().allQuizzes().then(data => res.status(200).json(data)));
+/**
+ * Delete a quizz from parameters passed in the URL ()
+ */
+router.get('/deleteQuizz', (req, res) => {
+    if(!req.query.quizzId) return res.status(400).json({ 'error': 'Missing field \"quizzId\"' });
+
+    getEndpoints().deleteQuizz(req.query.quizzId as string).then(data => res.status(200).json(data));
+});
+/**
+ * Update a quizz from parameters passed in the URL ()
+ */
+router.get('/updateQuizz', (req, res) => {
+    if(!req.query.quizzId) return res.status(400).json({ 'error': 'Missing field \"quizzId\"' });
+    if(!req.query.param) return res.status(400).json({ 'error': 'Missing field \"param\"' });
+
+    getEndpoints().updateQuizz(JSON.stringify(req.query.param), req.query.quizzId as string).then(data => res.status(200).json(data));
+});

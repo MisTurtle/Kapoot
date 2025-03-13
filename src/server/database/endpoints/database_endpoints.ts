@@ -274,4 +274,10 @@ export class DatabaseEndpointsContainer
         const sql = "DELETE FROM quizzes WHERE quizz_id =?";
         return this.provider.execute(sql, [ quizz_id ]);
     }
+    public async updateQuizz(params: string,quizz_id: QuizzIdentifier): Promise<void>
+    {        
+        const sql = "UPDATE quizzes SET params=?, updated_at=current_timestamp WHERE quizz_id=?";
+
+        await this.provider.execute(sql, [ params, quizz_id ]);
+    }
 }
