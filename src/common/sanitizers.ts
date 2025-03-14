@@ -1,7 +1,8 @@
 export type FormInputChecker = (value: string) => { valid: boolean, message?: string };
+export type WholeFormChecker = (value: object) => { valid: boolean, field?: string, message?: string };
 
-const invalid = (reason: string) => ({ valid: false, message: reason });
-const valid = () => ({ valid: true });
+export const invalid = (reason: string) => ({ valid: false, message: reason });
+export const valid = () => ({ valid: true });
 
 export const usernameRegex = /^[a-zA-Z0-9_\-\.!?&]{3,32}$/;
 export const usernameChecker: FormInputChecker = (username: string) => {
@@ -20,7 +21,7 @@ export const emailChecker: FormInputChecker = (email: string) => {
 }
 
 // Inspired from: https://uibakery.io/regex-library/password
-export const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&])[\sA-Za-z\d@.#$!%*?&]{8,32}$/;
+export const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[_#?!@$%^&*\-])[\sA-Za-z\d_@.#$!%*?&\-]{8,32}$/;
 export const passwordChecker: FormInputChecker = (password: string) => {
     if(password.length < 8 || password.length > 32) return invalid('Password must be between 8 and 32 characters long');
     if(!/[A-Z]/.test(password)) return invalid('Password must contain at least one capital letter (A to Z)');
@@ -34,4 +35,11 @@ export const uuidv4Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-
 export const uuidChecker: FormInputChecker = (uuid: string) => {
     if(uuid.match(uuidv4Regex)) return valid();
     return invalid('Invalid UUID');
+}
+
+export const loginChecker: FormInputChecker = (login: string) => {
+    const isUsername = usernameChecker(login);
+    const isEmail = emailChecker(login);
+    if(!isEmail.valid && !isUsername.valid) return invalid('Login is invalid');
+    return valid();
 }

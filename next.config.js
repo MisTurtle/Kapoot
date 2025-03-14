@@ -14,7 +14,8 @@ const e = {
       "@styles": path.join(__dirname, "styles"),
       "@public": path.join(__dirname, "public"),
       "@common": path.join(__dirname, "src", "common"),
-      "@server": path.join(__dirname, "src", "server")
+      "@server": path.join(__dirname, "src", "server"),
+      "@client": path.join(__dirname, "src", "client")
     };
     return config;
   }

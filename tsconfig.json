@@ -26,6 +26,7 @@
       "@styles/*": ["styles/*"],
       "@common/*": ["src/common/*"],
       "@server/*": ["src/server/*"],
+      "@client/*": ["src/client/*"],
       "@public/*": ["public/*"],
       "*": [
         "node_modules/*",

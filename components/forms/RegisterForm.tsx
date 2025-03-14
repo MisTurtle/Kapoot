@@ -1,23 +1,27 @@
-import { usernameRegex, emailRegex, passwordRegex } from '@common/sanitizers';
+import { usernameRegex, emailRegex, passwordRegex, FormInputChecker, usernameChecker, emailChecker, passwordChecker, valid, invalid, WholeFormChecker } from '@common/sanitizers';
+import { handleFormChange } from '@client/utils';
+import { AlertCircle } from 'lucide-react';
+
 import React, { FormEvent, useState } from 'react';
+import { useRouter } from 'next/router';
 
 import styles from './LoginForm.module.scss';
 
 const RegisterForm = () => {
     // TODO : Accept some redirection parameter to redirect the user once logged in
     // TODO : Redirect to the page if the user is already logged in
+    
+    const router = useRouter();
+    const [ formData, setFormData ] = useState({ username: "", mail: "", password: "", passwordVerif: "" });
+    const [ errors, setErrors ] = useState<Record<string, string>>({});
+    const [ enabled, setEnabled ] = useState(false);
+    const checkers: Record<string, FormInputChecker> = { 'username': usernameChecker, 'mail': emailChecker, 'password': passwordChecker };
 
-    const [ formData, setFormData ] = useState({
-        username: "",
-        mail: "",
-        password: "",
-        passwordVerif: ""
-    });
-
+    const passwordVerifChecker: WholeFormChecker = (formData: any) => formData.passwordVerif === formData.password ? valid() : { ...invalid('Both passwords do not match.'), field: 'passwordVerif' };
+    const requiredFieldChecker: WholeFormChecker = (formData: any) => Object.values(formData).some(val => !val) ? invalid('Required fields are missing') : valid();
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-        // TODO : Apply styles according to whether inputs are valid or not
-    }
+        return handleFormChange(e, checkers, formData, setFormData, setErrors, setEnabled, [ passwordVerifChecker, requiredFieldChecker ]);
+    };
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
@@ -29,8 +33,9 @@ const RegisterForm = () => {
         }).then(
             (res) => {
                 if(res.status === 200) {
-                    alert('Account created');
+                    router.push('/');
                 } else {
+                    // TODO : Make this prettier, an actual error message
                     res.json().then((cnt) => alert(JSON.stringify(cnt)));
                 }
             }
@@ -46,18 +51,22 @@ const RegisterForm = () => {
 
                     <div className={styles.inputContainer}>
                         <label htmlFor='username'>Username</label>
-                        <input name='username' id='username' type='text' pattern={usernameRegex.source} onChange={handleChange} required /> <br />
+                        <input name='username' id='username' type='text' pattern={usernameRegex.source} onChange={handleChange} required />
+                        { errors.username && <p className={styles.errorMessage}><AlertCircle height={16} /> {errors.username}</p>}
 
                         <label htmlFor='mail'>Email Address</label>
-                        <input name='mail' id='mail' type='text' pattern={emailRegex.source} onChange={handleChange} required /> <br />
+                        <input name='mail' id='mail' type='text' pattern={emailRegex.source} onChange={handleChange} required />
+                        { errors.mail && <p className={styles.errorMessage}><AlertCircle height={16} /> {errors.mail}</p>}
 
                         <label htmlFor='password'>Password</label>
-                        <input name='password' id='password' type='password' pattern={passwordRegex.source} onChange={handleChange} required /> <br />
+                        <input name='password' id='password' type='password' pattern={passwordRegex.source} onChange={handleChange} required />
+                        { errors.password && <p className={styles.errorMessage}><AlertCircle height={16} /> {errors.password}</p>}
 
                         <label htmlFor='passwordVerif'>Retype your password</label>
-                        <input name='passwordVerif' id='passwordVerif' type='password' pattern={passwordRegex.source} onChange={handleChange} required /> <br />
+                        <input name='passwordVerif' id='passwordVerif' type='password' pattern={passwordRegex.source} onChange={handleChange} required />
+                        { errors.passwordVerif && <p className={styles.errorMessage}><AlertCircle height={16} /> {errors.passwordVerif}</p>}
                     </div>
-                    <button className={styles.sign} type='submit'>Register</button>
+                    <button className={styles.sign} type='submit' disabled={!enabled}>Register</button>
                 </form>
 
                 <div className={styles.line} />
