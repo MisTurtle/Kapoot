@@ -6,12 +6,15 @@ import React, { FormEvent, useState } from 'react';
 import { useRouter } from 'next/router';
 
 import styles from './LoginForm.module.scss';
+import { handle } from '@common/responses';
+import { usePopup } from '@contexts/PopupContext';
 
 const RegisterForm = () => {
     // TODO : Accept some redirection parameter to redirect the user once logged in
     // TODO : Redirect to the page if the user is already logged in
     
     const router = useRouter();
+    const { showPopup } = usePopup();
     const [ formData, setFormData ] = useState({ username: "", mail: "", password: "", passwordVerif: "" });
     const [ errors, setErrors ] = useState<Record<string, string>>({});
     const [ enabled, setEnabled ] = useState(false);
@@ -30,17 +33,17 @@ const RegisterForm = () => {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username: formData.username, mail: formData.mail, password: formData.password })
-        }).then(
-            (res) => {
-                if(res.status === 200) {
-                    router.push('/');
-                } else {
-                    // TODO : Make this prettier, an actual error message
-                    res.json().then((cnt) => alert(JSON.stringify(cnt)));
-                }
+        }).then(async res => await handle(
+            res,
+            () => {
+                showPopup('success', 'Account created !', 5.0);
+                router.push('/');
+            },
+            (err) => {
+                showPopup('error', err, 5.0);
             }
-        )
-    }
+        ));
+    };
 
     return (
         <div className={styles.mainContainer}>

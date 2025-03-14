@@ -1,3 +1,4 @@
+import { handle } from "@common/responses";
 import { useRouter } from "next/router";
 import { createContext, useContext, useState, useEffect } from "react";
 
@@ -22,14 +23,11 @@ export const AuthProvider = ( { children } : { children: React.ReactNode } ) => 
         try{
             const response = await fetch('/api/account');
             
-            if(!response.ok) {
-                setUser(undefined);
-                return false;
-            }
-
-            const user = await response.json();
-            setUser(user);
-            return true;
+            return await handle<UserIdentifier>(
+                response,
+                (user) => { setUser(user); return true; },
+                () => { setUser(undefined); return false; }
+            );
         } catch(err) {
             setUser(undefined);
             return false;

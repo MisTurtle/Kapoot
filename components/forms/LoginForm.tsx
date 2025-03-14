@@ -4,11 +4,14 @@ import { useRouter } from 'next/router';
 import styles from './LoginForm.module.scss';
 import { AlertCircle } from 'lucide-react';
 import { handleFormChange } from '@client/utils';
+import { handle } from '@common/responses';
+import { usePopup } from '@contexts/PopupContext';
 
 const LoginForm = () => {
     // TODO : Accept some redirection parameter to redirect the user once logged in
     // TODO : Redirect to the page if the user is already logged in
     const router = useRouter();
+    const { showPopup } = usePopup();
     const [ formData, setFormData ] = useState({ login: "", password: "" });
     const [ errors, setErrors ] = useState<Record<string, string>>({});
     const [ enabled, setEnabled ] = useState(false);
@@ -26,16 +29,16 @@ const LoginForm = () => {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ login: formData.login, password: formData.password })
-        }).then(
-            (res) => {
-                if(res.status === 200) {
-                    router.push('/');
-                } else {
-                    // TODO : Make this prettier, an actual error message
-                    res.json().then((cnt) => alert(JSON.stringify(cnt)));
-                }
+        }).then(async res => await handle(
+            res, 
+            () => {
+                showPopup('success', 'Successfully logged in !', 5.0);
+                router.push('/');
+            }, 
+            (err) => {
+                showPopup('error', err, 5.0);
             }
-        )
+        ));
     }
 
 

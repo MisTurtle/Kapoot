@@ -1,29 +1,35 @@
 import React from 'react';
 
 import { NavBarAuto } from '@components/NavBar';
-import { AuthProvider } from '@contexts/AuthContext';
+import { AuthProvider, useAuth } from '@contexts/AuthContext';
 import styles from './index.module.scss';
 import { useRouter } from 'next/router';
 import { usePopup } from '@contexts/PopupContext';
+import { handle } from '@common/responses';
 
 // TODO : Add onSubmit={handleSubmit} on form to start the game with a quizz according entered PIN
 
 const IndexContent = () => {
   const router = useRouter();
   const { showPopup } = usePopup();
+  const { user } = useAuth();
 
   const createQuizz = () => {
-    fetch('/api/editor/quizz', { method: 'POST' })
-    .then(async (res) => {
-      const result = await res.json();
+    if(!user) { router.push('/login'); return; }
 
-      if(!res.ok) return showPopup('error', 'Uwu error ^^', 5);
-      if(!res.ok && result.error === 'Not logged in') return router.push('/login'); // TODO : Make a better system (through constants) to check why an api call failed
-      if(!res.ok || !result.identifier) return;  // TODO: Handle error
-
-      const quizz_id = result.identifier;
-      return router.push(`/editor?quizz=${quizz_id}`);
-    }).catch((error) => { console.log(error); }); // TODO : Popup with an error display (as a reusable element because it can occur on different pages)
+    fetch('/api/editor/quizz', { method: 'POST' }).then(async (res) => await handle<{identifier: string}>(
+        res,
+        
+        (result?) => {
+          if(!result) throw new Error("Result should always be defined for route POST /api/editor/quizz");
+          showPopup('success', 'New quizz created !', 5.0);
+          router.push(`/editor?quizz=${result.identifier}`)
+        },
+        
+        (err) => {
+          showPopup('error', err, 5.0);
+        }
+    ));
   };
 
   return (

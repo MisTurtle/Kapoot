@@ -25,13 +25,6 @@ export const Header = () => {
             body: JSON.stringify({ type: formData.type, text: formData.text, answer: formData.answer })
         }).then(
             (res) => {
-                if(res.status === 200) {
-                    alert('Quizz created');
-                    router.push('/');
-                } else {
-                    // TODO : Make this prettier, an actual error message
-                    res.json().then((cnt) => alert(JSON.stringify(cnt)));
-                }
             }
         )
     }
