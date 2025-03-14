@@ -29,7 +29,7 @@ router.post('/', (req, res) => {
         const field = fields[i];
         const result = checker(req.body[field]);
         
-        if(!result.valid) return res.status(400).json({ 'error': result.error });
+        if(!result.valid) return res.status(400).json({ 'error': result.message });
     }
 
     // Check if account already exists, and if not, create an account

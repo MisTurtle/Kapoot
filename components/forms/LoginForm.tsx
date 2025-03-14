@@ -1,21 +1,32 @@
-import { passwordRegex } from '@common/sanitizers';
+import { FormInputChecker, passwordChecker, passwordRegex } from '@common/sanitizers';
 import React, { FormEvent, useState } from 'react';
 import { useRouter } from 'next/router'; 
 import styles from './LoginForm.module.scss';
+import { AlertCircle } from 'lucide-react';
 
 const LoginForm = () => {
     // TODO : Accept some redirection parameter to redirect the user once logged in
     // TODO : Redirect to the page if the user is already logged in
-
-    const [ formData, setFormData ] = useState({
-        login: "",
-        password: "",
-    });
     const router = useRouter();
+    const [ formData, setFormData ] = useState({ login: "", password: "" });
+    const [ errors, setErrors ] = useState<Record<string, string>>({});
+    const checkers: Record<string, FormInputChecker> = { 'password': passwordChecker };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const inputName = e.target.name;
+        const inputValue = e.target.value;
+        const checker = checkers[inputName];
+        let updatedErrors = { ...errors };
+        
+        if(checker !== undefined)
+        {
+            const error = checker(inputValue);
+            if(!error.valid && error.message) updatedErrors[inputName] = error.message;  // Add an error
+            else if(error.valid) delete updatedErrors[inputName];  // Remove an error
+        }
+
+        setErrors(updatedErrors);
         setFormData({ ...formData, [e.target.name]: e.target.value });
-        // TODO : Apply styles according to whether inputs are valid or not
     }
 
     const handleSubmit = async (e: FormEvent) => {
@@ -45,13 +56,13 @@ const LoginForm = () => {
                 <form className={styles.form} onSubmit={handleSubmit}>
                     <div className={styles.inputContainer}>
                         <label htmlFor="login">Username or Email</label>
-                        <input name='login' id='login' type='text' onChange={handleChange} required /> <br />
+                        <input name='login' id='login' type='text' onChange={handleChange} required />
+                        { errors.login && <p className={styles.errorMessage}><AlertCircle height={16}/> {errors.login}</p> }
+                        <br />
 
                         <label htmlFor="password">Password</label>
-                        <input name='password' id='password' type='password' pattern={passwordRegex.source} onChange={handleChange} required />
-                        {/* <div className={styles.forgot}>
-                            <a rel="noopener noreferrer" href="#">Forgot Password ?</a>
-                        </div> */}
+                        <input name='password' id='password' type='password' onChange={handleChange} required />
+                        { errors.password && <p className={styles.errorMessage}><AlertCircle height={16}/> {errors.password}</p> }
                     </div>
                     <button className={styles.sign} type='submit'>Sign in</button>
                 </form>

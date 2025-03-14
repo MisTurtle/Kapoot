@@ -1,6 +1,6 @@
-export type FormInputChecker = (value: string) => { valid: boolean, error?: string };
+export type FormInputChecker = (value: string) => { valid: boolean, message?: string };
 
-const invalid = (reason: string) => ({ valid: false, error: reason });
+const invalid = (reason: string) => ({ valid: false, message: reason });
 const valid = () => ({ valid: true });
 
 export const usernameRegex = /^[a-zA-Z0-9_\-\.!?&]{3,32}$/;

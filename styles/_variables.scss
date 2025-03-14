@@ -4,11 +4,26 @@ $dark: #202020;
 $light: #bdbdbd;
 $lighter: #efefef;
 
+
 /* Theme */
 $primary: #7deb4d;
 $primaryDarker: #3e7527;
+$accent: #a78bfa;
+$accentDarker: #604f94;
+
+/* Message Types */
+$error: rgb(235, 75, 75);
+$warning: rgb(235, 211, 75);
+$success: rgb(83, 235, 75);
 
 /* Fonts */
 // TODO : This definitely needs to be changed lol, just some tests
 $text: "Arial";
 $title: "Consolas";
+
+/* Transition speeds */
+$faster: 0.05s;
+$fast: 0.1s;
+$medium: 0.2s;
+$slow: 0.35s;
+$slower: 0.5s;
