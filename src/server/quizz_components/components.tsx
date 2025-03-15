@@ -98,6 +98,7 @@ export class SimpleQuizzComponent extends QuizzComponent<types.SimpleQuizzProps>
     
     constructor(properties: types.SimpleQuizzProps, ...questions: QuestionComponent<any>[])
     {
+        if(!properties.label) properties.label = "New Quizz";
         super(properties, ...questions);
     }
 

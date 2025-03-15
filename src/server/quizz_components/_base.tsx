@@ -24,7 +24,6 @@ export abstract class KapootLeafComponent<T extends Record<string, any>>
     constructor(properties: Partial<T>)
     {
         this._properties = properties;
-        console.log('Properties:', properties);
     }
 
     public get<K extends keyof T>(key: K): T[K] { return this._properties[key] ?? this.defaultProperties[key]; }

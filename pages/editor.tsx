@@ -4,7 +4,7 @@ import { ProtectedRoute } from '@components/wrappers/ProtectedRoute';
 import styles from './editor.module.scss';
 import { useRouter } from 'next/router';
 import Loading from '@components/misc/Loading';
-import { SimpleQuizzComponent, SimpleQuestionComponent, SimpleAnswerComponent, QuestionComponent } from '@server/quizz_components/components';
+import { SimpleQuizzComponent, SimpleQuestionComponent, SimpleAnswerComponent, QuestionComponent, QuizzComponent } from '@server/quizz_components/components';
 import { uuidChecker } from '@common/sanitizers';
 import { handle } from '@common/responses';
 import { usePopup } from '@contexts/PopupContext';
@@ -22,10 +22,12 @@ const EditorContent = () =>  {
   }
 
   const { showPopup } = usePopup();
-  const [ title, setTitle ] = useState<string|undefined>(undefined);
   const [ quizz, setQuizz ] = useState<SimpleQuizzComponent | undefined>(undefined);
+  const [ , setVersion ] = useState<number>(0);
+  const [ title, setTitle ] = useState<string|undefined>(undefined);
   const [ loading, setLoading ] = useState<boolean>(true);
 
+  const updateRender = () => setVersion(v => v + 1);
   const updateQuizz = () => {
     if (!quizz) return;
 
@@ -51,8 +53,10 @@ const EditorContent = () =>  {
     if (!quizz) return;
 
     const newQuestion = new SimpleQuestionComponent({label: "la question"}, new SimpleAnswerComponent({label: "c'est la réponse"}));
-    quizz.children.push(newQuestion);
-    
+    if(!quizz) showPopup('error', 'No quizz is currently open', 5.0);
+    else quizz.children.push(newQuestion);
+
+    updateRender();
     updateQuizz();
   }
 
@@ -73,7 +77,6 @@ const EditorContent = () =>  {
         (err) => {
           // TODO : Handle error with some redirection, maybe
           showPopup('error', err, 5.0);
-          setQuizz(undefined);
           setLoading(false);
         }
       ))
