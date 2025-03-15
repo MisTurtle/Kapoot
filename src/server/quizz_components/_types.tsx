@@ -1,11 +1,10 @@
 /**
  * Base type for component properties (every component will have these)
  */
-type BaseProps = {
-    type?: string;
+export type BaseProps = {
     label?: string;  // Main text content
     thumbnail?: string;  // Thumbnail to be displayed (URL to image)
-    background?: string;  // Background (Color or URL to image)
+    background?: string | number[];  // Background (Color or URL to image)
 };
 
 /**

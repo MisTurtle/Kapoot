@@ -1,4 +1,4 @@
-import { KapootComponentContainer, KapootLeafComponent } from "./_base";
+import { defaultColors, FIELD_CHILDREN, FIELD_PROPERTIES, FIELD_TYPE, KapootComponentContainer, KapootLeafComponent } from "./_base";
 import * as types from "./_types";
 
 /**
@@ -7,22 +7,26 @@ import * as types from "./_types";
 // These might look useless but will (probably) be convenient later on when everything is of the same type
 export class OpenAnswerComponent extends KapootLeafComponent<types.OpenAnswerProps>
 {
-    public defaultProperties: types.OpenAnswerProps = { type: 'a:open' };
+    public defaultProperties: types.OpenAnswerProps = { };
+    public type: string = 'a:open';
 }
 
 export class BinaryAnswerComponent extends KapootLeafComponent<types.BinaryAnswerProps>
 {
-    public defaultProperties: types.BinaryAnswerProps = { type: 'a:bin' };
+    public defaultProperties: types.BinaryAnswerProps = { };
+    public type: string = 'a:bin';
 }
 
 export class SimpleAnswerComponent extends KapootLeafComponent<types.SimpleAnswerProps>
 {
-    public defaultProperties: types.SimpleAnswerProps = { type: 'a:simple' };
+    public defaultProperties: types.SimpleAnswerProps = { };
+    public type: string = 'a:simple';
 }
 
 export class McqAnswerComponent extends KapootLeafComponent<types.McqAnswerProps>
 {
-    public defaultProperties: types.McqAnswerProps = { type: 'a:mcq' };
+    public defaultProperties: types.McqAnswerProps = { };
+    public type: string = 'a:mcq';
 }
 
 
@@ -36,41 +40,50 @@ export abstract class QuestionComponent<T extends Record<string, any>> extends K
 
 export class OpenQuestionComponent extends QuestionComponent<types.OpenQuestionProps>
 {
-    public defaultProperties: types.OpenQuestionProps = { type: 'q:open' }
+    public defaultProperties: types.OpenQuestionProps = { }
+    public type: string = 'q:open';
 
     constructor(properties: types.OpenQuestionProps, answerComponent: OpenAnswerComponent)
     {
         super(properties, answerComponent);
+        if(!answerComponent.get('label')) answerComponent.set('label', 'Open Answer');
     }
 }
 
 export class BinaryQuestionComponent extends QuestionComponent<types.BinaryQuestionProps>
 {
-    public defaultProperties: types.BinaryQuestionProps = { type: 'q:bin' };
+    public defaultProperties: types.BinaryQuestionProps = { };
+    public type: string = 'q:bin';
 
     constructor(properties: types.BinaryQuestionProps, answerTrue: BinaryAnswerComponent, answerFalse: BinaryAnswerComponent) 
     {
         super(properties, answerTrue, answerFalse);
+        answerTrue.setAllIfUndefined({'label': 'Yes', 'background': defaultColors[0]});
+        answerFalse.setAllIfUndefined({'label': 'No', 'background': defaultColors[1]});
     }
 }
 
 export class SimpleQuestionComponent extends QuestionComponent<types.SimpleQuestionProps>
 {
-    public defaultProperties: types.SimpleQuestionProps = { type: 'q:simple' };
+    public defaultProperties: types.SimpleQuestionProps = { };
+    public type: string = 'q:simple';
 
     constructor(properties: types.SimpleQuestionProps, ...answers: SimpleAnswerComponent[])
     {
         super(properties, ...answers);
+        answers.forEach((ans, i) => ans.setAllIfUndefined({'label': `Answer #${i}`, 'background': defaultColors[i]}));
     }
 }
 
 export class McqQuestionComponent extends QuestionComponent<types.McqQuestionProps>
 {
-    public defaultProperties: types.McqQuestionProps = { type: 'q:mcq' };
+    public defaultProperties: types.McqQuestionProps = { };
+    public type: string = 'q:mcq';
 
     constructor(properties: types.McqQuestionProps, ...answers: McqAnswerComponent[])
     {
         super(properties, ...answers);
+        answers.forEach((ans, i) => ans.setAllIfUndefined({'label': `Answer #${i}`, 'background': defaultColors[i]}));
     }
 }
 
@@ -80,7 +93,8 @@ export class McqQuestionComponent extends QuestionComponent<types.McqQuestionPro
 export abstract class QuizzComponent<T extends Record<string, any>> extends KapootComponentContainer<T> { }
 export class SimpleQuizzComponent extends QuizzComponent<types.SimpleQuizzProps>
 {
-    public defaultProperties: types.SimpleQuizzProps = { type: 'quizz:simple' };
+    public defaultProperties: types.SimpleQuizzProps = { };
+    public type: string = 'quizz:simple';
     
     constructor(properties: types.SimpleQuizzProps, ...questions: QuestionComponent<any>[])
     {
@@ -88,20 +102,39 @@ export class SimpleQuizzComponent extends QuizzComponent<types.SimpleQuizzProps>
     }
 
     static deserialize(data: any): SimpleQuizzComponent {
-        const ques = (data.questions || []).map((q: any) => {
-            switch (q.type) {
-                case 'q:open': return new OpenQuestionComponent(q, new OpenAnswerComponent(q.answer));
-                case 'q:bin': return new BinaryQuestionComponent(q, new BinaryAnswerComponent(q.answerTrue), new BinaryAnswerComponent(q.answerFalse));
-                case 'q:simple': return new SimpleQuestionComponent(q, ...(q.answers || []).map((a: any) => new SimpleAnswerComponent(a)));
-                case 'q:mcq': return new McqQuestionComponent(q, ...(q.answers || []).map((a: any) => new McqAnswerComponent(a)));
-                default: throw new Error(`Unknown question type: ${q.type}`);
+        const quizzProperties = data[FIELD_PROPERTIES];
+        const quizzChildren = data[FIELD_CHILDREN];  // [ {type: 'questionType', children: questionAnswers, properties: {...questionProperties} ]
+
+        const questions = (quizzChildren ?? []).map((q: any) => {
+            const properties = q[FIELD_PROPERTIES];  // { ...questionProperties }
+            const children: { type: string, properties: any }[] = q[FIELD_CHILDREN];  // { type: 'answerType', properties: { ...childProperties }}
+            const childProperties: Partial<types.BaseProps>[] = children.map(child => child.properties);
+            const type = q[FIELD_TYPE];  // string
+            let ans = undefined;
+
+            // Answer types aren't actually checked before being passed to an answer's constructor
+            // But let's keep the type in case we ever need it for custom deserialization
+            switch (type) {
+                case 'q:open': 
+                    ans = new OpenAnswerComponent(childProperties[0]);
+                    return new OpenQuestionComponent(properties, ans);
+                case 'q:bin': 
+                    ans = [ new BinaryAnswerComponent(childProperties[0]), new BinaryAnswerComponent(childProperties[1]) ];
+                    return new BinaryQuestionComponent(properties, ans[0], ans[1]);
+                case 'q:simple':
+                    ans = (childProperties || []).map((props: any) => new SimpleAnswerComponent(props))
+                    return new SimpleQuestionComponent(properties, ...ans);
+                case 'q:mcq':
+                    ans = (childProperties || []).map((props: any) => new McqAnswerComponent(props))
+                    return new McqQuestionComponent(properties, ...ans);
+                default: 
+                    throw new Error(`Unknown question type: ${q.type}`);
             }
         });
         
-        return new SimpleQuizzComponent(data, ...ques);
+        return new SimpleQuizzComponent(quizzProperties, ...questions);
     }
     
 }
-
 
 export function emptyQuizz() { return new SimpleQuizzComponent({}); }

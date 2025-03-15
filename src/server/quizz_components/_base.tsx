@@ -1,8 +1,13 @@
-import { Children } from "react";
+export const FIELD_PROPERTIES = 'properties';
+export const FIELD_CHILDREN = 'children';
+export const FIELD_TYPE = 'type';
 
-export const FIELD_PROPERTIES = 'p';
-export const FIELD_CHILDREN = 'c';
-export const FIELD_TYPE = 't';
+export const defaultColors = [
+    [66, 135, 245],  // Blue
+    [245, 66, 66],  // Red
+    [201, 154, 60],  // Yellow
+    [50, 201, 76]  // Green
+]
 
 /**
  * Bottom-most level class extended by every quizz component
@@ -10,26 +15,36 @@ export const FIELD_TYPE = 't';
 export abstract class KapootLeafComponent<T extends Record<string, any>>
 {
     public abstract defaultProperties: T;
-    private _properties: T;
+    public abstract type: string;
+    private _properties: Partial<T> = {};
 
     /**
      * @param properties An object of properties to be serialized with the element
      */
-    constructor(properties: T)
+    constructor(properties: Partial<T>)
     {
         this._properties = properties;
+        console.log('Properties:', properties);
     }
 
     public get<K extends keyof T>(key: K): T[K] { return this._properties[key] ?? this.defaultProperties[key]; }
     public set<K extends keyof T>(key: K, value: T[K]): void { this._properties[key] = value; }
+    public setAll(props: Partial<T>): void { Object.assign(this._properties, props); }
+    public setAllIfUndefined(props: Partial<T>): void {
+        for (const key in props) {
+            if (this._properties[key] === undefined) {
+                this._properties[key] = props[key] as T[typeof key];
+            }
+        }
+    }
 
     /**
      * Called by JSON.stringify when serializing this object
      */
-    public toJSON(): object {
-        let properties= { ...this.defaultProperties } as Record<string, any>;
-        Object.entries(this._properties).forEach(([key, val]) => { properties[key] = val; })
-        return properties;
+    public toJSON(): Record<string, any> {
+        let properties = { ...this.defaultProperties } as Record<string, any>;
+        Object.assign(properties, this._properties);
+        return { [FIELD_TYPE]: this.type, [FIELD_PROPERTIES]: properties };
     }
 }
 
@@ -39,7 +54,7 @@ export abstract class KapootLeafComponent<T extends Record<string, any>>
  */
 export abstract class KapootComponentContainer<T extends Record<string, any>> extends KapootLeafComponent<T>
 {
-    private _children: KapootLeafComponent<T>[];
+    private _children: KapootLeafComponent<T>[] = [];
 
     constructor(properties: T, ...children: KapootLeafComponent<any>[]) {
         super(properties);
@@ -52,10 +67,8 @@ export abstract class KapootComponentContainer<T extends Record<string, any>> ex
     
     public toJSON(): object 
     {
-        const properties = super.toJSON();
-        return {
-            [FIELD_PROPERTIES]: properties,
-            [FIELD_CHILDREN]: this._children.map(child => child.toJSON())
-        };
+        let thisJson = super.toJSON();
+        thisJson[FIELD_CHILDREN] = this._children.map(child => child.toJSON());
+        return thisJson;
     }
 }
