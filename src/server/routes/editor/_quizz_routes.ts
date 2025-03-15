@@ -45,17 +45,24 @@ router.get('/quizz/:id', (req, res) => {
 /**
  * Action: Update an existing quizz's details
  */
-router.patch('/quizz/:id/:param', (req, res) => {
-    if(!req.user) return error(res, 'Not logged in.');
+router.patch('/quizz/:id/params', async (req, res) => {
+    if (!req.user) return res.status(404).json({ error: 'Not logged in' });
 
     const quizz_id: string = req.params.id;
-    if(!quizz_id) return error(res, 'Incomplete request data (Missing quizz id)');
-    if(!uuidChecker(quizz_id).valid) return error(res, 'Invalid quizz ID');
+    if (!quizz_id) return res.status(400).json({ error: 'Incomplete request data (Missing quizz id)' });
+    if (!uuidChecker(quizz_id).valid) return res.status(400).json({ error: 'Invalid quizz ID' });
 
-    // TODO : Check the user actually owns the quizz ^^ (Pass the user id to deleteQuizz so it only removes it if a rows with user_id && quizz_id exists)
-    const param: string = req.params.param;
-    getEndpoints().updateQuizz(param, quizz_id).then(() => success(res));
+    const { params } = req.body;
+    if (!params) return res.status(400).json({ error: 'Missing quizz params in body' });
+
+    try {
+        await getEndpoints().updateQuizz(params, quizz_id);
+        res.status(200).json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to update quizz' });
+    }
 });
+
 
 /**
  * Action: Delete a quizz
