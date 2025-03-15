@@ -5,6 +5,7 @@ import LoginForm from '@components/forms/LoginForm';
 import RegisterForm from '@components/forms/RegisterForm';
 import Loading from '@components/misc/Loading';
 import { NavBarAuto } from '@components/NavBar';
+import HeroPage from '@components/wrappers/HeroPage';
 
 
 const LoginContent = () => {
@@ -26,7 +27,9 @@ const LoginContent = () => {
 const LoginPage = () => {
     return (
         <UnprotectedRoute>
-            <LoginContent />
+            <HeroPage>
+                <LoginContent />
+            </HeroPage>
         </UnprotectedRoute>
     );
 };

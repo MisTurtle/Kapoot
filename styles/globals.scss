@@ -4,3 +4,21 @@
     margin: 0;
     padding: 0;
 }
+
+h1 {
+    font-family: $title;
+    font-size: $fs-huge;
+    text-shadow: 1px 1px 2px $accent;
+}
+h2 {
+    font-family: $title;
+    font-size: $fs-very-big;
+}
+h3 {
+    font-family: $title;
+    font-size: $fs-medium;
+}
+p, p > span, a, a > span, ul > li, pre {
+    font-family: $text;
+    font-size: $fs-small;
+}

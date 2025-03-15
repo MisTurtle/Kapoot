@@ -1,0 +1,62 @@
+@use "@styles/variables" as *;
+
+.hero {
+    width: 100vw;
+    height: 100vh;
+
+    background: linear-gradient(45deg, $primaryDarker, $primary, $accent, $accentDarker);
+    background-size: 300% 300%;
+    animation: gradientBG 10s ease infinite;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+}
+
+.shapesContainer {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+
+    .shape {
+        position: absolute;
+        opacity: 0.7;
+        animation: moveAndRotate 10s linear forwards;
+    }
+
+    .rounded {
+        border-radius: 33%;
+    }
+
+    .circle {
+        border-radius: 50%;
+    }
+
+    .hex {
+        clip-path: polygon(50% 0%, 95% 25%, 95% 75%, 50% 100%, 5% 75%, 5% 25%);
+    }
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes moveAndRotate {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        scale: 0;
+        opacity: 0;
+    }
+    10% {
+        scale: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        transform: translateY(-100vh) rotate(360deg);
+        opacity: calc(var(--destination) / 100 - 1);
+    }
+}

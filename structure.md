@@ -96,17 +96,7 @@ Le ``useRouter`` de React permet notamment de récupérer les paramètres inscri
 
 Si la page demandée est ``=== "register"``, on affiche le form pour créer un compte. Sinon celui pour se connecter. 
 
-**TODO: Rajouter un composant pour avoir une tab-view et switch entre Login et Register facilement**
-
-**TODO: Rajouter un paramètre de redirection (e.g. ?redirect={url}) pour rediriger l'utilisateur après le Login / Enregistrement. (Voir comment faire avec NextJS et useRouter)**
-
-**TODO: Rediriger l'utilisateur s'il est déjà logged in. Actuellement le form s'affiche sans aucune requête préalable => Faire une requête synchrone de compte et vérifier que le résultat soit bien un 404 (not logged in)**
-
-**TODO: Du joli css**
-
 ###### Account.tsx (/account)
-
-**TODO: Redirect à la page de login si l'utilisateur n'est pas connecté. Requête synchrone (sans useEffect), affichage normal si ``GET /api/account retourne des infos``, ou redirection si c'est une erreur 404 (pas connecté)**
 
 **TODO: Page de compte, affichage des stats (quand elles seront implémentées), avatar, quizz créés et stockés sur le serveur...**
 

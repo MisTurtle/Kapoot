@@ -28,7 +28,7 @@ export const PopupProvider = ( { children } : { children: ReactNode }) => {
     const [popups, setPopups] = useState<PopupData[]>([]);
 
     const showPopup = async (type: PopupType, message: string, duration: number = 5) => {
-        let id = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+        let id = Date.now();
         const onClose = () => removePopup(id);
         setPopups((prev) => [...prev.slice(-4), { identifier: id, type: type, message: message, duration: duration, onClose: onClose }]);
         setTimeout(onClose, duration * 1000);

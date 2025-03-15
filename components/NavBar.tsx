@@ -9,7 +9,6 @@ import styles from './NavBar.module.scss';
 import logo from '@public/images/Logo_Big.png';
 
 // TODO : Ability to pass in some extra class to apply styles on specific buttons (copy Quizlet's layout ?)
-// TODO : System to access the user and setUser from any component / page
 
 export interface NavLink {
   label: string; // Text to display when hovered 
@@ -43,7 +42,7 @@ export const CustomNavBar: FC<NavBarProps> = ({ logo, links }) => {
         </Link>
       </div>
 
-      { /* Navigation Links */}
+      { /* Navigation Links */ }
       <ul className={styles.linkContainer}>
         { links.map( ({ label, target, icon: IconComponent }) => (
 

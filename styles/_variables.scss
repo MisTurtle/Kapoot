@@ -20,10 +20,16 @@ $success: rgb(83, 235, 75);
 // TODO : This definitely needs to be changed lol, just some tests
 $text: "Arial";
 $title: "Consolas";
+$fs-huge: 28pt;
+$fs-very-big: 24pt;
+$fs-big: 20pt;
+$fs-medium: 16pt;
+$fs-small: 12pt;
+$fs-very-small: 9pt;
 
 /* Transition speeds */
-$faster: 0.05s;
-$fast: 0.1s;
-$medium: 0.2s;
-$slow: 0.35s;
-$slower: 0.5s;
+$t-faster: 0.05s;
+$t-fast: 0.1s;
+$t-medium: 0.2s;
+$t-slow: 0.35s;
+$t-slower: 0.5s;
