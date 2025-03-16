@@ -22,6 +22,7 @@ const EditorContent = () =>  {
   }
 
   const { showPopup } = usePopup();
+  const [ question, selectQuestion ] = useState<QuestionComponent<any> | undefined>(undefined);
   const [ quizz, setQuizz ] = useState<SimpleQuizzComponent | undefined>(undefined);
   const [ , setVersion ] = useState<number>(0);
   const [ title, setTitle ] = useState<string|undefined>(undefined);
@@ -43,9 +44,16 @@ const EditorContent = () =>  {
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTitle = e.target.value;
-    if (quizz) quizz.set("label", newTitle);
-
+    quizz?.set("label", newTitle);
     setTitle(newTitle);
+    updateQuizz();
+  };
+
+  const handleQuestionTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newTitle = e.target.value;
+    question?.set('label', newTitle);
+
+    updateRender();
     updateQuizz();
   };
 
@@ -56,6 +64,7 @@ const EditorContent = () =>  {
     if(!quizz) showPopup('error', 'No quizz is currently open', 5.0);
     else quizz.children.push(newQuestion);
 
+    selectQuestion(newQuestion);
     updateRender();
     updateQuizz();
   }
@@ -70,6 +79,7 @@ const EditorContent = () =>  {
           
           data = JSON.parse(data);
           const quizz = SimpleQuizzComponent.deserialize(data);
+          if(quizz.children.length > 0) selectQuestion(quizz.children[0] as QuestionComponent<any>);
           setQuizz(quizz);
           setTitle(quizz.get('label'));
           setLoading(false);
@@ -85,45 +95,42 @@ const EditorContent = () =>  {
   return (
     <div className={styles.editorContainer}>
       { /* Debug interface to test functionnalities */ }
-      { loading ? <Loading /> : 
-      <div> 
-        { /* <Header /> */ }
-        <div className={styles.editorTitle}>
-          <h1>Éditeur de Quizz</h1>
-        </div>
+      { loading ? <Loading /> : <div className={styles.layout}>
+      
+        { /* Header Title Bar */ }
+        <header className={styles.titleSection}>
+          <input type="text" value={title} onChange={handleTitleChange} placeholder="Quizz Title..." className={styles.titleInput}/>
+        </header>
 
-        { /* Editor Layout View */ }
-        <div className={styles.layout}>
+        { /* Main content view */ }
+        <div className={styles.editorBody}>
 
-          { /* Quizz Questions */ }
-          <div className={styles.questionsContainer}>
+          { /* Quizz Questions Side Panel */ }
+          <aside className={styles.questionsContainer}>
             <span className={styles.questionsTitle}>Questions</span>
             {quizz?.children.map((question, index) => (
-              <div key={index} className={styles.question}>
+              <div key={index} onClick={() => selectQuestion(quizz.children[index] as QuestionComponent<any>)} className={styles.question}>
                 <strong>Question :</strong> {question.get('label')}
               </div>
             ))}
             <button className={styles.addQuestionButton} onClick={addQuestion}>Add simple question</button>
-          </div>
+          </aside>
 
-          { /* Title Bar */ }
-          <div className={styles.titleSection}>
-            <input type="text" value={title} onChange={handleTitleChange} placeholder="Titre du quizz" className={styles.titleInput}/>
-            <div className={styles.titleDisplay}>
-              <strong>Titre :</strong> {title || 'Titre non défini'}
-            </div>
-          </div>
-
-          { /* Preview zone */ }
-          <div className={styles.previewSection}>
-          </div>
-
-          { /* Component settings zone */ }
-          <div className={styles.settingsZone}>
-          </div>
+          { /* Main Preview zone */ }
+          <main className={styles.previewSection}>
+            {
+              question === undefined ? 
+              <>No question selected</> 
+              :
+              <>
+                <input type="text" value={question.get('label')} onChange={handleQuestionTitleChange} className={styles.questionInput} />
+                <p>TODO : Show render here</p>
+              </>
+            }
+          </main>
 
         </div>
-    </div>
+      </div>
     }
   </div>
   );
