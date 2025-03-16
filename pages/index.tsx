@@ -9,6 +9,8 @@ import styles from "./index.module.scss";
 
 import logo from "@public/images/Logo_Big.png";
 import Link from "next/link";
+import { UserNavBar } from "@components/NavBar";
+import HeroLogo from "@components/misc/HeroLogo";
 
 const IndexContent = () => {
   const router = useRouter();
@@ -37,17 +39,19 @@ const IndexContent = () => {
   };
 
   return (
-    <HeroPage>
-      <div className={styles.heroContent}>
-        <Image src={logo} className={styles.heroLogo} alt="Kapoot Logo" />
-        <h1 className={styles.heroTitle}>Spice up your Quizz</h1>
-        <form className={styles.codeInput}>
-          <input className={styles.enterCode} name="quizzId" placeholder="Code PIN du jeu" type="numeric" />
-          <button className={styles.startButton} type="submit">Validate</button>
-        </form>
-        <p>Want to create your own quizz? It's over <Link href="" onClick={createQuizz}>here</Link>!</p>
-      </div>
-    </HeroPage>
+    <>
+      <UserNavBar />
+      <HeroPage>
+        <div className={styles.heroContent}>
+          <HeroLogo />
+          <form className={styles.codeInput}>
+            <input className={styles.enterCode} name="quizzId" placeholder="Code PIN du jeu" type="numeric" />
+            <button className={styles.startButton} type="submit">Validate</button>
+          </form>
+          <p>Want to create your own quizz? It's over <Link href="" onClick={createQuizz}>here</Link>!</p>
+        </div>
+      </HeroPage>
+    </>
   );
 };
 
