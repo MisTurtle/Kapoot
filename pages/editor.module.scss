@@ -1,3 +1,5 @@
+@use "@styles/variables" as *;
+
 .editorContainer {
   display: flex;
   flex-direction: column;
@@ -45,6 +47,7 @@
 
 /* Questions Sidebar */
 .questionsContainer {
+  max-width: 30%;
   width: 30%;
   background: #fff;
   padding: 16px;
@@ -52,6 +55,8 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  overflow: hidden;
+  transition: $t-fast ease;
 }
 
 .questionsTitle {
@@ -110,5 +115,41 @@
   &:focus {
     border-color: #007bff;
     outline: none;
+  }
+}
+
+
+.collapsed {
+  max-width: 0px;
+}
+
+/* Resizable Tab */
+$handleSize: 24px;
+$handleThickness: 1px;
+$handleDistance: 3px;
+
+.resizeHandle {
+  /* Positionning */
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(-50%) translateY(-50%);
+  top: 50%;
+
+  /* Sizing */
+  padding-inline: 0.25rem;
+  height: 60px;
+
+  /* Appearance */
+  background-color: $darker;
+  color: $light;
+  border-radius: 1rem;
+  transition: $t-fast ease;
+
+  &:hover {
+    cursor: pointer;
+    background-color: $dark;
   }
 }

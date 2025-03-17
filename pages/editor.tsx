@@ -1,15 +1,25 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Header } from '@components/EditorComponents';
 import { ProtectedRoute } from '@components/wrappers/ProtectedRoute';
-import styles from './editor.module.scss';
 import { useRouter } from 'next/router';
 import Loading from '@components/misc/Loading';
 import { SimpleQuizzComponent, SimpleQuestionComponent, SimpleAnswerComponent, QuestionComponent, QuizzComponent } from '@server/quizz_components/components';
 import { uuidChecker } from '@common/sanitizers';
 import { handle } from '@common/responses';
 import { usePopup } from '@contexts/PopupContext';
+import { ArrowLeftIcon } from 'lucide-react';
+
+import styles from './editor.module.scss';
 
 
+const collapseElement = (e: React.MouseEvent) => {
+  const collapseID = e.currentTarget.getAttribute('data-target');
+  if(!collapseID) return;
+  const element = document.getElementById(collapseID);
+  if(!element) return;
+  console.log(styles);
+  element.classList.toggle(styles.collapsed);
+};
 
 const EditorContent = () =>  {
 
@@ -106,7 +116,7 @@ const EditorContent = () =>  {
         <div className={styles.editorBody}>
 
           { /* Quizz Questions Side Panel */ }
-          <aside className={styles.questionsContainer}>
+          <aside id="questionsContainer" className={styles.questionsContainer}>
             <span className={styles.questionsTitle}>Questions</span>
             {quizz?.children.map((question, index) => (
               <div key={index} onClick={() => selectQuestion(quizz.children[index] as QuestionComponent<any>)} className={styles.question}>
@@ -115,6 +125,11 @@ const EditorContent = () =>  {
             ))}
             <button className={styles.addQuestionButton} onClick={addQuestion}>Add simple question</button>
           </aside>
+
+          { /* Resize handle */ }
+          <div className={styles.resizeHandle} data-target="questionsContainer" onClick={collapseElement}>
+            <ArrowLeftIcon width={16} />
+          </div>
 
           { /* Main Preview zone */ }
           <main className={styles.previewSection}>
