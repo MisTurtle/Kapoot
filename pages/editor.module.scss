@@ -23,7 +23,8 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 1);
 
   .titleInput {
-    flex: 1 1 auto;
+    flex-basis:content;
+    width: fit-content;
   }
 
   .savedAutomatically {
@@ -31,10 +32,14 @@
     align-items: center;
     gap: 8px;
     margin-left: 1rem;
-    color: $darker;
     font-size: $fs-very-small;
-    color: $lighter;
     font-weight: bold;
+    color: transparent;
+    transition: $t-medium;
+
+    &.active {
+      color: $lighter;
+    }
   }
 
   .navBar {
@@ -116,6 +121,15 @@ $collapseDuration: $t-medium;
       opacity: 1;
     }
   }
+  
+  &.dragging {
+    border: 3px dashed $accent !important;
+    animation: wiggle calc($t-slower * 2) infinite ease-in-out;
+  }
+  &.active {
+    border: 1px solid $primaryDarker;
+    background: rgba($primary, 0.5);
+  }
 
   .deleteQuestion {
     opacity: 0;
@@ -133,6 +147,11 @@ $collapseDuration: $t-medium;
       transform: rotate(-2deg);
     }
   }
+}
+
+@keyframes wiggle {
+  0% { transform: scale(1.00); }
+  50% { transform: scale(0.95); }
 }
 
 

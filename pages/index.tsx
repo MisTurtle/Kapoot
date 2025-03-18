@@ -1,15 +1,13 @@
 import React from "react";
-import Image from "next/image";
+import Link from "next/link";
 import { AuthProvider, useAuth } from "@contexts/AuthContext";
 import { useRouter } from "next/router";
 import { usePopup } from "@contexts/PopupContext";
 import { handle } from "@common/responses";
-import HeroPage from "@components/wrappers/HeroPage"; // Import the Hero Background Component
 import styles from "./index.module.scss";
 
-import logo from "@public/images/Logo_Big.png";
-import Link from "next/link";
 import { UserNavBar } from "@components/NavBar";
+import HeroPage from "@components/wrappers/HeroPage"; // Import the Hero Background Component
 import HeroLogo from "@components/misc/HeroLogo";
 
 const IndexContent = () => {

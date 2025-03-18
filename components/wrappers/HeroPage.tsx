@@ -17,7 +17,6 @@ const HeroPage = ({children}: { children: React.ReactNode}) => {
     const [ shapes, setShapes ] = useState<ShapeProps[]>([]);
 
     useEffect(() => {
-        
         const shapeTypes = ['square', 'rounded', 'circle', 'hex', 'triangle'];
         const animationDuration = 10;  // seconds
         const maxShapesAtOnce = 10;  // units
@@ -40,8 +39,7 @@ const HeroPage = ({children}: { children: React.ReactNode}) => {
         
         const interval = setInterval(addShape, 1000 * spawnShapeEvery * animationDuration / maxShapesAtOnce);
         return () => clearInterval(interval);
-
-    });
+    }, []);
 
     return (
         <div className={styles.hero}>
