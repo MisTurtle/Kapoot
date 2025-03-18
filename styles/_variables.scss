@@ -1,23 +1,29 @@
 /* Shades */
+$black: #000000;
 $darker: #101010;
 $dark: #202020;
-$light: #bdbdbd;
+$dim: #bdbdbd;
+$light: #dcdcdc;
 $lighter: #efefef;
-
+$white: #ffffff;
 
 /* Theme */
 $primary: #7deb4d;
+$primaryIntermediate: #71d048;
 $primaryDarker: #3e7527;
 $accent: #a78bfa;
+$accentIntermediate: #9279dd;
 $accentDarker: #604f94;
 
 /* Message Types */
 $error: rgb(235, 75, 75);
+$errorHover: rgb(200, 64, 64);
 $warning: rgb(235, 211, 75);
+$warningHover: rgb(219, 196, 68);
 $success: rgb(83, 235, 75);
+$successHover: rgb(75, 213, 68);
 
 /* Fonts */
-// TODO : This definitely needs to be changed lol, just some tests
 $text: "Arial";
 $title: "Consolas";
 $fs-huge: 28pt;

@@ -7,9 +7,10 @@ import { SimpleQuizzComponent, SimpleQuestionComponent, SimpleAnswerComponent, Q
 import { uuidChecker } from '@common/sanitizers';
 import { handle } from '@common/responses';
 import { usePopup } from '@contexts/PopupContext';
-import { ArrowLeftIcon } from 'lucide-react';
+import { ArrowLeftIcon, SaveIcon, Trash2Icon, TrashIcon } from 'lucide-react';
 
 import styles from './editor.module.scss';
+import { CustomNavBar } from '@components/NavBar';
 
 
 const collapseElement = (e: React.MouseEvent) => {
@@ -17,8 +18,8 @@ const collapseElement = (e: React.MouseEvent) => {
   if(!collapseID) return;
   const element = document.getElementById(collapseID);
   if(!element) return;
-  console.log(styles);
   element.classList.toggle(styles.collapsed);
+  e.currentTarget.classList.toggle(styles.flipped);
 };
 
 const EditorContent = () =>  {
@@ -77,7 +78,15 @@ const EditorContent = () =>  {
     selectQuestion(newQuestion);
     updateRender();
     updateQuizz();
-  }
+  };
+
+  const removeQuestion = async (index: number) => {
+    if(!quizz) return;
+
+    quizz.children.splice(index, 1);
+    updateRender();
+    updateQuizz();
+  };
 
   useEffect(() => {
     fetch(`/api/editor/quizz/${quizz_id}`)
@@ -110,6 +119,10 @@ const EditorContent = () =>  {
         { /* Header Title Bar */ }
         <header className={styles.titleSection}>
           <input type="text" value={title} onChange={handleTitleChange} placeholder="Quizz Title..." className={styles.titleInput}/>
+          <p className={styles.savedAutomatically}><SaveIcon width={16}/>Your quizz is saved automatically !</p>
+          <div className={styles.navBar}>
+            <CustomNavBar links={['home']} />
+          </div>
         </header>
 
         { /* Main content view */ }
@@ -119,15 +132,23 @@ const EditorContent = () =>  {
           <aside id="questionsContainer" className={styles.questionsContainer}>
             <span className={styles.questionsTitle}>Questions</span>
             {quizz?.children.map((question, index) => (
-              <div key={index} onClick={() => selectQuestion(quizz.children[index] as QuestionComponent<any>)} className={styles.question}>
-                <strong>Question :</strong> {question.get('label')}
+              <div 
+                key={index}
+                onClick={() => selectQuestion(quizz.children[index] as QuestionComponent<any>)}
+                onContextMenu={() => {}}
+                className={styles.question}
+              >
+                <p className={styles.questionLabel}><strong>#{index}</strong> {question.get('label')}</p>
+                <button className={styles.deleteQuestion} onClick={() => {removeQuestion(index)}}>
+                  <Trash2Icon width={16} />
+                </button>
               </div>
             ))}
-            <button className={styles.addQuestionButton} onClick={addQuestion}>Add simple question</button>
+            <button className={styles.addQuestionButton} onClick={addQuestion}>Add question</button>
           </aside>
 
           { /* Resize handle */ }
-          <div className={styles.resizeHandle} data-target="questionsContainer" onClick={collapseElement}>
+          <div className={styles.collapseButton} data-target="questionsContainer" onClick={collapseElement}>
             <ArrowLeftIcon width={16} />
           </div>
 

@@ -4,37 +4,62 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: #f8f9fa;
-  font-family: Arial, sans-serif;
-}
+  background: $darker;
 
-.layout {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
+  .layout {
+    display: flex;
+    flex-direction: column;
+    flex: 1;  // Fill in the space
+  }
 }
 
 /* Header Section */
 .titleSection {
-  padding: 16px;
-  background: white;
-  border-bottom: 2px solid #ddd;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   display: flex;
-}
+  align-items: center;
 
-.titleInput {
-  font-size: 20px;
-  font-weight: bold;
-  border: 1px solid #ccc;
-  border-radius: 4px;
   padding: 8px;
-  width: 100%;
-  max-width: 400px;
-  outline: none;
+  background: linear-gradient(45deg, $accentDarker, $accent);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 1);
 
-  &:focus {
-    border-color: #007bff;
+  .titleInput {
+    flex: 1 1 auto;
+  }
+
+  .savedAutomatically {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 1rem;
+    color: $darker;
+    font-size: $fs-very-small;
+    color: $lighter;
+    font-weight: bold;
+  }
+
+  .navBar {
+    position: relative;
+    flex: 1 1 auto;
+    height: 100%;
+    & > nav {
+      top: 0;
+    }
+  }
+
+  .titleInput {
+    font-weight: bold;
+    border: 1px solid transparent;
+    border-radius: 0.5rem;
+    color: $lighter;
+    background-color: transparent;
+    padding: 8px;
+    width: 100%;
+    max-width: 400px;
+    outline: none;
+
+    &:focus, &:hover {
+      border-color: $lighter;
+    }
   }
 }
 
@@ -45,37 +70,124 @@
   height: 100%;
 }
 
-/* Questions Sidebar */
+/* Question Sidebar */
+$collapseDuration: $t-medium;
 .questionsContainer {
-  max-width: 30%;
-  width: 30%;
-  background: #fff;
-  padding: 16px;
-  border-right: 2px solid #ddd;
   display: flex;
+  position: relative;
   flex-direction: column;
+
+  width: 25%;
+  max-width: 25%;
+  padding: 16px;
   gap: 10px;
+
+  background: $lighter;
+  border-right: 2px solid $dark;
   overflow: hidden;
-  transition: $t-fast ease;
+
+  transition: $collapseDuration ease;
+
+  & > * {
+    position: relative;
+    overflow: hidden;
+  }
 }
+
+/* Question element */
+.question {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid $light;
+  border-radius: 0.33rem;
+
+  padding: 12px;
+  
+  cursor: pointer;
+  transition: background $t-fast;
+  font-size: $fs-small;
+
+  &:hover {
+    background: $light;
+
+    & > .deleteQuestion {
+      opacity: 1;
+    }
+  }
+
+  .deleteQuestion {
+    opacity: 0;
+    padding-block: 0.25rem;
+    padding-inline: 0.5rem;
+    transition: $t-fast ease;
+    background-color: $error;
+    border: 2px solid $light;
+    border-radius: 0.33rem;
+    
+    &:hover {
+      cursor: pointer;
+      background-color: $errorHover;
+      scale: 1.10;
+      transform: rotate(-2deg);
+    }
+  }
+}
+
+
+/* Question tab collapse button */
+.collapseButton {
+  /* Positionning */
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(-50%) translateY(-50%);
+  top: 50%;
+
+  /* Sizing */
+  padding-inline: 0.25rem;
+  height: 60px;
+
+  /* Appearance */
+  background-color: $darker;
+  color: $light;
+  border-radius: 1rem;
+  transition: $t-fast ease;
+
+  &:hover {
+    cursor: pointer;
+    background-color: $dark;
+  }
+
+  &.flipped {
+    transform: translateX(0) translateY(-50%);
+    & > * {
+      transform: rotateZ(180deg);
+    }
+  }
+}
+
+.collapsed {
+  padding: 0;
+  max-width: 0px;
+}
+
+
+
+
+
+
+
+
+
 
 .questionsTitle {
   font-size: 18px;
   font-weight: bold;
   margin-bottom: 10px;
-}
-
-.question {
-  background: #f0f0f0;
-  padding: 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.3s;
-  font-size: 14px;
-
-  &:hover {
-    background: #ddd;
-  }
 }
 
 .addQuestionButton {
@@ -115,41 +227,5 @@
   &:focus {
     border-color: #007bff;
     outline: none;
-  }
-}
-
-
-.collapsed {
-  max-width: 0px;
-}
-
-/* Resizable Tab */
-$handleSize: 24px;
-$handleThickness: 1px;
-$handleDistance: 3px;
-
-.resizeHandle {
-  /* Positionning */
-  display: flex;
-  position: relative;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  transform: translateX(-50%) translateY(-50%);
-  top: 50%;
-
-  /* Sizing */
-  padding-inline: 0.25rem;
-  height: 60px;
-
-  /* Appearance */
-  background-color: $darker;
-  color: $light;
-  border-radius: 1rem;
-  transition: $t-fast ease;
-
-  &:hover {
-    cursor: pointer;
-    background-color: $dark;
   }
 }
