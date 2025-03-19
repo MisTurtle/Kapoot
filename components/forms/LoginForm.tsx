@@ -59,9 +59,7 @@ const LoginForm = () => {
                     <button className={styles.sign} type='submit' disabled={!enabled}>Sign in</button>
                 </form>
                 <div className={styles.line} />
-                <p className={styles.signup}>Don't have an account? 
-                <a rel="noopener noreferrer" href="login?page=register">Register</a>
-                </p>
+                <p className={styles.signup}>Don't have an account? <a rel="noopener noreferrer" href="login?page=register">Register Now!</a></p>
             </div>
         </div>
     );

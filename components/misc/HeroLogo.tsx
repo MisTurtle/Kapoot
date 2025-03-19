@@ -5,10 +5,10 @@ import styles from './HeroLogo.module.scss';
 
 const HeroLogo = () => {
     return (
-        <>
+        <div className={styles.heroLogoContainer}>
             <Image src={logo} className={styles.heroLogo} alt="Kapoot Logo" />
             <h1 className={styles.heroTitle}>Spice up your Quizz</h1>
-        </>
+        </div>
     );
 };
 
