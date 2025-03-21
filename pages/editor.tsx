@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ProtectedRoute } from '@components/wrappers/ProtectedRoute';
 import { useRouter } from 'next/router';
 import Loading from '@components/misc/Loading';
-import { SimpleQuizzComponent, SimpleQuestionComponent, SimpleAnswerComponent, QuestionComponent, QuizzComponent } from '@server/quizz_components/components';
+import { SimpleQuizzComponent, SimpleQuestionComponent, SimpleAnswerComponent, QuestionComponent, QuizzComponent } from '@common/quizz_components/components';
 import { uuidChecker } from '@common/sanitizers';
 import { handle } from '@common/responses';
 import { usePopup } from '@contexts/PopupContext';
@@ -11,6 +11,7 @@ import { ArrowLeftIcon, SaveIcon, Trash2Icon, TrashIcon } from 'lucide-react';
 import styles from './editor.module.scss';
 import { CustomNavBar } from '@components/NavBar';
 import { ReactSortable } from 'react-sortablejs';
+import { render } from '@client/quizz_components/component_render_map';
 
 type QuestionWrapper = {
   id: number;  // The identifier in the editor
@@ -232,7 +233,7 @@ const EditorContent = () =>  {
               :
               <>
                 <input type="text" value={activeQuestion.question.get('label')} onChange={handleQuestionTitleChange} className={styles.questionInput} />
-                <p>TODO : Show render here</p>
+                { render(activeQuestion.question, true) }
               </>
             }
           </main>

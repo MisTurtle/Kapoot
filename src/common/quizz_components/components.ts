@@ -8,25 +8,25 @@ import * as types from "./_types";
 export class OpenAnswerComponent extends KapootLeafComponent<types.OpenAnswerProps>
 {
     public defaultProperties: types.OpenAnswerProps = { };
-    public type: string = 'a:open';
+    public static type: string = 'a:open';
 }
 
 export class BinaryAnswerComponent extends KapootLeafComponent<types.BinaryAnswerProps>
 {
     public defaultProperties: types.BinaryAnswerProps = { };
-    public type: string = 'a:bin';
+    public static type: string = 'a:bin';
 }
 
 export class SimpleAnswerComponent extends KapootLeafComponent<types.SimpleAnswerProps>
 {
     public defaultProperties: types.SimpleAnswerProps = { };
-    public type: string = 'a:simple';
+    public static type: string = 'a:simple';
 }
 
 export class McqAnswerComponent extends KapootLeafComponent<types.McqAnswerProps>
 {
     public defaultProperties: types.McqAnswerProps = { };
-    public type: string = 'a:mcq';
+    public static type: string = 'a:mcq';    
 }
 
 
@@ -41,19 +41,19 @@ export abstract class QuestionComponent<T extends Record<string, any>> extends K
 export class OpenQuestionComponent extends QuestionComponent<types.OpenQuestionProps>
 {
     public defaultProperties: types.OpenQuestionProps = { }
-    public type: string = 'q:open';
+    public static type: string = 'q:open';
 
     constructor(properties: types.OpenQuestionProps, answerComponent: OpenAnswerComponent)
     {
         super(properties, answerComponent);
-        if(!answerComponent.get('label')) answerComponent.set('label', 'Open Answer');
+        answerComponent.setAllIfUndefined({'label': 'Open Answer'});
     }
 }
 
 export class BinaryQuestionComponent extends QuestionComponent<types.BinaryQuestionProps>
 {
     public defaultProperties: types.BinaryQuestionProps = { };
-    public type: string = 'q:bin';
+    public static type: string = 'q:bin';
 
     constructor(properties: types.BinaryQuestionProps, answerTrue: BinaryAnswerComponent, answerFalse: BinaryAnswerComponent) 
     {
@@ -66,7 +66,7 @@ export class BinaryQuestionComponent extends QuestionComponent<types.BinaryQuest
 export class SimpleQuestionComponent extends QuestionComponent<types.SimpleQuestionProps>
 {
     public defaultProperties: types.SimpleQuestionProps = { };
-    public type: string = 'q:simple';
+    public static type: string = 'q:simple';
 
     constructor(properties: types.SimpleQuestionProps, ...answers: SimpleAnswerComponent[])
     {
@@ -78,7 +78,7 @@ export class SimpleQuestionComponent extends QuestionComponent<types.SimpleQuest
 export class McqQuestionComponent extends QuestionComponent<types.McqQuestionProps>
 {
     public defaultProperties: types.McqQuestionProps = { };
-    public type: string = 'q:mcq';
+    public static type: string = 'q:mcq';
 
     constructor(properties: types.McqQuestionProps, ...answers: McqAnswerComponent[])
     {
@@ -94,7 +94,7 @@ export abstract class QuizzComponent<T extends Record<string, any>> extends Kapo
 export class SimpleQuizzComponent extends QuizzComponent<types.SimpleQuizzProps>
 {
     public defaultProperties: types.SimpleQuizzProps = { };
-    public type: string = 'quizz:simple';
+    public static type: string = 'quizz:simple';
     
     constructor(properties: types.SimpleQuizzProps, ...questions: QuestionComponent<any>[])
     {

@@ -46,7 +46,7 @@ const IndexContent = () => {
             <input className={styles.enterCode} name="quizzId" placeholder="Code PIN du jeu" type="numeric" />
             <button className={styles.startButton} type="submit">Validate</button>
           </form>
-          <p>Want to create your own quizz? It's over <Link href="" onClick={createQuizz}>here</Link>!</p>
+          <p className={styles.quizzCreateParagraph}>Want to create your own quizz? It's over <Link href="" onClick={createQuizz}>here</Link>!</p>
         </div>
       </HeroPage>
     </>

@@ -22,3 +22,12 @@ p, p > span, a, a > span, ul > li, pre, input, label {
     font-family: $text;
     font-size: $fs-small;
 }
+ 
+a {
+    text-decoration: none;
+    font-weight: bold;
+
+    &:hover {
+      text-decoration: underline $accentDarker;
+    }
+  }

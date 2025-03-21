@@ -94,16 +94,8 @@
     line-height: 1rem;
     color: $light;
     font-size: $fs-smaller;
-    
     a {
       color: $lighter;
-      text-decoration: none;
-      font-size: $fs-smaller;
-      font-weight: bold;
-  
-      &:hover {
-        text-decoration: underline $accent;
-      }
     }
   }
   

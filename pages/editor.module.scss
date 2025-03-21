@@ -128,7 +128,7 @@ $collapseDuration: $t-medium;
   }
   &.active {
     border: 1px solid $primaryDarker;
-    background: rgba($primary, 0.5);
+    background: rgba($primary, 0.15);
   }
 
   .deleteQuestion {

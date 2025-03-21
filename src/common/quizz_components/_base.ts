@@ -1,3 +1,5 @@
+import React from "react";
+
 export const FIELD_PROPERTIES = 'properties';
 export const FIELD_CHILDREN = 'children';
 export const FIELD_TYPE = 'type';
@@ -15,7 +17,7 @@ export const defaultColors = [
 export abstract class KapootLeafComponent<T extends Record<string, any>>
 {
     public abstract defaultProperties: T;
-    public abstract type: string;
+    public static type: string;
     private _properties: Partial<T> = {};
 
     /**
@@ -24,6 +26,10 @@ export abstract class KapootLeafComponent<T extends Record<string, any>>
     constructor(properties: Partial<T>)
     {
         this._properties = properties;
+    }
+
+    public get type(): string {
+        return (this.constructor as typeof KapootLeafComponent).type;
     }
 
     public get<K extends keyof T>(key: K): T[K] { return this._properties[key] ?? this.defaultProperties[key]; }
@@ -53,7 +59,7 @@ export abstract class KapootLeafComponent<T extends Record<string, any>>
  */
 export abstract class KapootComponentContainer<T extends Record<string, any>> extends KapootLeafComponent<T>
 {
-    private _children: KapootLeafComponent<T>[] = [];
+    private _children: KapootLeafComponent<any>[] = [];
 
     constructor(properties: T, ...children: KapootLeafComponent<any>[]) {
         super(properties);

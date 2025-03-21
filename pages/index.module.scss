@@ -15,7 +15,7 @@
         width: 25%;
         height: auto;
     }
-    p {
+    .quizzCreateParagraph {
         position: absolute;
         bottom: 20px;
         font-weight: bold;
@@ -24,6 +24,10 @@
         padding-inline: 20px;
         backdrop-filter: sepia(40%);
         border-radius: 8px;
+
+        a {
+            color: $accentDarker;
+        }
     }
     .codeInput {
         padding: 15px;

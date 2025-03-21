@@ -1,6 +1,6 @@
 import express from 'express';
 import { getEndpoints } from '@server/database/database_controller';
-import { QuestionComponent, QuizzComponent, SimpleQuizzComponent, emptyQuizz } from '@server/quizz_components/components';
+import { QuestionComponent, QuizzComponent, SimpleQuizzComponent, emptyQuizz } from '@common/quizz_components/components';
 import { uuidChecker } from '@common/sanitizers';
 import { error, success } from '@common/responses';
 
