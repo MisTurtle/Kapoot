@@ -1,3 +1,100 @@
-.test {
-    background-color: red;
+@use "@styles/variables" as *;
+
+/**
+ * Quizz
+ */
+
+
+
+/**
+ * Questions
+ */
+.questionHeader {
+    display: flex;
+    flex: 1;
+    width: 90%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    
+    & * {
+        text-align: center;
+        break-after: always;
+    }
+}
+.questionAnswers {
+    display: grid;
+    flex: 1;
+    margin: 1rem;
+    width: 65%;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    & * {
+        text-align: center;
+    }
+}
+
+.questionTitle {
+
+    font-size: $fs-big;
+
+}
+
+
+
+/**
+ * Answers
+ */
+
+.answerBase {
+    position: relative;
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    opacity: 1;
+    background-color: rgba(var(--color), 1);
+    border: 3px solid color-mix(in srgb, rgb(var(--color)) 80%, black);
+    box-sizing: border-box;
+
+    transition: $t-faster ease;
+    &:hover {
+        cursor: pointer;
+        transform: scale(1.03);
+    }
+    &:active {
+        transform: scale(1.00);
+    }
+}
+
+
+/**
+ * Editable texts
+ */
+.editorInput {
+    --myColor: var(--color, #{(0, 0, 0)});
+    background: transparent;
+    border: 2px solid transparent;
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+    margin: 0.25rem;
+
+    width: 100%;
+    overflow: visible;
+
+    &:hover, &:active, &:focus {
+        border: 2px solid color-mix(in srgb, rgb(var(--myColor)) 80%, black);
+    }
+}
+
+.answerLabel {
+    font-size: $fs-small;
+}
+input.questionTitle, input.questionDesc, input.answerLabel {
+    @extend .editorInput;
+}
+
+.simpleAnswer {
+    @extend .answerBase;
 }

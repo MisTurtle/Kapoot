@@ -154,6 +154,8 @@ $collapseDuration: $t-slower;
 .previewSection {
   position: relative !important;
   z-index: 0;
+  flex-direction: column !important;
+  justify-content: space-evenly !important;
 }
 
 
@@ -188,7 +190,9 @@ $collapseDuration: $t-slower;
   &.flipped {
     left: 0;
     margin: 0;
+    height: 100%;
     transform: translateX(0%) translateY(-50%);
+    border-radius: 0;
     & > * {
       transform: rotateZ(180deg);
     }

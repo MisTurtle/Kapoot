@@ -23,7 +23,7 @@ export class DatabaseEndpointsContainer
         await this.provider.connect();
         let statements: string[] = [];
 
-        statements.push(
+        await this.provider.execute(
             // --- User accounts table
             `CREATE TABLE IF NOT EXISTS userAccounts(
                 user_id CHAR(36) PRIMARY KEY,
@@ -33,7 +33,7 @@ export class DatabaseEndpointsContainer
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );`
         );
-        statements.push(
+        await this.provider.execute(
             // --- Every session id created and that are still valid (or at least that haven't been cleaned up yet)
             `CREATE TABLE IF NOT EXISTS allSessions(
                 sess_id CHAR(32) PRIMARY KEY,
@@ -41,7 +41,7 @@ export class DatabaseEndpointsContainer
                 last_access TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );`
         );
-        statements.push(
+        await this.provider.execute(
             // --- Link between session ids and user accounts
             `CREATE TABLE IF NOT EXISTS userSessions(
                 sess_id CHAR(32) PRIMARY KEY,
@@ -50,7 +50,7 @@ export class DatabaseEndpointsContainer
                 FOREIGN KEY (sess_id) REFERENCES allSessions(sess_id) ON DELETE CASCADE
             );`
         );
-        statements.push(
+        await this.provider.execute(
             // --- Store quizzes created by users
             `CREATE TABLE IF NOT EXISTS quizzes(
                 quizz_id CHAR(36) PRIMARY KEY,
@@ -61,7 +61,7 @@ export class DatabaseEndpointsContainer
                 FOREIGN KEY (user_id) REFERENCES userAccounts(user_id) ON DELETE CASCADE
             );`
         );
-        statements.push(
+        await this.provider.execute(
             // --- Create trigger to automatically update quizzes last change time (FIXME: SQLITE syntaxe, won't work for MySQL)
             `CREATE TRIGGER IF NOT EXISTS quizz_last_update
              AFTER UPDATE ON quizzes
@@ -80,7 +80,6 @@ export class DatabaseEndpointsContainer
         //         FOREIGN KEY (quizz_id) REFERENCES quizz(quizz_id)
         //     );`
         // );
-        await Promise.all(statements.map((sql) => this.provider.execute(sql)));
     
         this.startSessionCleanupLoop();
     }

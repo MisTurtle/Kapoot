@@ -142,6 +142,11 @@ const EditorContent = () =>  {
     updateQuizz();
   };
 
+  const onChangeHook = (e: any) => {
+    updateRender();
+    updateQuizz();
+  };
+
   /**
    * Question user actions
    */
@@ -233,8 +238,8 @@ const EditorContent = () =>  {
             <>No question selected</> 
             :
             <>
-              <input type="text" value={activeQuestion.question.get('label')} onChange={handleQuestionTitleChange} className={styles.questionInput} />
-              { render(activeQuestion.question, true) }
+              {/* <input type="text" value={activeQuestion.question.get('label')} onChange={handleQuestionTitleChange} className={styles.questionInput} /> */}
+              { render(activeQuestion.question, true, onChangeHook) }
             </>
           }
           </HeroPage>
