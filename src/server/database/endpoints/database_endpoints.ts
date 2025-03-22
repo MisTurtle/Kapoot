@@ -138,7 +138,13 @@ export class DatabaseEndpointsContainer
     public async accountDetails(user: UserIdentifier): Promise<AccountDetails | undefined>
     {
         // TODO: Fill in actual information like statistics etc.
-        return { username: "Placeholder Name", mail: "Placeholder Email" };
+        const sql = "SELECT u.username, u.mail, json_group_array(json_object('quizz_id', q.quizz_id, 'params', q.params,'created_at', q.created_at,'updated_at', q.updated_at)) AS quizzes FROM userAccounts u LEFT JOIN quizzes q ON u.user_id = q.user_id WHERE u.user_id = ? GROUP BY u.user_id;"
+        //const sql = "SELECT username, mail, qui FROM userAccounts WHERE user_id=?";
+        const result: any[] = await this.provider.select(sql, [ user.identifier ]);
+        
+        if(result.length === 0) return { username: "Placeholder Name", mail: "Placeholder Email", quizzes: [] }
+        
+        return { username: result[0].username, mail: result[0].mail, quizzes: JSON.parse(result[0].quizzes) || [] };
     }
 
     public async deleteAccount(user: UserIdentifier): Promise<any>
