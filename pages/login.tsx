@@ -30,21 +30,19 @@ const LoginContent = () => {
     }
     
     return (
-        <div>
+        <>
             { navbar }
             { content }
-        </div>
+        </>
     );
 };
 
 const LoginPage = () => {
     return (
         <UnprotectedRoute>
-            <HeroPage>
-                <div className={styles.form}>
-                    <HeroLogo />
-                    <LoginContent />
-                </div>
+            <HeroPage className={styles.heroContent}>
+                <HeroLogo />
+                <LoginContent />
             </HeroPage>
         </UnprotectedRoute>
     );

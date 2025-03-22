@@ -12,6 +12,7 @@ import styles from './editor.module.scss';
 import { CustomNavBar } from '@components/NavBar';
 import { ReactSortable } from 'react-sortablejs';
 import { render } from '@client/quizz_components/component_render_map';
+import HeroPage from '@components/wrappers/HeroPage';
 
 type QuestionWrapper = {
   id: number;  // The identifier in the editor
@@ -184,8 +185,8 @@ const EditorContent = () =>  {
   return (
     <div className={styles.editorContainer}>
       { /* Debug interface to test functionnalities */ }
-      { loading ? <Loading /> : <div className={styles.layout}>
-      
+      { loading && <Loading /> }
+      { !loading && <>
         { /* Header Title Bar */ }
         <header className={styles.titleSection}>
           <input type="text" value={title} onChange={handleTitleChange} placeholder="Quizz Title..." className={styles.titleInput}/>
@@ -219,29 +220,28 @@ const EditorContent = () =>  {
             </ReactSortable>
             <button className={styles.addQuestionButton} onClick={addQuestion}>Add question</button>
           </aside> }
-
+          
           { /* Resize handle */ }
           <div className={styles.collapseButton} data-target="questionsContainer" onClick={collapseElement}>
             <ArrowLeftIcon width={16} />
           </div>
 
-          { /* Main Preview zone */ }
-          <main className={styles.previewSection}>
-            {
-              activeQuestion === undefined ? 
-              <>No question selected</> 
-              :
-              <>
-                <input type="text" value={activeQuestion.question.get('label')} onChange={handleQuestionTitleChange} className={styles.questionInput} />
-                { render(activeQuestion.question, true) }
-              </>
-            }
-          </main>
+          { /* Main Preview zone. Might change that to directly rendering the quizz with a question index */ }
+          <HeroPage className={styles.previewSection}>
+          {
+            activeQuestion === undefined ? 
+            <>No question selected</> 
+            :
+            <>
+              <input type="text" value={activeQuestion.question.get('label')} onChange={handleQuestionTitleChange} className={styles.questionInput} />
+              { render(activeQuestion.question, true) }
+            </>
+          }
+          </HeroPage>
 
         </div>
-      </div>
-    }
-  </div>
+      </>}
+    </div>
   );
 }
 

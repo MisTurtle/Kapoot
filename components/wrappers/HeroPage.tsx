@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import styles from './HeroPage.module.scss';
 
 
@@ -12,7 +12,7 @@ type ShapeProps = {
     duration: number;  // Animation duration (s)
 };
 
-const HeroPage = ({children}: { children: React.ReactNode}) => {
+const HeroPage: FC<React.HTMLAttributes<HTMLDivElement>> = ({ className, children, ...rest }) => {
     
     const [ shapes, setShapes ] = useState<ShapeProps[]>([]);
 
@@ -42,7 +42,7 @@ const HeroPage = ({children}: { children: React.ReactNode}) => {
     }, []);
 
     return (
-        <div className={styles.hero}>
+        <div className={`${styles.hero} ${className || ""}`} {...rest}>
           <div className={styles.shapesContainer}>
             {shapes.map((shape) => (
               <div

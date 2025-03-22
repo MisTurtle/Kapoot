@@ -1,12 +1,9 @@
-import Link from 'next/link';
-import Image, { StaticImageData } from 'next/image';
 import { FC } from 'react';
 import { LucideIcon, Home, UserPen, UserPlus, User, DoorClosedIcon } from 'lucide-react';
 import { useAuth } from '@contexts/AuthContext';
 
 /* Resource file imports */
 import styles from './NavBar.module.scss';
-import { link } from 'fs';
 
 
 const logoutCallback = () => {
@@ -56,7 +53,13 @@ export const CustomNavBar: FC<NavBarProps> = ({ links }) => {
 
 export const UserNavBar: FC<NavBarProps> = ({ links }) => {
   const { user } = useAuth();
+  
+  // Add Account or Sign In button
   if(!links) links = [];
-  links.push(user ? 'account' : 'signIn');
+  links.unshift(user ? 'account' : 'signIn');
+  // Remove the logout button if the user isn't signed in
+  const logoutIndex = links.indexOf('logout');
+  if(logoutIndex !== -1 && !user) links.splice(logoutIndex, 1);
+
   return <CustomNavBar links={links} />
 };

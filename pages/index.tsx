@@ -38,16 +38,14 @@ const IndexContent = () => {
 
   return (
     <>
-      <UserNavBar />
-      <HeroPage>
-        <div className={styles.heroContent}>
-          <HeroLogo />
-          <form className={styles.codeInput}>
-            <input className={styles.enterCode} name="quizzId" placeholder="Code PIN du jeu" type="numeric" />
-            <button className={styles.startButton} type="submit">Validate</button>
-          </form>
-          <p className={styles.quizzCreateParagraph}>Want to create your own quizz? It's over <Link href="" onClick={createQuizz}>here</Link>!</p>
-        </div>
+      <UserNavBar links={['logout']} />
+      <HeroPage className={styles.heroContent}>
+        <HeroLogo />
+        <form className={styles.codeInput}>
+          <input className={styles.enterCode} name="quizzId" placeholder="Code PIN du jeu" type="numeric" />
+          <button className={styles.startButton} type="submit">Validate</button>
+        </form>
+        <p className={styles.quizzCreateParagraph}>Want to create your own quizz? It's over <Link href="" onClick={createQuizz}>here</Link>!</p>
       </HeroPage>
     </>
   );

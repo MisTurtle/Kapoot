@@ -1,18 +1,15 @@
 @use "@styles/variables" as *;
 
+
 .mainContainer {
-  display: flex;
-  justify-content: center; 
-  align-items: center;
-}
-.formContainer {
+    display: flex;
+    flex-direction: column;
     width: 320px;
     border-radius: 0.75rem;
     background-color: $darker;
     padding: 2rem;
     color: $lighter;
     overflow: hidden; 
-  }
   
   .title {
     text-align: center;
@@ -98,4 +95,4 @@
       color: $lighter;
     }
   }
-  
+}

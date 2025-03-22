@@ -4,19 +4,14 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: $darker;
-
-  .layout {
-    display: flex;
-    flex-direction: column;
-    flex: 1;  // Fill in the space
-  }
+  z-index: 0;  /* Base Z: 0 */
 }
 
 /* Header Section */
 .titleSection {
   display: flex;
   align-items: center;
+  z-index: 5;  /* Title section is above everything */
 
   padding: 8px;
   background: linear-gradient(45deg, $accentDarker, $accent);
@@ -73,14 +68,16 @@
   display: flex;
   flex: 1;
   height: 100%;
+  z-index: 1;  /* Editor body is above the body but below the header */
 }
 
 /* Question Sidebar */
-$collapseDuration: $t-medium;
+$collapseDuration: $t-slower;
 .questionsContainer {
   display: flex;
   position: relative;
   flex-direction: column;
+  z-index: 2;  /* Question container is above the Editor */
 
   width: 25%;
   max-width: 25%;
@@ -95,7 +92,6 @@ $collapseDuration: $t-medium;
 
   & > * {
     position: relative;
-    overflow: hidden;
   }
 }
 
@@ -154,27 +150,35 @@ $collapseDuration: $t-medium;
   50% { transform: scale(0.95); }
 }
 
+/* Preview Section */
+.previewSection {
+  position: relative !important;
+  z-index: 0;
+}
+
 
 /* Question tab collapse button */
 .collapseButton {
   /* Positionning */
   display: flex;
-  position: relative;
+  position: absolute;
+  z-index: 5;  /* Collapse button is always above */
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  transform: translateX(-50%) translateY(-50%);
+  transform: translateX(calc(0.5rem + 50% + 1px)) translateY(-50%);
   top: 50%;
+  left: 25%;
 
-  /* Sizing */
+  // /* Sizing */
   padding-inline: 0.25rem;
   height: 60px;
 
-  /* Appearance */
+  // /* Appearance */
   background-color: $darker;
   color: $light;
   border-radius: 1rem;
-  transition: $t-fast ease;
+  transition: $collapseDuration ease;
 
   &:hover {
     cursor: pointer;
@@ -182,7 +186,9 @@ $collapseDuration: $t-medium;
   }
 
   &.flipped {
-    transform: translateX(0) translateY(-50%);
+    left: 0;
+    margin: 0;
+    transform: translateX(0%) translateY(-50%);
     & > * {
       transform: rotateZ(180deg);
     }
@@ -193,12 +199,6 @@ $collapseDuration: $t-medium;
   padding: 0;
   max-width: 0px;
 }
-
-
-
-
-
-
 
 
 
@@ -222,16 +222,6 @@ $collapseDuration: $t-medium;
   &:hover {
     background: #0056b3;
   }
-}
-
-/* Preview Section */
-.previewSection {
-  flex: 1;
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
 }
 
 .questionInput {

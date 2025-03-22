@@ -44,23 +44,22 @@ const LoginForm = () => {
 
     return (
         <div className={styles.mainContainer}>
-            <div className={styles.formContainer}>
-                <h1 className={styles.title}>Sign in</h1>
-                <form className={styles.form} onSubmit={handleSubmit}>
-                    <div className={styles.inputContainer}>
-                        <label htmlFor="login">Username or Email</label>
-                        <input name='login' id='login' type='text' onChange={handleChange} required />
-                        { errors.login && <p className={styles.errorMessage}><AlertCircle height={16}/> {errors.login}</p> }
-                        
-                        <label htmlFor="password">Password</label>
-                        <input name='password' id='password' type='password' onChange={handleChange} required />
-                        { errors.password && <p className={styles.errorMessage}><AlertCircle height={16}/> {errors.password}</p> }
-                    </div>
-                    <button className={styles.sign} type='submit' disabled={!enabled}>Sign in</button>
-                </form>
-                <div className={styles.line} />
-                <p className={styles.signup}>Don't have an account? <a rel="noopener noreferrer" href="login?page=register">Register Now!</a></p>
-            </div>
+            <h1 className={styles.title}>Sign in</h1>
+            <form className={styles.form} onSubmit={handleSubmit}>
+                <div className={styles.inputContainer}>
+                    <label htmlFor="login">Username or Email</label>
+                    <input name='login' id='login' type='text' onChange={handleChange} required />
+                    { errors.login && <p className={styles.errorMessage}><AlertCircle height={16}/> {errors.login}</p> }
+                    
+                    <label htmlFor="password">Password</label>
+                    <input name='password' id='password' type='password' onChange={handleChange} required />
+                    { errors.password && <p className={styles.errorMessage}><AlertCircle height={16}/> {errors.password}</p> }
+                </div>
+                <button className={styles.sign} type='submit' disabled={!enabled}>Sign in</button>
+            </form>
+            <div className={styles.line} />
+            <p className={styles.signup}>Don't have an account? <a rel="noopener noreferrer" href="login?page=register">Register Now!</a></p>
+
         </div>
     );
 };
