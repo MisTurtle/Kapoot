@@ -7,6 +7,7 @@
     background-color: $error;
     border: 3px solid color-mix(in srgb, $error 75%, black);
     border-radius: 0.33rem;
+    color: black;
     
     &:hover {
       cursor: pointer;

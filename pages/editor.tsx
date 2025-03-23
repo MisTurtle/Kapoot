@@ -14,6 +14,7 @@ import { ReactSortable } from 'react-sortablejs';
 import { render } from '@client/quizz_components/component_render_map';
 import HeroPage from '@components/wrappers/HeroPage';
 import DeleteButton from '@components/misc/Delete';
+import { ContextMenuProvider } from '@contexts/EditorContextMenus';
 
 type QuestionWrapper = {
   id: number;  // The identifier in the editor
@@ -244,7 +245,9 @@ const EditorContent = () =>  {
 const CreateQuizzPage = () => {
   return (
     <ProtectedRoute>
-      <EditorContent />
+      <ContextMenuProvider>
+        <EditorContent />
+      </ContextMenuProvider>
     </ProtectedRoute>
   );
 }

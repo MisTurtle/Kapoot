@@ -4,8 +4,10 @@ import { FC } from "react";
 
 import styles from "./QuizzComponents.module.scss";
 import { BaseProps, SimpleAnswerProps, SimpleQuestionProps } from "@common/quizz_components/_types";
-import { ImageUpIcon } from "lucide-react";
+import { GemIcon, ImageIcon, ImageUpIcon, PaintRollerIcon, ShapesIcon, Trash2Icon } from "lucide-react";
 import DeleteButton from "@components/misc/Delete";
+import { useContextMenu } from "@contexts/EditorContextMenus";
+import ContextMenu from "@components/popups/ContextMenu";
 
 type ReactQuizzComponent<T extends KapootLeafComponent<any>> = FC<React.HTMLAttributes<HTMLDivElement> & {
     parent?: KapootComponentContainer<any>,
@@ -18,29 +20,51 @@ type ReactQuizzComponent<T extends KapootLeafComponent<any>> = FC<React.HTMLAttr
  * Answer Components
  */
 const BaseAnswer: ReactQuizzComponent<KapootLeafComponent<BaseProps>> = ({ parent, component, editor, hook, children }) => {
-    const onChange = (prop: keyof BaseProps, value: any) => { component.set(prop, value); hook(null); }
+    const { openMenu } = useContextMenu();
+    const onChange = (prop: keyof BaseProps, value: any) => { component.set(prop, value); hook(null); };
     const inlineStyles = { "--color": component.get('background') } as React.CSSProperties;
+
     const deleteSelf = () => {
         const index = parent?.children.indexOf(component);
-        console.log(parent, index);
         if(index !== undefined && index >= 0) parent?.children.splice(index, 1);
-        console.log(parent?.children);
         hook(null);
+    };
+    const colorPicker = () => {
+
+    };
+    const iconPicker = () => {
+
+    }
+
+    const handleContextMenu = (e: React.MouseEvent) => {
+        e.preventDefault();
+        openMenu(
+            component,
+            { x: e.clientX, y: e.clientY },
+            [
+                <p><strong>{ component.get('label') }</strong></p>,
+                <hr />,
+                <button onClick={colorPicker}><PaintRollerIcon /> Background</button>,
+                <button onClick={iconPicker}><ShapesIcon /> Icon</button>,
+                <button onClick={deleteSelf}><Trash2Icon /> Delete</button>
+            ]
+        );
     };
 
     return (
         <div 
             className={styles.answerBase} 
             style={inlineStyles}
+            onContextMenu={e => editor && handleContextMenu(e)}
         >
-            { editor && <DeleteButton className={styles.delete} callback={deleteSelf} />}
-            { editor ?
-                <input className={styles.answerLabel} type="text" value={component.get('label')} onChange={(e) => onChange('label', e.target.value)}/> :
+            {editor && <DeleteButton className={styles.delete} callback={deleteSelf} />}
+            {editor ? (
+                <input className={styles.answerLabel} type="text" value={component.get('label')} onChange={(e) => onChange('label', e.target.value)} />
+            ) : (
                 <p className={styles.answerLabel}>{component.get('label')}</p>
-            }
+            )}
 
-            { children }
-
+            {children}
         </div>
     );
 };
