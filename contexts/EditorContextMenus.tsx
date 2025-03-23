@@ -3,8 +3,9 @@ import { createContext, FC, ReactNode, useContext, useEffect, useState } from "r
 
 type ContextMenuContextType = {
     menuLock: any | null;
-    menuPosition: { x: number; y: number };
-    openMenu: (lock: any, pos: {x: number; y: number}, contents: ReactNode[]) => void;
+    openMenu: (lock: any, contents: ReactNode[], pos?: {x: number; y: number}) => void;
+    closeMenu: () => void;
+    menuPosition?: { x: number; y: number };
 };
 
 const ContextMenuContext = createContext<ContextMenuContextType | undefined>(undefined);
@@ -14,16 +15,17 @@ export const ContextMenuProvider: FC<{ children: ReactNode }> = ({ children }) =
     const [menuPosition, setMenuPosition] = useState<{x: number; y: number}>({x: 0, y: 0});
     const [menuContents, setMenuContents] = useState<ReactNode[]|null>(null);
 
-    const openMenu = (lock: any, pos: {x: number; y: number}, contents: ReactNode[]) => {
+    const openMenu = (lock: any, contents: ReactNode[], pos?: {x: number; y: number}) => {
         setMenuLock(lock);
-        setMenuPosition(pos);
         setMenuContents(contents);
+        if(pos) setMenuPosition(pos);
     };
+    const closeMenu = () => setMenuLock(null);
 
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
-            setMenuLock(null);
-            console.log('clearing');
+            if(!(e.target as HTMLElement).closest("[data-context-menu]"))
+                setMenuLock(null);
         };
 
         document.addEventListener('click', handleClickOutside);
@@ -31,8 +33,8 @@ export const ContextMenuProvider: FC<{ children: ReactNode }> = ({ children }) =
     }, []);
 
     return (
-        <ContextMenuContext.Provider value={{ menuLock, menuPosition, openMenu }}>
-            {children}
+        <ContextMenuContext.Provider value={{ menuLock, menuPosition, openMenu, closeMenu }}>
+            { children }
             { menuLock && <ContextMenu posX={menuPosition.x} posY={menuPosition.y}>
                 {menuContents}
             </ContextMenu>

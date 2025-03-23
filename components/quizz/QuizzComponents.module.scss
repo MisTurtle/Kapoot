@@ -107,3 +107,16 @@
 input.questionTitle, input.questionDesc, input.answerLabel {
     @extend .editorInput;
 }
+
+/**
+ * Extras
+ */
+.colorPickerWrapper {
+    position: absolute;
+    background-color: $dark;
+    padding: 1rem;
+    border-radius: 1rem;
+    width: 250px;
+    height: 10vh;
+    z-index: 2;
+}

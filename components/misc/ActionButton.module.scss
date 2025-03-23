@@ -1,0 +1,35 @@
+@use "@styles/variables" as *;
+
+.button {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+    justify-content: left;
+    gap: 1rem;
+
+    background: $darker;
+    border: 1px solid transparent;
+    border-radius: 0.5rem;
+    color: $lighter;
+    transition: $t-fast ease;
+
+    &:hover {
+        background: $dark;
+        border-color: $accent;
+        color: $accent;
+        transform: scale(1.05);
+    }
+    
+    &[data-theme=success]:hover {
+        border-color: $success;
+        color: $success;
+    }
+    &[data-theme=warn]:hover {
+        border-color: $warning;
+        color: $warning;
+    }
+    &[data-theme=error]:hover {
+        border-color: $error;
+        color: $error;
+    }
+}

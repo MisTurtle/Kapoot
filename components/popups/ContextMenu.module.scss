@@ -1,10 +1,21 @@
 @use "@styles/variables" as *;
 
 .contextMenu {
+    display: flex;
+    flex-direction: column;
     position: absolute;
-    background: #fff;
-    padding: 8px;
-    border-radius: 4px;
-    box-shadow: 0px 4px 6px rgba(0,0,0,0.1);
-    z-index: 1000;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    text-align: center;
+    gap: 8px;
+    
+    background: $darker;
+    color: $lighter;
+    box-shadow: 4px 4px 6px rgba($accentDarker, 0.5);
+
+    z-index: 1;
+
+    hr {
+        color: $lighter;
+    }
 }

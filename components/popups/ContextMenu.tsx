@@ -9,7 +9,7 @@ type ContextMenuProps = {
 
 const ContextMenu: FC<ContextMenuProps> = ({ posX, posY, children }) => {
     return (
-        <div className={styles.contextMenu} style={ { top: `${posY}px`, left: `${posX}px` } }>
+        <div className={`${styles.contextMenu} contextMenu`} style={ { top: `${posY}px`, left: `${posX}px` } } data-context-menu>
             { children }
         </div>
     );

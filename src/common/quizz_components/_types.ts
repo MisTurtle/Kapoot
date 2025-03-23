@@ -4,7 +4,7 @@
 export type BaseProps = {
     label?: string;  // Main text content
     thumbnail?: string;  // Thumbnail to be displayed (URL to image)
-    background?: string | number[];  // Background (Color or URL to image)
+    background?: number[];  // Background (Color)
 };
 
 /**
