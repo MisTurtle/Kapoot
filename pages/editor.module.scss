@@ -110,12 +110,11 @@ $collapseDuration: $t-slower;
   transition: background $t-fast;
   font-size: $fs-small;
 
+  & > .delete { opacity: 0 !important; }
+
   &:hover {
     background: $light;
-
-    & > .deleteQuestion {
-      opacity: 1;
-    }
+    & > .delete { opacity: 1 !important; }
   }
   
   &.dragging {
@@ -125,23 +124,6 @@ $collapseDuration: $t-slower;
   &.active {
     border: 1px solid $primaryDarker;
     background: rgba($primary, 0.15);
-  }
-
-  .deleteQuestion {
-    opacity: 0;
-    padding-block: 0.25rem;
-    padding-inline: 0.5rem;
-    transition: $t-fast ease;
-    background-color: $error;
-    border: 2px solid $light;
-    border-radius: 0.33rem;
-    
-    &:hover {
-      cursor: pointer;
-      background-color: $errorHover;
-      scale: 1.10;
-      transform: rotate(-2deg);
-    }
   }
 }
 

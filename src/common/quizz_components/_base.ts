@@ -5,10 +5,10 @@ export const FIELD_CHILDREN = 'children';
 export const FIELD_TYPE = 'type';
 
 export const defaultColors = [
-    [66, 135, 245],  // Blue
-    [245, 66, 66],  // Red
-    [201, 154, 60],  // Yellow
-    [50, 201, 76]  // Green
+    [59, 180, 245],  // Blue
+    [245, 59, 59],  // Red
+    [245, 226, 59],  // Yellow
+    [81, 245, 59]  // Green
 ]
 
 /**

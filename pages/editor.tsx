@@ -13,6 +13,7 @@ import { CustomNavBar } from '@components/NavBar';
 import { ReactSortable } from 'react-sortablejs';
 import { render } from '@client/quizz_components/component_render_map';
 import HeroPage from '@components/wrappers/HeroPage';
+import DeleteButton from '@components/misc/Delete';
 
 type QuestionWrapper = {
   id: number;  // The identifier in the editor
@@ -134,14 +135,6 @@ const EditorContent = () =>  {
     updateQuizz();
   };
 
-  const handleQuestionTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newTitle = e.target.value;
-    activeQuestion?.question.set('label', newTitle);
-
-    updateRender();
-    updateQuizz();
-  };
-
   const onChangeHook = (e: any) => {
     updateRender();
     updateQuizz();
@@ -217,9 +210,7 @@ const EditorContent = () =>  {
                   <p className={styles.questionLabel}>
                     <strong>#{allQuestions.indexOf(wrapper)}</strong> {wrapper.question.get("label")}
                   </p>
-                  <button className={styles.deleteQuestion} onClick={() => removeQuestion(wrapper.id)}>
-                    <Trash2Icon width={16} />
-                  </button>
+                  <DeleteButton callback={() => removeQuestion(wrapper.id)} className={styles.delete} />
                 </div>
               ))}
             </ReactSortable>
