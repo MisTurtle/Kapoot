@@ -1,10 +1,10 @@
 import { KapootComponentContainer, KapootLeafComponent } from "@common/quizz_components/_base";
 import { BinaryAnswerComponent, BinaryQuestionComponent, SimpleAnswerComponent, SimpleQuestionComponent } from "@common/quizz_components/components";
 import { FC, useState } from "react";
-import { HuePicker, RGBColor } from "react-color";
+import { RGBColor } from "react-color";
 
 import { BaseProps, SimpleQuestionProps } from "@common/quizz_components/_types";
-import { ArrowLeftCircle, PaintRollerIcon, PlusCircleIcon, ShapesIcon, Trash2Icon } from "lucide-react";
+import { ArrowLeftCircle, CheckCheckIcon, PaintRollerIcon, PlusCircleIcon, ShapesIcon, SquareCheckIcon, SquareXIcon, StopCircleIcon, Trash2Icon, XIcon } from "lucide-react";
 import DeleteButton from "@components/misc/Delete";
 import { useContextMenu } from "@contexts/EditorContextMenus";
 
@@ -13,12 +13,16 @@ import ActionButton from "@components/misc/ActionButton";
 import EditorColorPicker from "@components/misc/EditorColorPicker";
 
 
-type ReactQuizzComponent<T extends KapootLeafComponent<any>> = FC<React.HTMLAttributes<HTMLDivElement> & {
-    parent?: KapootComponentContainer<any>,
-    component: T,
-    editor: boolean,
-    hook: (e: any) => void
-}>;
+type ReactQuizzComponent<T extends KapootLeafComponent<any>> = React.HTMLAttributes<HTMLDivElement> & {
+    parent?: KapootComponentContainer<any>;
+    component: T;
+    editor: boolean;
+    hook: (e: any) => void;
+};
+type ReactAnswerComponent<T extends KapootLeafComponent<any>> = ReactQuizzComponent<T> & {
+    isCorrect?: boolean;
+    setCorrect?: (correct: any) => void;
+};
 
 /**
  * Answer Components
@@ -31,7 +35,7 @@ const AddAnswerButton = ({ callback }: { callback: () => void }) => {
     );
 };
 
-const BaseAnswer: ReactQuizzComponent<KapootLeafComponent<BaseProps>> = ({ parent, component, editor, hook, children }) => {
+const BaseAnswer: FC<ReactAnswerComponent<KapootLeafComponent<BaseProps>>> = ({ parent, component, editor, hook, children, isCorrect, setCorrect }) => {
     const { openMenu, closeMenu } = useContextMenu();
     const onChange = (prop: keyof BaseProps, value: any) => { component.set(prop, value); hook(null); };
     const inlineStyles = { "--color": component.get('background') } as React.CSSProperties;
@@ -42,9 +46,10 @@ const BaseAnswer: ReactQuizzComponent<KapootLeafComponent<BaseProps>> = ({ paren
         hook(null);
         closeMenu();
     };
-    const changeBackground = (newColor: RGBColor) => {
-        component.set('background', [newColor.r, newColor.g, newColor.b]);
-        hook(null);
+    const changeBackground = (newColor: RGBColor) => onChange('background', [newColor.r, newColor.g, newColor.b]);
+    const toggleCorrect = () => {
+        if(setCorrect) setCorrect(!isCorrect);
+        isCorrect = !isCorrect;
     };
     const handleMainContextMenu = (e?: React.MouseEvent) => {
         if(e) e.preventDefault();
@@ -54,6 +59,9 @@ const BaseAnswer: ReactQuizzComponent<KapootLeafComponent<BaseProps>> = ({ paren
                 <hr />,
                 <ActionButton onClick={() => showBackgroundColorPicker()}><PaintRollerIcon /> Background</ActionButton>,
                 <ActionButton onClick={() => {}}><ShapesIcon /> Icon</ActionButton>,
+                <ActionButton theme="warn" onClick={toggleCorrect}>
+                    <SquareCheckIcon /> Toggle
+                </ActionButton>,
                 <ActionButton theme="error" onClick={deleteSelf}><Trash2Icon /> Delete</ActionButton>
             ], e ? { x: e.clientX, y: e.clientY } : undefined
         );
@@ -81,32 +89,35 @@ const BaseAnswer: ReactQuizzComponent<KapootLeafComponent<BaseProps>> = ({ paren
             ) : (
                 <p className={styles.answerLabel}>{component.get('label')}</p>
             )}
+            {editor && isCorrect && <p className={styles.correctAnswerTag} onClick={toggleCorrect}><CheckCheckIcon width={14} /></p>}
+            {editor && !isCorrect && <p className={styles.incorrectAnswerTag} onClick={toggleCorrect}></p>}
 
             {children}
         </div>
     );
 };
 
-export const BinaryAnswer: ReactQuizzComponent<BinaryAnswerComponent> = ({ parent, component, editor, hook }) => {
-    return <BaseAnswer parent={parent} component={component} editor={editor} hook={hook}></BaseAnswer>;
+export const BinaryAnswer: FC<ReactAnswerComponent<BinaryAnswerComponent>> = ({ parent, component, editor, hook, isCorrect, setCorrect }) => {
+    return <BaseAnswer parent={parent} component={component} editor={editor} hook={hook} isCorrect={isCorrect} setCorrect={setCorrect}></BaseAnswer>;
 };
 
-export const SimpleAnswer: ReactQuizzComponent<SimpleAnswerComponent> = ({ parent, component, editor, hook }) => {
-    return <BaseAnswer parent={parent} component={component} editor={editor} hook={hook}></BaseAnswer>;
+export const SimpleAnswer: FC<ReactAnswerComponent<SimpleAnswerComponent>> = ({ parent, component, editor, hook, isCorrect, setCorrect }) => {
+    return <BaseAnswer parent={parent} component={component} editor={editor} hook={hook} isCorrect={isCorrect} setCorrect={setCorrect}></BaseAnswer>;
 }
 
 /**
  * Question Components
  */
-export const BinaryQuestion: ReactQuizzComponent<BinaryQuestionComponent> = ({ component, editor, hook }) => {
+export const BinaryQuestion: FC<ReactQuizzComponent<BinaryQuestionComponent>> = ({ component, editor, hook }) => {
     return (<div>
         <p>{component.children[0].get('label')}</p>
         <p>{component.children[1].get('label')}</p>
     </div>);
 };
 
-export const SimpleQuestion: ReactQuizzComponent<SimpleQuestionComponent> = ({ component, editor, hook }) => {
+export const SimpleQuestion: FC<ReactQuizzComponent<SimpleQuestionComponent>> = ({ component, editor, hook }) => {
     const onChange = (prop: keyof SimpleQuestionProps, value: any) => { component.set(prop, value); hook(null); };
+    const [ validAnswer, setValidAnswer ] = useState<number>(component.get('answer') ?? 0);
     return (
         <>
             <div className={styles.questionHeader}>
@@ -123,7 +134,12 @@ export const SimpleQuestion: ReactQuizzComponent<SimpleQuestionComponent> = ({ c
                 component.get('thumbnail') && <img src={component.get('thumbnail')} alt='Question Image' />
             }
             <div className={styles.questionAnswers}>
-                { component.children.map((ans, i) => <SimpleAnswer key={i} parent={component} component={ans} editor={editor} hook={hook} />) }
+                { component.children.map((ans, i) => 
+                    <SimpleAnswer key={i} parent={component} component={ans} editor={editor} hook={hook}
+                     isCorrect={validAnswer === i}
+                     setCorrect={(correct) => { const newAnswer = correct ? i : -1; component.set('answer', newAnswer); setValidAnswer(newAnswer); hook(null); }}
+                    />)
+                }
                 { editor && component.children.length < 4 && <AddAnswerButton callback={() => { component.addDefault(); hook(null); }} /> }
             </div>
         </>

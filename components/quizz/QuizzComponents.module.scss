@@ -87,7 +87,7 @@
     border: 5px solid color-mix(in srgb, rgb(var(--color)) 70%, black);
 
     &, & > * {
-        font-size: $fs-small !important;
+        font-size: $fs-small;
         font-weight: bold;
         color: color-mix(in srgb, rgb(var(--color)) 35%, black);
     }
@@ -99,6 +99,45 @@
         opacity: 0;
     }
     &:hover .delete { opacity: 1; }
+}
+
+.answerTag {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    padding: 5px;
+    font-size: $fs-smaller;
+    border-radius: 5px;
+    transition: $t-fast ease;
+    pointer-events: all;
+    color: $darker;
+    width: 20px;
+    height: 20px;
+
+    &:hover {
+        transform: scale(1.04);
+    }
+}
+.correctAnswerTag {
+    @extend .answerTag;
+    background-color: $success;
+    border: 2px solid color-mix(in srgb, $success 75%, black);
+    &:hover {
+        background-color: $successHover;
+        border: 2px solid color-mix(in srgb, $successHover 75%, black);
+    }
+}
+.incorrectAnswerTag {
+    @extend .answerTag;
+    background-color: $error;
+    border: 2px solid color-mix(in srgb, $error 75%, black);
+    &:hover {
+        background-color: $errorHover;
+        border: 2px solid color-mix(in srgb, $errorHover 75%, black);
+    }
 }
 
 
