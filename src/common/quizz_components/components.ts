@@ -46,7 +46,17 @@ export class OpenQuestionComponent extends QuestionComponent<types.OpenQuestionP
     constructor(properties: types.OpenQuestionProps, answerComponent: OpenAnswerComponent)
     {
         super(properties, answerComponent);
-        answerComponent.setAllIfUndefined({'label': 'Open Answer'});
+    }
+
+    public addDefault(): OpenAnswerComponent {
+        if(this.children.length > 0) throw new Error("Open questions can only have one child");
+        this.children.push(new OpenAnswerComponent({}));
+        this.fillChildProps(this.children[0], 0);
+        return this.children[0];
+    }
+
+    public fillChildProps(child: KapootLeafComponent<any>, _: number): void {
+        child.setAllIfUndefined({'label': 'Open Answer'});
     }
 }
 
@@ -58,8 +68,19 @@ export class BinaryQuestionComponent extends QuestionComponent<types.BinaryQuest
     constructor(properties: types.BinaryQuestionProps, answerTrue: BinaryAnswerComponent, answerFalse: BinaryAnswerComponent) 
     {
         super(properties, answerTrue, answerFalse);
-        answerTrue.setAllIfUndefined({'label': 'Yes', 'background': defaultColors[0]});
-        answerFalse.setAllIfUndefined({'label': 'No', 'background': defaultColors[1]});
+    }
+
+    public addDefault(): BinaryAnswerComponent {
+        if(this.children.length >= 2) throw new Error("Binary questions can only have two answer components");
+        const ans = new BinaryAnswerComponent({});
+        this.fillChildProps(ans, this.children.length);
+        this.children.push(ans);
+        return ans;
+    }
+
+    public fillChildProps(child: KapootLeafComponent<any>, index: number): void {
+        if(index < 0 || index > 1) throw new Error("Binary question can only have two answer components");
+        child.setAllIfUndefined({'label': ['Yes', 'No'][index], 'background': defaultColors[index]});
     }
 }
 
@@ -71,7 +92,18 @@ export class SimpleQuestionComponent extends QuestionComponent<types.SimpleQuest
     constructor(properties: types.SimpleQuestionProps, ...answers: SimpleAnswerComponent[])
     {
         super(properties, ...answers);
-        answers.forEach((ans, i) => ans.setAllIfUndefined({'label': `Answer #${i}`, 'background': defaultColors[i]}));
+    }
+
+    public addDefault(): SimpleAnswerComponent {
+        if(this.children.length >= 4) throw new Error("Simple questions cannot have more than 4 answers");
+        const ans = new SimpleAnswerComponent({});
+        this.fillChildProps(ans, this.children.length);
+        this.children.push(ans);
+        return ans;
+    }
+
+    public fillChildProps(child: KapootLeafComponent<any>, index: number): void {
+        child.setAllIfUndefined({'label': `Answer #${index}`, 'background': defaultColors[index]});
     }
 }
 
@@ -83,7 +115,18 @@ export class McqQuestionComponent extends QuestionComponent<types.McqQuestionPro
     constructor(properties: types.McqQuestionProps, ...answers: McqAnswerComponent[])
     {
         super(properties, ...answers);
-        answers.forEach((ans, i) => ans.setAllIfUndefined({'label': `Answer #${i}`, 'background': defaultColors[i]}));
+    }
+
+    public addDefault(): McqAnswerComponent {
+        if(this.children.length >= 4) throw new Error("Multiple choice questions cannot have more than 4 answers");
+        const ans = new McqAnswerComponent({});
+        this.fillChildProps(ans, this.children.length);
+        this.children.push(ans);
+        return ans;
+    }
+
+    public fillChildProps(child: KapootLeafComponent<any>, index: number): void {
+        child.setAllIfUndefined({'label': `Answer #${index}`, 'background': defaultColors[index]});
     }
 }
 
@@ -135,7 +178,18 @@ export class SimpleQuizzComponent extends QuizzComponent<types.SimpleQuizzProps>
         
         return new SimpleQuizzComponent(quizzProperties, ...questions);
     }
-    
+
+    public addDefault(): SimpleQuestionComponent {
+        const question = new SimpleQuestionComponent({});
+        for(let i = 0; i < 4; ++i) question.addDefault();
+        this.fillChildProps(question, this.children.length);
+        this.children.push(question);
+        return question;
+    }
+
+    public fillChildProps(child: KapootLeafComponent<any>, index: number): void {
+        child.set('label', `Question #${index}`);    
+    }
 }
 
 export function emptyQuizz() { return new SimpleQuizzComponent({}); }

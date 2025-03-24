@@ -3,6 +3,7 @@
  */
 export type BaseProps = {
     label?: string;  // Main text content
+    iconShape?: number;  // Id to the shape
     thumbnail?: string;  // Thumbnail to be displayed (URL to image)
     background?: number[];  // Background (Color)
 };

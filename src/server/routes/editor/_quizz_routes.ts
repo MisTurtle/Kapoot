@@ -15,6 +15,7 @@ router.post('/quizz', (req, res) => {
     if(!req.user) return error(res, 'Not logged in.');
     
     let quizz = emptyQuizz();
+    quizz.addDefault();
 
     const template: string | undefined = req.body.template;
     if(template) {

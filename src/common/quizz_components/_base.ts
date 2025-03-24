@@ -64,6 +64,7 @@ export abstract class KapootComponentContainer<T extends Record<string, any>> ex
     constructor(properties: T, ...children: KapootLeafComponent<any>[]) {
         super(properties);
         this._children = children;
+        children.forEach((c, i) => this.fillChildProps(c, i));
     }
 
     public get children() {
@@ -76,4 +77,7 @@ export abstract class KapootComponentContainer<T extends Record<string, any>> ex
         thisJson[FIELD_CHILDREN] = this._children.map(child => child.toJSON());
         return thisJson;
     }
+
+    public abstract fillChildProps(child: KapootLeafComponent<any>, index: number): void;
+    public abstract addDefault(): KapootLeafComponent<any>;
 }

@@ -147,15 +147,9 @@ const EditorContent = () =>  {
   const addQuestion = () => {
     if (!quizz) return showPopup('error', 'No quizz is currently open', 5.0);
 
-    const newQuestion = new SimpleQuestionComponent(
-      {label: `Question #${allQuestions.length}`},
-      new SimpleAnswerComponent({label: "c'est la réponse A"}),
-      new SimpleAnswerComponent({label: "c'est la réponse B"}),
-      new SimpleAnswerComponent({label: "c'est la réponse C"}),
-      new SimpleAnswerComponent({label: "c'est la réponse D"})
-    );
+    const question = quizz.addDefault() as QuestionComponent<any>;
     setAllQuestions(prev => {
-      const wrapper = {id: prev.length, question: newQuestion};
+      const wrapper = {id: prev.length, question: question};
       setActiveQuestion(wrapper)
       return [...prev, wrapper];
     });
@@ -163,7 +157,6 @@ const EditorContent = () =>  {
 
   const selectQuestion = (index: number) => {
     if(!quizz) return showPopup('error', 'No quizz is currently open', 5.0);
-
     setActiveQuestion(allQuestions.find(w => w.id === index));
   };
 

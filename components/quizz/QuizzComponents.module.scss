@@ -47,19 +47,16 @@
 /**
  * Answers
  */
-.answerBase {
+.answerShape {
     position: relative;
     display: flex;
     flex: 1;
     align-items: center;
     justify-content: center;
-
     border-radius: 0.5rem;
-    background-color: rgba(var(--color), 1);
-    border: 5px solid color-mix(in srgb, rgb(var(--color)) 70%, black);
-
+    
     opacity: 1;
-    transition: $t-faster ease;
+    transition: $t-fast ease;
     &:hover {
         cursor: pointer;
         transform: scale(1.03);
@@ -67,6 +64,27 @@
     &:active {
         transform: scale(1.00);
     }
+}
+
+.answerAdd {
+    @extend .answerShape;
+
+    border: 5px dashed $accentDarker;
+    border-radius: 2rem;
+    gap: 1rem;
+    background-color: rgba($accent, 0.25);
+    font-weight: bold;
+
+    &:hover {
+        background-color: rgba($accent, 1);
+    }
+}
+
+.answerBase {
+    @extend .answerShape;
+
+    background-color: rgba(var(--color), 1);
+    border: 5px solid color-mix(in srgb, rgb(var(--color)) 70%, black);
 
     &, & > * {
         font-size: $fs-small !important;
@@ -111,7 +129,7 @@ input.questionTitle, input.questionDesc, input.answerLabel {
 /**
  * Extras
  */
-.colorPickerWrapper {
+.huePicker {
     position: absolute;
     background-color: $dark;
     padding: 1rem;

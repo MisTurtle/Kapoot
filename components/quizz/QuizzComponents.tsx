@@ -1,15 +1,16 @@
 import { KapootComponentContainer, KapootLeafComponent } from "@common/quizz_components/_base";
-import { BinaryAnswerComponent, BinaryQuestionComponent, QuestionComponent, SimpleAnswerComponent, SimpleQuestionComponent } from "@common/quizz_components/components";
+import { BinaryAnswerComponent, BinaryQuestionComponent, SimpleAnswerComponent, SimpleQuestionComponent } from "@common/quizz_components/components";
 import { FC, useState } from "react";
-import { HuePicker, SliderPicker } from "react-color";
+import { HuePicker, RGBColor } from "react-color";
 
 import { BaseProps, SimpleQuestionProps } from "@common/quizz_components/_types";
-import { ArrowLeftCircle, PaintRollerIcon, ShapesIcon, Trash2Icon } from "lucide-react";
+import { ArrowLeftCircle, PaintRollerIcon, PlusCircleIcon, ShapesIcon, Trash2Icon } from "lucide-react";
 import DeleteButton from "@components/misc/Delete";
 import { useContextMenu } from "@contexts/EditorContextMenus";
 
 import styles from "./QuizzComponents.module.scss";
 import ActionButton from "@components/misc/ActionButton";
+import EditorColorPicker from "@components/misc/EditorColorPicker";
 
 
 type ReactQuizzComponent<T extends KapootLeafComponent<any>> = FC<React.HTMLAttributes<HTMLDivElement> & {
@@ -22,6 +23,14 @@ type ReactQuizzComponent<T extends KapootLeafComponent<any>> = FC<React.HTMLAttr
 /**
  * Answer Components
  */
+const AddAnswerButton = ({ callback }: { callback: () => void }) => {
+    return (
+        <button className={styles.answerAdd} onClick={callback}>
+            <PlusCircleIcon /> Add Answer
+        </button>
+    );
+};
+
 const BaseAnswer: ReactQuizzComponent<KapootLeafComponent<BaseProps>> = ({ parent, component, editor, hook, children }) => {
     const { openMenu, closeMenu } = useContextMenu();
     const onChange = (prop: keyof BaseProps, value: any) => { component.set(prop, value); hook(null); };
@@ -32,61 +41,49 @@ const BaseAnswer: ReactQuizzComponent<KapootLeafComponent<BaseProps>> = ({ paren
         if(index !== undefined && index >= 0) parent?.children.splice(index, 1);
         hook(null);
         closeMenu();
-
     };
-    const changeBackground = (newColor: number[]) => {
-        component.set('background', newColor);
+    const changeBackground = (newColor: RGBColor) => {
+        component.set('background', [newColor.r, newColor.g, newColor.b]);
         hook(null);
     };
-
     const handleMainContextMenu = (e?: React.MouseEvent) => {
         if(e) e.preventDefault();
         openMenu(
-            component,
-            [
+            component, [
                 <p><strong>{ component.get('label') }</strong></p>,
                 <hr />,
                 <ActionButton onClick={() => showBackgroundColorPicker()}><PaintRollerIcon /> Background</ActionButton>,
                 <ActionButton onClick={() => {}}><ShapesIcon /> Icon</ActionButton>,
                 <ActionButton theme="error" onClick={deleteSelf}><Trash2Icon /> Delete</ActionButton>
-            ],
-            e ? { x: e.clientX, y: e.clientY } : undefined
+            ], e ? { x: e.clientX, y: e.clientY } : undefined
         );
     };
     const showBackgroundColorPicker = () => {
         setTimeout(() => openMenu(
-            component,
-            [
+            component, [
                 <p><strong>{ component.get('label') }</strong></p>,
                 <hr />,
-                <HuePicker 
-                    color={bgColor ? { r: bgColor[0], g: bgColor[1], b: bgColor[2] } : undefined}
-                    onChange={(newColor) => changeBackground([ newColor.rgb.r, newColor.rgb.g, newColor.rgb.b ])}
-                    onChangeComplete={(newColor) => changeBackground([ newColor.rgb.r, newColor.rgb.g, newColor.rgb.b ])}
-                />,
+                <EditorColorPicker defaultColor={component.get('background')} onChange={changeBackground} />,
                 <ActionButton onClick={() => handleMainContextMenu()}><ArrowLeftCircle /> Back</ActionButton>
             ]
         ), 1);  // Timeout is required, otherwise the document trigger to close the context menu is called after rerendering, which hides the new context
     };
-    let bgColor = component.get('background');
 
     return (
-        <>
-            <div 
-                className={styles.answerBase} 
-                style={inlineStyles}
-                onContextMenu={e => editor && handleMainContextMenu(e)}
-            >
-                {editor && <DeleteButton className={styles.delete} callback={deleteSelf} />}
-                {editor ? (
-                    <input className={styles.answerLabel} type="text" value={component.get('label')} onChange={(e) => onChange('label', e.target.value)} />
-                ) : (
-                    <p className={styles.answerLabel}>{component.get('label')}</p>
-                )}
+        <div 
+            className={styles.answerBase} 
+            style={inlineStyles}
+            onContextMenu={e => editor && handleMainContextMenu(e)}
+        >
+            {editor && <DeleteButton className={styles.delete} callback={deleteSelf} />}
+            {editor ? (
+                <input className={styles.answerLabel} type="text" value={component.get('label')} onChange={(e) => onChange('label', e.target.value)} />
+            ) : (
+                <p className={styles.answerLabel}>{component.get('label')}</p>
+            )}
 
-                {children}
-            </div>
-        </>
+            {children}
+        </div>
     );
 };
 
@@ -98,7 +95,9 @@ export const SimpleAnswer: ReactQuizzComponent<SimpleAnswerComponent> = ({ paren
     return <BaseAnswer parent={parent} component={component} editor={editor} hook={hook}></BaseAnswer>;
 }
 
-
+/**
+ * Question Components
+ */
 export const BinaryQuestion: ReactQuizzComponent<BinaryQuestionComponent> = ({ component, editor, hook }) => {
     return (<div>
         <p>{component.children[0].get('label')}</p>
@@ -125,6 +124,7 @@ export const SimpleQuestion: ReactQuizzComponent<SimpleQuestionComponent> = ({ c
             }
             <div className={styles.questionAnswers}>
                 { component.children.map((ans, i) => <SimpleAnswer key={i} parent={component} component={ans} editor={editor} hook={hook} />) }
+                { editor && component.children.length < 4 && <AddAnswerButton callback={() => { component.addDefault(); hook(null); }} /> }
             </div>
         </>
     );
