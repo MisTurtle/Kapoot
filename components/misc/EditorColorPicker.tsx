@@ -1,5 +1,6 @@
+import { buttonColors } from "@common/constants";
 import { FC, useState } from "react";
-import { HuePicker, RGBColor } from "react-color";
+import { AlphaPicker, BlockPicker, CompactPicker, GithubPicker, HuePicker, RGBColor, SketchPicker, SwatchesPicker, TwitterPicker } from "react-color";
 
 type EditorColorPickerProps = {
     defaultColor?: number[] | RGBColor;
@@ -13,7 +14,8 @@ const EditorColorPicker: FC<EditorColorPickerProps> = ({ defaultColor, onChange,
     const [ selectedColor, setSelectedColor ] = useState<RGBColor>(defaultColor ?? {r: 0, g: 0, b: 0});
 
     return (
-        <HuePicker
+        <CompactPicker
+            colors={buttonColors.map(([r, g, b]) => `#${((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1).toUpperCase()}`)}
             color={selectedColor}
             onChange={(color) => { setSelectedColor(color.rgb); if(onChange) onChange(color.rgb)} }
             onChangeComplete={(color) => { setSelectedColor(color.rgb); if(onSubmit) onSubmit(color.rgb)} }

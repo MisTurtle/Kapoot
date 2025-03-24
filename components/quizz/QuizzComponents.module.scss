@@ -69,11 +69,11 @@
 .answerAdd {
     @extend .answerShape;
 
+    background-color: rgba($accent, 0.25);
     border: 5px dashed $accentDarker;
     border-radius: 2rem;
-    gap: 1rem;
-    background-color: rgba($accent, 0.25);
     font-weight: bold;
+    gap: 1rem;
 
     &:hover {
         background-color: rgba($accent, 1);
@@ -91,8 +91,7 @@
         font-weight: bold;
         color: color-mix(in srgb, rgb(var(--color)) 35%, black);
     }
-}
-.answerBase {
+    
     .delete { 
         position: absolute;
         top: 0.5rem;

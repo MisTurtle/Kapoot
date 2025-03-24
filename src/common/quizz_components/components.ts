@@ -1,4 +1,5 @@
-import { defaultColors, FIELD_CHILDREN, FIELD_PROPERTIES, FIELD_TYPE, KapootComponentContainer, KapootLeafComponent } from "./_base";
+import { FIELD_CHILDREN, FIELD_PROPERTIES, FIELD_TYPE, KapootComponentContainer, KapootLeafComponent } from "./_base";
+import { defaultColors } from "@common/constants";
 import * as types from "./_types";
 
 /**

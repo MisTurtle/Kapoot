@@ -1,15 +1,6 @@
-import React from "react";
-
 export const FIELD_PROPERTIES = 'properties';
 export const FIELD_CHILDREN = 'children';
 export const FIELD_TYPE = 'type';
-
-export const defaultColors = [
-    [59, 180, 245],  // Blue
-    [245, 59, 59],  // Red
-    [245, 226, 59],  // Yellow
-    [81, 245, 59]  // Green
-]
 
 /**
  * Bottom-most level class extended by every quizz component
