@@ -99,6 +99,11 @@
         opacity: 0;
     }
     &:hover .delete { opacity: 1; }
+    .answerIcon {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+    }
 }
 
 .answerTag {
@@ -117,10 +122,11 @@
     width: 20px;
     height: 20px;
     border: 4px solid rgba(black, 0.60);
-    background-color: transparent;
+    background-color: rgba(black, 0.25);
 
     &:hover {
         border-radius: 10px;
+        background-color: transparent;
     }
 }
 .correctAnswerTag {

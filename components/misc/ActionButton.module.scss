@@ -19,6 +19,9 @@
         color: $accent;
         transform: scale(1.03);
     }
+    &:active {
+        transform: scale(0.98);
+    }
     
     &[data-theme=success]:hover {
         border-color: $success;

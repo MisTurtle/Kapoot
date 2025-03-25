@@ -1,3 +1,5 @@
+import { IconName } from "lucide-react/dynamic";
+
 export const defaultColors = [
     [244,  78,  59],
     [  0, 156, 224],
@@ -45,3 +47,6 @@ export const buttonColors = [
     [101,  50, 148],
     [171,  20, 158]
 ];
+
+export const allIcons: IconName[] = [ "circle", "squircle", "triangle", "pentagon", "hexagon", "octagon", "sparkle", "star", "club", "diamond", "spade", "heart" ];
+export const getIcon = (index?: number) => allIcons[((index ?? 0) + allIcons.length) % allIcons.length];

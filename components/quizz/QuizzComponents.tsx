@@ -4,13 +4,15 @@ import { FC, useState } from "react";
 import { RGBColor } from "react-color";
 
 import { BaseProps, SimpleQuestionProps } from "@common/quizz_components/_types";
-import { ArrowLeftCircle, CheckCheckIcon, CheckIcon, PaintRollerIcon, PlusCircleIcon, ShapesIcon, SquareCheckIcon, SquareXIcon, StopCircleIcon, Trash2Icon, XIcon } from "lucide-react";
+import { ArrowLeftCircle, CheckCheckIcon, CheckIcon, ChevronLeftIcon, ChevronRightIcon, PaintRollerIcon, PlusCircleIcon, ShapesIcon, SquareCheckIcon, SquareXIcon, StopCircleIcon, Trash2Icon, XIcon } from "lucide-react";
 import DeleteButton from "@components/misc/Delete";
 import { useContextMenu } from "@contexts/EditorContextMenus";
 
 import styles from "./QuizzComponents.module.scss";
 import ActionButton from "@components/misc/ActionButton";
 import EditorColorPicker from "@components/misc/EditorColorPicker";
+import { allIcons, getIcon } from "@common/constants";
+import { DynamicIcon, IconName } from "lucide-react/dynamic";
 
 
 type ReactQuizzComponent<T extends KapootLeafComponent<any>> = React.HTMLAttributes<HTMLDivElement> & {
@@ -47,6 +49,7 @@ const BaseAnswer: FC<ReactAnswerComponent<KapootLeafComponent<BaseProps>>> = ({ 
         closeMenu();
     };
     const changeBackground = (newColor: RGBColor) => onChange('background', [newColor.r, newColor.g, newColor.b]);
+    const changeIcon = (offset: number) => onChange('iconShape', ((component.get('iconShape') ?? 0) + offset) % allIcons.length);
     const toggleCorrect = () => {
         if(setCorrect) setCorrect(!isCorrect);
         isCorrect = !isCorrect;
@@ -55,11 +58,15 @@ const BaseAnswer: FC<ReactAnswerComponent<KapootLeafComponent<BaseProps>>> = ({ 
         if(e) e.preventDefault();
         openMenu(
             component, [
-                <p><strong>{ component.get('label') }</strong></p>,
+                <p><strong>{component.get('label')}</strong></p>,
                 <hr />,
                 <ActionButton onClick={() => showBackgroundColorPicker()}><PaintRollerIcon /> Background</ActionButton>,
-                <ActionButton onClick={() => {}}><ShapesIcon /> Icon</ActionButton>,
-                <ActionButton theme="warn" onClick={toggleCorrect}>
+                <div style={{display: "flex", alignItems: "center", justifyContent: "center", gap: "0.1rem"}}>
+                    <ActionButton onClick={() => changeIcon(-1)}><ChevronLeftIcon size={16} /></ActionButton>
+                    <ActionButton onClick={() => changeIcon(0)}><ShapesIcon /> Icon</ActionButton>
+                    <ActionButton onClick={() => changeIcon(1)}><ChevronRightIcon size={16} /></ActionButton>
+                </div>,
+                <ActionButton onClick={toggleCorrect}>
                     <SquareCheckIcon /> Toggle
                 </ActionButton>,
                 <ActionButton theme="error" onClick={deleteSelf}><Trash2Icon /> Delete</ActionButton>
@@ -83,6 +90,9 @@ const BaseAnswer: FC<ReactAnswerComponent<KapootLeafComponent<BaseProps>>> = ({ 
             style={inlineStyles}
             onContextMenu={e => editor && handleMainContextMenu(e)}
         >
+            <div className={styles.answerIcon}>
+                <DynamicIcon name={getIcon(component.get('iconShape'))} size={36} strokeWidth={3}></DynamicIcon>
+            </div>
             {editor && <DeleteButton className={styles.delete} callback={deleteSelf} />}
             {editor ? (
                 <input className={styles.answerLabel} type="text" value={component.get('label')} onChange={(e) => onChange('label', e.target.value)} />

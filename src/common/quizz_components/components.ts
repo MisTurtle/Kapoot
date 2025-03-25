@@ -81,7 +81,7 @@ export class BinaryQuestionComponent extends QuestionComponent<types.BinaryQuest
 
     public fillChildProps(child: KapootLeafComponent<any>, index: number): void {
         if(index < 0 || index > 1) throw new Error("Binary question can only have two answer components");
-        child.setAllIfUndefined({'label': ['Yes', 'No'][index], 'background': defaultColors[index]});
+        child.setAllIfUndefined({'label': ['Yes', 'No'][index], 'background': defaultColors[index], iconShape: index});
     }
 }
 
@@ -104,7 +104,7 @@ export class SimpleQuestionComponent extends QuestionComponent<types.SimpleQuest
     }
 
     public fillChildProps(child: KapootLeafComponent<any>, index: number): void {
-        child.setAllIfUndefined({'label': `Answer #${index}`, 'background': defaultColors[index]});
+        child.setAllIfUndefined({'label': `Answer #${index}`, 'background': defaultColors[index], 'iconShape': index});
     }
 }
 
@@ -127,7 +127,7 @@ export class McqQuestionComponent extends QuestionComponent<types.McqQuestionPro
     }
 
     public fillChildProps(child: KapootLeafComponent<any>, index: number): void {
-        child.setAllIfUndefined({'label': `Answer #${index}`, 'background': defaultColors[index]});
+        child.setAllIfUndefined({'label': `Answer #${index}`, 'background': defaultColors[index], 'iconShape': index});
     }
 }
 

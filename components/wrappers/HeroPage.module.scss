@@ -24,20 +24,8 @@
 
     .shape {
         position: absolute;
-        opacity: 0.7;
+        opacity: 0.4;
         animation: moveAndRotate 10s linear forwards;
-    }
-
-    .rounded {
-        border-radius: 33%;
-    }
-
-    .circle {
-        border-radius: 50%;
-    }
-
-    .hex {
-        clip-path: polygon(50% 0%, 95% 25%, 95% 75%, 50% 100%, 5% 75%, 5% 25%);
     }
 }
 
