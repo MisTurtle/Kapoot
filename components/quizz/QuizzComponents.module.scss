@@ -110,34 +110,24 @@
     right: 5px;
     padding: 5px;
     font-size: $fs-smaller;
-    border-radius: 5px;
+    border-radius: 50%;
     transition: $t-fast ease;
     pointer-events: all;
     color: $darker;
     width: 20px;
     height: 20px;
+    border: 4px solid rgba(black, 0.60);
+    background-color: transparent;
 
     &:hover {
-        transform: scale(1.04);
+        border-radius: 10px;
     }
 }
 .correctAnswerTag {
     @extend .answerTag;
-    background-color: $success;
-    border: 2px solid color-mix(in srgb, $success 75%, black);
-    &:hover {
-        background-color: $successHover;
-        border: 2px solid color-mix(in srgb, $successHover 75%, black);
-    }
 }
 .incorrectAnswerTag {
     @extend .answerTag;
-    background-color: $error;
-    border: 2px solid color-mix(in srgb, $error 75%, black);
-    &:hover {
-        background-color: $errorHover;
-        border: 2px solid color-mix(in srgb, $errorHover 75%, black);
-    }
 }
 
 

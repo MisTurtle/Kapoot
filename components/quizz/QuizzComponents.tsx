@@ -4,7 +4,7 @@ import { FC, useState } from "react";
 import { RGBColor } from "react-color";
 
 import { BaseProps, SimpleQuestionProps } from "@common/quizz_components/_types";
-import { ArrowLeftCircle, CheckCheckIcon, PaintRollerIcon, PlusCircleIcon, ShapesIcon, SquareCheckIcon, SquareXIcon, StopCircleIcon, Trash2Icon, XIcon } from "lucide-react";
+import { ArrowLeftCircle, CheckCheckIcon, CheckIcon, PaintRollerIcon, PlusCircleIcon, ShapesIcon, SquareCheckIcon, SquareXIcon, StopCircleIcon, Trash2Icon, XIcon } from "lucide-react";
 import DeleteButton from "@components/misc/Delete";
 import { useContextMenu } from "@contexts/EditorContextMenus";
 
@@ -89,7 +89,7 @@ const BaseAnswer: FC<ReactAnswerComponent<KapootLeafComponent<BaseProps>>> = ({ 
             ) : (
                 <p className={styles.answerLabel}>{component.get('label')}</p>
             )}
-            {editor && isCorrect && <p className={styles.correctAnswerTag} onClick={toggleCorrect}><CheckCheckIcon width={14} /></p>}
+            {editor && isCorrect && <p className={styles.correctAnswerTag} onClick={toggleCorrect}><CheckIcon width={24} color="#000000b0" strokeWidth={5}/></p>}
             {editor && !isCorrect && <p className={styles.incorrectAnswerTag} onClick={toggleCorrect}></p>}
 
             {children}

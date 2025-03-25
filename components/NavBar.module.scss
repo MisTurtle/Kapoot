@@ -46,5 +46,8 @@
                 transform: rotate(-2deg) scale(1.05);
             }
         }
+        &:active {
+            transform: rotate(0deg) scale(1.00) !important;
+        }
     }
 }

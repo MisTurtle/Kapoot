@@ -6,7 +6,7 @@ import { ButtonHTMLAttributes } from "react";
 const DeleteButton = ({ callback, className }: { callback: () => any } & React.HTMLAttributes<HTMLButtonElement>) => {
     return (
         <button className={`${styles.delete} ${className} || ''`} onClick={callback}>
-            <Trash2Icon width={16} />
+            <Trash2Icon width={20} strokeWidth={2} color="#000000b0" />
         </button>
     );
 }

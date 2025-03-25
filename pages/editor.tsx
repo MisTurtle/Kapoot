@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { ProtectedRoute } from '@components/wrappers/ProtectedRoute';
 import { useRouter } from 'next/router';
 import Loading from '@components/misc/Loading';
-import { SimpleQuizzComponent, SimpleQuestionComponent, SimpleAnswerComponent, QuestionComponent, QuizzComponent } from '@common/quizz_components/components';
+import { SimpleQuizzComponent, QuestionComponent } from '@common/quizz_components/components';
 import { uuidChecker } from '@common/sanitizers';
 import { handle } from '@common/responses';
 import { usePopup } from '@contexts/PopupContext';
-import { ArrowLeftIcon, SaveIcon, Trash2Icon, TrashIcon } from 'lucide-react';
+import { ArrowLeftIcon, ArrowRightLeftIcon, SaveIcon } from 'lucide-react';
 
 import styles from './editor.module.scss';
 import { CustomNavBar } from '@components/NavBar';
@@ -44,6 +44,7 @@ const EditorContent = () =>  {
   const [ title, setTitle ] = useState<string|undefined>(undefined);
   const [ loading, setLoading ] = useState<boolean>(true);
   const [ showSavedMessage, setShowSavedMessage ] = useState(false);
+  const [ editorView, setEditorView ] = useState(true);
 
   const updateRender = () => setVersion(v => v + 1);
   const updateQuizz = () => {
@@ -184,7 +185,7 @@ const EditorContent = () =>  {
           <input type="text" value={title} onChange={handleTitleChange} placeholder="Quizz Title..." className={styles.titleInput}/>
           <p className={`${styles.savedAutomatically} ${showSavedMessage ? styles.active : ""}`}><SaveIcon width={16}/>Your quizz is saved automatically !</p>
           <div className={styles.navBar}>
-            <CustomNavBar links={['home']} />
+            <CustomNavBar links={[{ icon: ArrowRightLeftIcon, label: editorView ? 'Player View' : 'Editor View', target: () => setEditorView(prev => !prev) }, 'home']} />
           </div>
         </header>
 
@@ -224,7 +225,7 @@ const EditorContent = () =>  {
             :
             <>
               {/* <input type="text" value={activeQuestion.question.get('label')} onChange={handleQuestionTitleChange} className={styles.questionInput} /> */}
-              { render(activeQuestion.question, true, onChangeHook) }
+              { render(activeQuestion.question, editorView, onChangeHook) }
             </>
           }
           </HeroPage>
