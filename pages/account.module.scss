@@ -1,0 +1,84 @@
+@use "@styles/variables" as *;
+
+.accountContainer {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    z-index: 0;  /* Base Z: 0 */
+
+    /* Header Section */
+    .titleSection {
+        display: flex;
+        align-items: center;
+        z-index: 5;  /* Title section is above everything */
+    
+        padding: 18px 0;
+        background: linear-gradient(45deg, $accentDarker, $accent);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 1);
+
+        .titlePage {
+            display: flex;
+            color: white;
+            padding: 0 10px;
+            font-size: $fs-bigger;
+        }
+        margin-bottom: 20px;
+    }  
+
+    /* User Data Section */
+    .accountTop {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        border: 2px dashed black;
+        padding: 10px 0;
+        width: 600px;
+        .accountAvatar {
+            display: flex;
+            img {
+                border: 1px solid black;
+                border-radius: 50%;
+                width: 200px;
+                aspect-ratio: 1/1;
+            }
+        }
+
+        .accountData {
+            display: flex;
+            flex-direction: column;
+            margin-left: 10px;
+            .accountUsername {
+                font-size: 30px;
+            }
+            .accountEmail {
+                
+            }
+        }
+    }
+
+
+  /* Quizz Section */
+    .quizzTitle {
+
+    }
+
+  .userQuizzContainer {
+    display: flex;
+    flex-direction: column;
+    .quizzContainer {
+        display: flex;
+    
+        .editQuizz {
+    
+        }
+        .dateQuizz {
+    
+        }
+        .updatedQuizz {
+    
+        }
+       }
+  }
+  
+}
