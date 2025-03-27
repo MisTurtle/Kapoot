@@ -98,7 +98,7 @@ const EditorContent = () =>  {
   /**
    * Automatic quizz saving when questions change
    */
-  useEffect(() => { updateQuizz(); }, [allQuestions, version]);  // TODO : This is a lot of requests, maybe try to reduce the amount of patches by refining the dependencies
+  // useEffect(() => { updateQuizz(); }, [allQuestions, version]);  // TODO : This is a lot of requests, maybe try to reduce the amount of patches by refining the dependencies
 
   /**
    * Additional one shot setup

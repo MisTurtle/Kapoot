@@ -5,7 +5,7 @@ declare global {
         | { username?: string; identifier?: string; mail: string; }
     );
 
-    type Quizz = {
+    type SerializedQuizz = {
         quizz_id: string;
         params: string;
         created_at: string;
@@ -15,7 +15,6 @@ declare global {
     type AccountDetails = {
         username: string,
         mail: string,
-        quizzes: Quizz[];
         // TODO : Add more information about the user
     };
 

@@ -84,5 +84,7 @@ router.delete('/quizz/:id', (req, res) => {
  * Action: Get all quizzes from a user account
  */
 router.get('/quizz', (req, res) => {
-    
+    if(!req.user) return error(res, 'Not logged in.');
+
+    getEndpoints().getUserSerializedQuizzes(req.user).then(result => success(res, result));
 });

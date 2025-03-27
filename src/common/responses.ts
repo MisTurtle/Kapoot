@@ -1,4 +1,5 @@
 import { Response as eResponse } from 'express';
+import { production } from './utils';
 
 type ResponseStatus = ( | { error: string, result?: string } | { error?: undefined, result?: string } );
 
@@ -33,6 +34,6 @@ export async function handle<T>(res: Response, onSuccess: (result?: T) => void, 
     else try {
         return onSuccess(json.result as T);
     } catch (err) {
-        return onFailure("Server error.");
+        return onFailure("Unknown error... " + err);
     };
 }

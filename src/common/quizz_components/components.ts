@@ -150,7 +150,7 @@ export class SimpleQuizzComponent extends QuizzComponent<types.SimpleQuizzProps>
         const quizzProperties = data[FIELD_PROPERTIES];
         const quizzChildren = data[FIELD_CHILDREN];  // [ {type: 'questionType', children: questionAnswers, properties: {...questionProperties} ]
 
-        const questions = (quizzChildren ?? []).map((q: any) => {
+        const questions: QuestionComponent<any>[] = (quizzChildren ?? []).map((q: any) => {
             const properties = q[FIELD_PROPERTIES];  // { ...questionProperties }
             const children: { type: string, properties: any }[] = q[FIELD_CHILDREN];  // { type: 'answerType', properties: { ...childProperties }}
             const childProperties: Partial<types.BaseProps>[] = children.map(child => child.properties);
@@ -189,7 +189,7 @@ export class SimpleQuizzComponent extends QuizzComponent<types.SimpleQuizzProps>
     }
 
     public fillChildProps(child: KapootLeafComponent<any>, index: number): void {
-        child.set('label', `Question #${index}`);    
+        child.setAllIfUndefined({ label: `Question #${index}` });    
     }
 }
 

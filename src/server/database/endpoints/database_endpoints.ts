@@ -137,13 +137,12 @@ export class DatabaseEndpointsContainer
     public async accountDetails(user: UserIdentifier): Promise<AccountDetails | undefined>
     {
         // TODO: Fill in actual information like statistics etc.
-        const sql = "SELECT u.username, u.mail, json_group_array(json_object('quizz_id', q.quizz_id, 'params', q.params,'created_at', q.created_at,'updated_at', q.updated_at)) AS quizzes FROM userAccounts u LEFT JOIN quizzes q ON u.user_id = q.user_id WHERE u.user_id = ? GROUP BY u.user_id;"
-        //const sql = "SELECT username, mail, qui FROM userAccounts WHERE user_id=?";
+        const sql = "SELECT u.username, u.mail FROM userAccounts u WHERE u.user_id = ?;"
         const result: any[] = await this.provider.select(sql, [ user.identifier ]);
         
-        if(result.length === 0) return { username: "Placeholder Name", mail: "Placeholder Email", quizzes: [] }
+        if(result.length === 0) return { username: "Placeholder Name", mail: "Placeholder Email" };
         
-        return { username: result[0].username, mail: result[0].mail, quizzes: JSON.parse(result[0].quizzes) || [] };
+        return { username: result[0].username, mail: result[0].mail };
     }
 
     public async deleteAccount(user: UserIdentifier): Promise<any>
@@ -267,11 +266,11 @@ export class DatabaseEndpointsContainer
         if(result.length === 0) return undefined;
         return result[0].params;
     }
-
-    public async allQuizzes(): Promise<{ user_id: string; quizz_id: string; params: string; }[]>
-    {        
-        const sql = "SELECT * from quizzes";
-        return this.provider.select(sql);
+    public async getUserSerializedQuizzes(user_id: UserIdentifier): Promise<SerializedQuizz[] | undefined>
+    {
+        const sql = "SELECT quizz_id, params, created_at, updated_at from quizzes WHERE user_id=?";
+        const result: SerializedQuizz[] = await this.provider.select(sql, [ user_id.identifier ]);
+        return result;
     }
 
     public async deleteQuizz(quizz_id: QuizzIdentifier): Promise<void>
@@ -283,6 +282,11 @@ export class DatabaseEndpointsContainer
     {        
         const sql = "UPDATE quizzes SET params=?, updated_at=current_timestamp WHERE quizz_id=?";
 
-        await this.provider.execute(sql, [ params, quizz_id ]);
+        return await this.provider.execute(sql, [ params, quizz_id ]);
+    }
+    public async allQuizzes(): Promise<{ user_id: string; quizz_id: string; params: string; }[]>
+    {        
+        const sql = "SELECT * from quizzes";
+        return this.provider.select(sql);
     }
 }
