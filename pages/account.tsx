@@ -42,6 +42,25 @@ const AccountContent = () => {
       }
     ));
   }, []);
+
+  const removeQuizz = (quizzId: string) => {
+      fetch(`/api/editor/quizz/${quizzId}`, { method: "DELETE" }).then(async (res) =>
+        await handle(
+          res,
+          (result) => {
+            if (!result) throw new Error("Result should always be defined for route POST /api/editor/quizz");
+            showPopup("success", "Quizz deleted with success!", 5.0);
+
+            setQuizzIds((prev) => prev.filter((id) => id !== quizzId));
+            setQuizzTmsp((prev) => prev.filter((_, idx) => quizzIds[idx] !== quizzId));
+            setQuizzes((prev) => prev.filter((_, index) => quizzIds[index] !== quizzId));
+          },
+          (err) => {
+            showPopup("error", err, 5.0);
+          }
+        )
+      );
+    };
   
 
   if(!user) return <Loading />;
@@ -71,18 +90,24 @@ const AccountContent = () => {
                 <div className={styles.userQuizzContainer}>
                     {quizzes.map((quizz, index) => (                      
                       <div className={styles.quizzContainer} key={index}>
-                        <a className={styles.editQuizz} href={editQuizz(quizzIds[index])}>{quizz.get("label")}</a>
-                        <span className={styles.dateQuizz}>Created at :{quizzTmsp[index][0]}</span>
-                        <span className={styles.updatedQuizz}>Updated at :{quizzTmsp[index][1]}</span>
-                        <div>
+                        <div className={styles.quizzData}>
+                          <a className={styles.editQuizz} href={editQuizz(quizzIds[index])}>{quizz.get("label")}</a>
+                          <p>{quizz.get("description")}</p>
+                          <button className={styles.removeQuizz} onClick={() => removeQuizz(quizzIds[index])}>DELETE</button>
+                        </div>
+                        <div className={styles.quizzTime}>
+                          <span className={styles.dateQuizz}>Created at :{quizzTmsp[index][0]}</span>
+                          <span className={styles.updatedQuizz}> Last update :{quizzTmsp[index][1]}</span>
+                        </div>
+                        <div className={styles.questionsContainer}>
                         {quizz.children && quizz.children.length > 0 ? (
                           quizz.children.map((question, idx) => (
-                            <div key={idx}>
+                            <div className={styles.question} key={idx}>
                               <p>{question.get("label")}</p>
                             </div>
                           ))
                         ) : (
-                            <p>Aucune question disponible pour ce quiz.</p>
+                            <p>This quizz does not contain any question</p>
                           )}
                         </div>
                       </div>

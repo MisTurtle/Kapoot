@@ -77,7 +77,15 @@ router.delete('/quizz/:id', (req, res) => {
     if(!uuidChecker(quizz_id).valid) return error(res, 'Invalid quizz ID');
 
     // TODO : Check the user actually owns the quizz ^^ (Pass the user id to deleteQuizz so it only removes it if a rows with user_id && quizz_id exists)
-    getEndpoints().deleteQuizz(quizz_id).then(() => success(res));
+    
+    try {
+        getEndpoints().deleteQuizz(quizz_id)
+        .then(result => success(res, result))
+        .catch(() => error(res, 'Failed to delete quizz'));
+    } catch (err) {
+        error(res, 'Invalid quizz data: ' + err);
+    }
+    
 });
 
 /**

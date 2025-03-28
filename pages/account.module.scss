@@ -33,7 +33,8 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    border: 2px dashed black;
+    border: 4px solid white;
+    border-radius: 25px;
     padding: 10px 0;
     width: 600px;
     .accountAvatar {
@@ -70,15 +71,55 @@ display: flex;
 flex-direction: column;
 .quizzContainer {
     display: flex;
+    flex-direction: column;
 
-    .editQuizz {
+    .quizzData {
+        display: flex;
+        flex-direction: row;
+        margin-bottom: 5px;
+        .editQuizz {
 
+        }
+
+        .removeQuizz {
+            width: 100px;
+            background-color: $dark;
+            color: $lighter;
+            text-align: center;
+            font-size: $fs-small;
+            margin-left: 5px;
+            padding-top: 5px;
+            
+            border: none;
+            border-radius: 0.25rem;
+            box-shadow: 0px 4px 0px $darker;
+            transition: $t-fast;
+        
+            &:hover {
+                cursor: pointer;
+                top: -4px;
+                box-shadow: 0px 2px 0px $darker;
+            }
+        }
     }
-    .dateQuizz {
 
+    .quizzTime {
+        display: flex;
+        flex-direction: row;
+        .dateQuizz {
+    
+        }
+        .updatedQuizz {
+    
+        }
     }
-    .updatedQuizz {
 
+    .questionContainer {
+        display: flex;
+        flex-direction: column;
+        .question {
+
+        }
     }
     }
 }
