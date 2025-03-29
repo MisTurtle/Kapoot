@@ -221,10 +221,8 @@ const EditorContent = () =>  {
           <HeroPage className={styles.previewSection}>
           {
             activeQuestion === undefined ? 
-            <>No question selected</> 
-            :
+            <>No question selected</> :
             <>
-              {/* <input type="text" value={activeQuestion.question.get('label')} onChange={handleQuestionTitleChange} className={styles.questionInput} /> */}
               { render(activeQuestion.question, editorView, onChangeHook) }
             </>
           }

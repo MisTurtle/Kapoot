@@ -4,7 +4,7 @@ import { FC, useState } from "react";
 import { RGBColor } from "react-color";
 
 import { BaseProps, SimpleQuestionProps } from "@common/quizz_components/_types";
-import { ArrowLeftCircle, CheckCheckIcon, CheckIcon, ChevronLeftIcon, ChevronRightIcon, PaintRollerIcon, PlusCircleIcon, ShapesIcon, SquareCheckIcon, SquareXIcon, StopCircleIcon, Trash2Icon, XIcon } from "lucide-react";
+import { AlarmClockIcon, ArrowLeftCircle, CheckCheckIcon, CheckIcon, ChevronLeftIcon, ChevronRightIcon, PaintRollerIcon, PlusCircleIcon, ShapesIcon, SquareCheckIcon, SquareXIcon, StopCircleIcon, Trash2Icon, XIcon } from "lucide-react";
 import DeleteButton from "@components/misc/Delete";
 import { useContextMenu } from "@contexts/EditorContextMenus";
 
@@ -130,6 +130,13 @@ export const SimpleQuestion: FC<ReactQuizzComponent<SimpleQuestionComponent>> = 
     const [ validAnswer, setValidAnswer ] = useState<number>(component.get('answer') ?? 0);
     return (
         <>
+            <div className={styles.questionTimer}>
+                <AlarmClockIcon size={34} />
+                { editor ?
+                    <input className={styles.timerValue} value={component.get('time_limit')} onChange={(e) => onChange('time_limit', e.target.value)} /> :
+                    <p className={styles.timerValue}>{component.get('time_limit')}</p>
+                }
+            </div>
             <div className={styles.questionHeader}>
                 { editor ?
                     <input className={styles.questionTitle} value={component.get('label')} onChange={(e) => onChange('label', e.target.value)} /> :

@@ -9,6 +9,31 @@
 /**
  * Questions
  */
+.questionTimer {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    align-items: center;
+
+    background-color: rgba($lighter, 0.25);
+    border-radius: 1rem;
+    border: 3px solid $dark;
+    box-shadow: 2px 2px 4px $darker;
+    padding: 0.5rem 1rem;
+    margin: 1rem;
+    gap: 1rem;
+
+    * {
+        text-align: center;
+        font-size: $fs-medium;
+    }
+    .timerValue {
+        width: 60px; 
+        margin: 0;
+        padding: 0;
+    }
+}
 .questionHeader {
     display: flex;
     flex: 1;
@@ -33,7 +58,6 @@
         text-align: center;
     }
 }
-
 .questionTitle {
     font-size: $fs-bigger;
     font-weight: bold;
@@ -156,7 +180,7 @@
     }
 }
 
-input.questionTitle, input.questionDesc, input.answerLabel {
+input.timerValue, input.questionTitle, input.questionDesc, input.answerLabel {
     @extend .editorInput;
 }
 

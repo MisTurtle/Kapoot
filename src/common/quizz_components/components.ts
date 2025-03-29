@@ -189,7 +189,7 @@ export class SimpleQuizzComponent extends QuizzComponent<types.SimpleQuizzProps>
     }
 
     public fillChildProps(child: KapootLeafComponent<any>, index: number): void {
-        child.setAllIfUndefined({ label: `Question #${index}` });    
+        child.setAllIfUndefined({ label: `Question #${index}`, time_limit: 60 });    
     }
 }
 
