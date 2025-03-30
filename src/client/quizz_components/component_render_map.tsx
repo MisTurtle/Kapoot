@@ -1,4 +1,4 @@
-import { KapootLeafComponent } from "@common/quizz_components/_base";
+import { KapootLeafComponent } from "@common/quizz_components/base";
 import { BinaryAnswerComponent, BinaryQuestionComponent, SimpleAnswerComponent, SimpleQuestionComponent } from "@common/quizz_components/components";
 import { BinaryAnswer, BinaryQuestion, SimpleAnswer, SimpleQuestion } from "@components/quizz/QuizzComponents";
 

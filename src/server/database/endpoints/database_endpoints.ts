@@ -137,12 +137,16 @@ export class DatabaseEndpointsContainer
     public async accountDetails(user: UserIdentifier): Promise<AccountDetails | undefined>
     {
         // TODO: Fill in actual information like statistics etc.
-        const sql = "SELECT u.username, u.mail FROM userAccounts u WHERE u.user_id = ?;"
+        const sql = "SELECT * FROM userAccounts u WHERE u.user_id = ?;"
         const result: any[] = await this.provider.select(sql, [ user.identifier ]);
         
-        if(result.length === 0) return { username: "Placeholder Name", mail: "Placeholder Email" };
-        
-        return { username: result[0].username, mail: result[0].mail };
+        if(result.length === 0) return undefined;
+        return { 
+            uuid: result[0].user_id,
+            username: result[0].username,
+            mail: result[0].mail,
+            avatar: ""   // TODO
+        };
     }
 
     public async deleteAccount(user: UserIdentifier): Promise<any>
@@ -289,4 +293,8 @@ export class DatabaseEndpointsContainer
         const sql = "SELECT * from quizzes";
         return this.provider.select(sql);
     }
+
+    /**
+     * Game creation and management
+     */
 }

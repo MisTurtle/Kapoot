@@ -1,10 +1,10 @@
-import { KapootComponentContainer, KapootLeafComponent } from "@common/quizz_components/_base";
+import { KapootComponentContainer, KapootLeafComponent } from "@common/quizz_components/base";
 import { BinaryAnswerComponent, BinaryQuestionComponent, SimpleAnswerComponent, SimpleQuestionComponent } from "@common/quizz_components/components";
 import { FC, useState } from "react";
 import { RGBColor } from "react-color";
 
-import { BaseProps, SimpleQuestionProps } from "@common/quizz_components/_types";
-import { AlarmClockIcon, ArrowLeftCircle, CheckCheckIcon, CheckIcon, ChevronLeftIcon, ChevronRightIcon, PaintRollerIcon, PlusCircleIcon, ShapesIcon, SquareCheckIcon, SquareXIcon, StopCircleIcon, Trash2Icon, XIcon } from "lucide-react";
+import { AlarmClockIcon, ArrowLeftCircle, CheckIcon, ChevronLeftIcon, ChevronRightIcon, PaintRollerIcon, PlusCircleIcon, ShapesIcon, SquareCheckIcon, Trash2Icon } from "lucide-react";
+import { DynamicIcon } from "lucide-react/dynamic";
 import DeleteButton from "@components/misc/Delete";
 import { useContextMenu } from "@contexts/EditorContextMenus";
 
@@ -12,7 +12,6 @@ import styles from "./QuizzComponents.module.scss";
 import ActionButton from "@components/misc/ActionButton";
 import EditorColorPicker from "@components/misc/EditorColorPicker";
 import { allIcons, getIcon } from "@common/constants";
-import { DynamicIcon, IconName } from "lucide-react/dynamic";
 
 
 type ReactQuizzComponent<T extends KapootLeafComponent<any>> = React.HTMLAttributes<HTMLDivElement> & {

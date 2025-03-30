@@ -1,32 +1,30 @@
-import { FIELD_CHILDREN, FIELD_PROPERTIES, FIELD_TYPE, KapootComponentContainer, KapootLeafComponent } from "./_base";
+import { FIELD_CHILDREN, FIELD_PROPERTIES, FIELD_TYPE, KapootComponentContainer, KapootLeafComponent } from "./base";
 import { defaultColors } from "@common/constants";
-import * as types from "./_types";
 
 /**
  * Answer components
  */
-// These might look useless but will (probably) be convenient later on when everything is of the same type
-export class OpenAnswerComponent extends KapootLeafComponent<types.OpenAnswerProps>
+export class OpenAnswerComponent extends KapootLeafComponent<OpenAnswerProps>
 {
-    public defaultProperties: types.OpenAnswerProps = { };
+    public defaultProperties: OpenAnswerProps = { };
     public static type: string = 'a:open';
 }
 
-export class BinaryAnswerComponent extends KapootLeafComponent<types.BinaryAnswerProps>
+export class BinaryAnswerComponent extends KapootLeafComponent<BinaryAnswerProps>
 {
-    public defaultProperties: types.BinaryAnswerProps = { };
+    public defaultProperties: BinaryAnswerProps = { };
     public static type: string = 'a:bin';
 }
 
-export class SimpleAnswerComponent extends KapootLeafComponent<types.SimpleAnswerProps>
+export class SimpleAnswerComponent extends KapootLeafComponent<SimpleAnswerProps>
 {
-    public defaultProperties: types.SimpleAnswerProps = { };
+    public defaultProperties: SimpleAnswerProps = { };
     public static type: string = 'a:simple';
 }
 
-export class McqAnswerComponent extends KapootLeafComponent<types.McqAnswerProps>
+export class McqAnswerComponent extends KapootLeafComponent<McqAnswerProps>
 {
-    public defaultProperties: types.McqAnswerProps = { };
+    public defaultProperties: McqAnswerProps = { };
     public static type: string = 'a:mcq';    
 }
 
@@ -39,12 +37,12 @@ export class McqAnswerComponent extends KapootLeafComponent<types.McqAnswerProps
  */
 export abstract class QuestionComponent<T extends Record<string, any>> extends KapootComponentContainer<T> { }
 
-export class OpenQuestionComponent extends QuestionComponent<types.OpenQuestionProps>
+export class OpenQuestionComponent extends QuestionComponent<OpenQuestionProps>
 {
-    public defaultProperties: types.OpenQuestionProps = { }
+    public defaultProperties: OpenQuestionProps = { }
     public static type: string = 'q:open';
 
-    constructor(properties: types.OpenQuestionProps, answerComponent: OpenAnswerComponent)
+    constructor(properties: OpenQuestionProps, answerComponent: OpenAnswerComponent)
     {
         super(properties, answerComponent);
     }
@@ -61,12 +59,12 @@ export class OpenQuestionComponent extends QuestionComponent<types.OpenQuestionP
     }
 }
 
-export class BinaryQuestionComponent extends QuestionComponent<types.BinaryQuestionProps>
+export class BinaryQuestionComponent extends QuestionComponent<BinaryQuestionProps>
 {
-    public defaultProperties: types.BinaryQuestionProps = { };
+    public defaultProperties: BinaryQuestionProps = { };
     public static type: string = 'q:bin';
 
-    constructor(properties: types.BinaryQuestionProps, answerTrue: BinaryAnswerComponent, answerFalse: BinaryAnswerComponent) 
+    constructor(properties: BinaryQuestionProps, answerTrue: BinaryAnswerComponent, answerFalse: BinaryAnswerComponent) 
     {
         super(properties, answerTrue, answerFalse);
     }
@@ -85,12 +83,12 @@ export class BinaryQuestionComponent extends QuestionComponent<types.BinaryQuest
     }
 }
 
-export class SimpleQuestionComponent extends QuestionComponent<types.SimpleQuestionProps>
+export class SimpleQuestionComponent extends QuestionComponent<SimpleQuestionProps>
 {
-    public defaultProperties: types.SimpleQuestionProps = { };
+    public defaultProperties: SimpleQuestionProps = { };
     public static type: string = 'q:simple';
 
-    constructor(properties: types.SimpleQuestionProps, ...answers: SimpleAnswerComponent[])
+    constructor(properties: SimpleQuestionProps, ...answers: SimpleAnswerComponent[])
     {
         super(properties, ...answers);
     }
@@ -108,12 +106,12 @@ export class SimpleQuestionComponent extends QuestionComponent<types.SimpleQuest
     }
 }
 
-export class McqQuestionComponent extends QuestionComponent<types.McqQuestionProps>
+export class McqQuestionComponent extends QuestionComponent<McqQuestionProps>
 {
-    public defaultProperties: types.McqQuestionProps = { };
+    public defaultProperties: McqQuestionProps = { };
     public static type: string = 'q:mcq';
 
-    constructor(properties: types.McqQuestionProps, ...answers: McqAnswerComponent[])
+    constructor(properties: McqQuestionProps, ...answers: McqAnswerComponent[])
     {
         super(properties, ...answers);
     }
@@ -135,25 +133,26 @@ export class McqQuestionComponent extends QuestionComponent<types.McqQuestionPro
  * Quizz components
  */
 export abstract class QuizzComponent<T extends Record<string, any>> extends KapootComponentContainer<T> { }
-export class SimpleQuizzComponent extends QuizzComponent<types.SimpleQuizzProps>
+export class SimpleQuizzComponent extends QuizzComponent<SimpleQuizzProps>
 {
-    public defaultProperties: types.SimpleQuizzProps = { };
+    public defaultProperties: SimpleQuizzProps = { };
     public static type: string = 'quizz:simple';
     
-    constructor(properties: types.SimpleQuizzProps, ...questions: QuestionComponent<any>[])
+    constructor(properties: SimpleQuizzProps, ...questions: QuestionComponent<any>[])
     {
         if(!properties.label) properties.label = "New Quizz";
         super(properties, ...questions);
     }
 
     static deserialize(data: any): SimpleQuizzComponent {
+        // TODO : Sanitize values before setting them (format, ranges, ...)
         const quizzProperties = data[FIELD_PROPERTIES];
         const quizzChildren = data[FIELD_CHILDREN];  // [ {type: 'questionType', children: questionAnswers, properties: {...questionProperties} ]
 
         const questions: QuestionComponent<any>[] = (quizzChildren ?? []).map((q: any) => {
             const properties = q[FIELD_PROPERTIES];  // { ...questionProperties }
             const children: { type: string, properties: any }[] = q[FIELD_CHILDREN];  // { type: 'answerType', properties: { ...childProperties }}
-            const childProperties: Partial<types.BaseProps>[] = children.map(child => child.properties);
+            const childProperties: Partial<BaseProps>[] = children.map(child => child.properties);
             const type = q[FIELD_TYPE];  // string
             let ans = undefined;
 

@@ -6,7 +6,7 @@ import { SimpleQuizzComponent, QuestionComponent } from '@common/quizz_component
 import { uuidChecker } from '@common/sanitizers';
 import { handle } from '@common/responses';
 import { usePopup } from '@contexts/PopupContext';
-import { ArrowLeftIcon, ArrowRightLeftIcon, SaveIcon } from 'lucide-react';
+import { ArrowLeftIcon, ArrowRightLeftIcon, PlayCircleIcon, SaveIcon } from 'lucide-react';
 
 import styles from './editor.module.scss';
 import { CustomNavBar } from '@components/NavBar';
@@ -185,7 +185,11 @@ const EditorContent = () =>  {
           <input type="text" value={title} onChange={handleTitleChange} placeholder="Quizz Title..." className={styles.titleInput}/>
           <p className={`${styles.savedAutomatically} ${showSavedMessage ? styles.active : ""}`}><SaveIcon width={16}/>Your quizz is saved automatically !</p>
           <div className={styles.navBar}>
-            <CustomNavBar links={[{ icon: ArrowRightLeftIcon, label: editorView ? 'Player View' : 'Editor View', target: () => setEditorView(prev => !prev) }, 'home']} />
+            <CustomNavBar links={[
+              { icon: PlayCircleIcon, label: 'Create Game', target: () => {} },
+              { icon: ArrowRightLeftIcon, label: editorView ? 'Player View' : 'Editor View', target: () => setEditorView(prev => !prev) },
+              'home'
+            ]} />
           </div>
         </header>
 

@@ -5,20 +5,13 @@ declare global {
         | { username?: string; identifier?: string; mail: string; }
     );
 
-    type SerializedQuizz = {
-        quizz_id: string;
-        params: string;
-        created_at: string;
-        updated_at: string;
-    };
-
     type AccountDetails = {
-        username: string,
-        mail: string,
+        uuid: string;
+        username: string;
+        mail: string;
+        avatar: string;
         // TODO : Add more information about the user
     };
-
-    type QuizzIdentifier = string;
 }
 
 export {};
