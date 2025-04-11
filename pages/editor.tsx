@@ -57,10 +57,25 @@ const EditorContent = () =>  {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(quizz),
-    }).then(
-      () => {},
-      (err) => showPopup('error', err, 5.0)
-    )
+    }).catch((err) => showPopup('error', err, 5.0))
+  };
+  const startGame = () => {
+    fetch("/api/game", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ "quizz_id": quizz_id })
+    })
+    .then(async data => await handle(
+      data,
+      (data) => {
+        console.log(data);
+        router.push("/game");
+      },
+      (err) => {
+        console.log(err);
+        showPopup('error', err, 5.0);
+    }))
+    .catch(err => showPopup('error', err, 5.0))
   };
 
   /**
@@ -186,7 +201,7 @@ const EditorContent = () =>  {
           <p className={`${styles.savedAutomatically} ${showSavedMessage ? styles.active : ""}`}><SaveIcon width={16}/>Your quizz is saved automatically !</p>
           <div className={styles.navBar}>
             <CustomNavBar links={[
-              { icon: PlayCircleIcon, label: 'Create Game', target: () => {} },
+              { icon: PlayCircleIcon, label: 'Create Game', target: startGame },
               { icon: ArrowRightLeftIcon, label: editorView ? 'Player View' : 'Editor View', target: () => setEditorView(prev => !prev) },
               'home'
             ]} />

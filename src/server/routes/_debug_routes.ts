@@ -2,6 +2,7 @@ import express from 'express';
 import { getEndpoints } from '@server/database/database_controller.js';
 import { emptyQuizz } from '@common/quizz_components/components.jsx';
 import { error, success } from '@common/responses';
+import KapootGameManager from '@server/game/game_manager';
 
 export const router = express.Router();
 
@@ -19,6 +20,7 @@ router.get('/sessions', (req, res) => getEndpoints().allSessions().then(data => 
  * List all currently active session tokens linked to a user
  */
 router.get('/userSessions', (req, res) => getEndpoints().allUserSessions().then(data => success(res, data)));
+router.get('/games', (req, res) => res.json(KapootGameManager.getAllGames()));
 /**
  * Create a quizz from parameters passed in the URL ()
  */

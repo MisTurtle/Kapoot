@@ -23,10 +23,7 @@ export const Header = () => {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ type: formData.type, text: formData.text, answer: formData.answer })
-        }).then(
-            (res) => {
-            }
-        )
+        });
     }
 
     return (

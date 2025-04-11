@@ -142,7 +142,7 @@ export class DatabaseEndpointsContainer
         
         if(result.length === 0) return undefined;
         return { 
-            uuid: result[0].user_id,
+            identifier: result[0].user_id,
             username: result[0].username,
             mail: result[0].mail,
             avatar: ""   // TODO

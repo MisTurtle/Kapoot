@@ -146,7 +146,9 @@ export class SimpleQuizzComponent extends QuizzComponent<SimpleQuizzProps>
 
     static deserialize(data: any): SimpleQuizzComponent {
         // TODO : Sanitize values before setting them (format, ranges, ...)
-        const quizzProperties = data[FIELD_PROPERTIES];
+        if(typeof data === 'string') data = JSON.parse(data);
+
+        const quizzProperties = data[FIELD_PROPERTIES] ?? {};
         const quizzChildren = data[FIELD_CHILDREN];  // [ {type: 'questionType', children: questionAnswers, properties: {...questionProperties} ]
 
         const questions: QuestionComponent<any>[] = (quizzChildren ?? []).map((q: any) => {

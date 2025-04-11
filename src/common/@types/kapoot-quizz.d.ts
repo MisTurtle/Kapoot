@@ -9,9 +9,8 @@ declare global {
         updated_at: string;
     };
 
-    type GameSettings = {
-        pin: number;
-    };
+    type GameIdentifier = number;
+    type GameSettings = { };
 
 }
 

@@ -5,13 +5,14 @@ declare global {
         | { username?: string; identifier?: string; mail: string; }
     );
 
-    type AccountDetails = {
-        uuid: string;
+    type AccountCosmetics = {
         username: string;
-        mail: string;
         avatar: string;
-        // TODO : Add more information about the user
+    }
+    type AccountStatistics = {
+        // TODO
     };
+    type AccountDetails = UserIdentifier & AccountCosmetics & AccountStatistics;
 }
 
 export {};

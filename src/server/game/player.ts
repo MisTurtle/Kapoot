@@ -1,7 +1,11 @@
 class Player 
 {
-    constructor(account: AccountDetails)
-    {
+    account: AccountDetails | undefined;
+    cosmetics: AccountCosmetics;
 
+    constructor(account: AccountDetails | undefined, cosmetics: AccountCosmetics)
+    {
+        this.account = account;
+        this.cosmetics = cosmetics;
     }
 }
