@@ -3,6 +3,7 @@ import session from 'express-session';
 import CustomSessionStore from './session_store';
 import { allValidSecrets, sessionCookieLifetime } from './session_secret.js';
 import { getEndpoints } from '@server/database/database_controller.js';
+import KapootGameManager from '@server/game/game_manager';
 
 /** Setup session cookie generation routes */
 export const router = express.Router();
@@ -22,8 +23,10 @@ router.use(session({
 // Add a user context to the session if the account can be retrieved from the database
 router.use((req, res, next) => {
     if(!req.sessionID) next();
-    getEndpoints().getAccountFromSession(req.sessionID).then((user) => {
+    getEndpoints().getAccountFromSession(req.sessionID)
+    .then((user) => {
         req.user = user;
+        req.gamePlayer = KapootGameManager.createPlayerObjectFromRequest(req);
         next();
     });
 });
