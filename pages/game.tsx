@@ -5,9 +5,11 @@ import Loading from "@components/misc/Loading";
 import { ProtectedRoute } from "@components/wrappers/ProtectedRoute";
 import { AuthProvider, useAuth } from "@contexts/AuthContext";
 import { usePopup } from "@contexts/PopupContext";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 const GamePageContent = () => {
+    const router = useRouter();
     const [ game, setGame ] = useState<SharedGameValues | undefined | null>();
     
     const { user, loading } = useAuth();
@@ -31,7 +33,7 @@ const GamePageContent = () => {
     }, []);
 
     if(loading || game === undefined) return <Loading />;
-    if(game === null) return <p>You are not in a game and should be redirected to the home page or smth</p>;
+    if(game === null) { router.push('/'); return; }
 
     let cnt;
     if(isOwner) cnt = <p>You are the owner of Game #{game!.id}</p>;

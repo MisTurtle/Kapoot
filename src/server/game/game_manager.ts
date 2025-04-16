@@ -1,6 +1,7 @@
 import { SimpleQuizzComponent } from "@common/quizz_components/components";
 import Game from "./game";
 import { Request } from "express";
+import { randomIGN } from "@server/utils/ign";
 
 
 export const MIN_GAME_ID = 100000;
@@ -47,7 +48,7 @@ class GameManager {
         let player: GamePlayer = { 
             accountId: req.user?.identifier,
             sessionId: req.sessionID,
-            username: req.user?.username
+            username: req.user?.username ?? randomIGN()
         };
         let game = this.getPlayerGame(player);
         return game?.get(player) ?? player;

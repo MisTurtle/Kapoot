@@ -23,7 +23,7 @@ router.use(session({
 // Add a user context to the session if the account can be retrieved from the database
 router.use((req, res, next) => {
     if(!req.sessionID) next();
-    getEndpoints().getAccountFromSession(req.sessionID)
+    getEndpoints().getAccountFromSession(req.sessionID, true)
     .then((user) => {
         req.user = user;
         req.gamePlayer = KapootGameManager.createPlayerObjectFromRequest(req);

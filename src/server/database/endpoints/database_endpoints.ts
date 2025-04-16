@@ -223,10 +223,9 @@ export class DatabaseEndpointsContainer
     public async getAccountFromSession(sessionID: string, full: boolean = false): Promise<UserIdentifier | undefined>
     {
         let sql = "SELECT user_id FROM userSessions WHERE sess_id=? LIMIT 1";
-        if(full) sql = "SELECT b.user_id as user_id, b.username as username, b.mail as mail FROM userSessions a LEFT JOIN userAccounts b ON a.user_id=b.user_id W AND a.sess_id=?";
+        if(full) sql = "SELECT b.user_id as user_id, b.username as username, b.mail as mail FROM userSessions a INNER JOIN userAccounts b ON a.user_id=b.user_id AND a.sess_id=?";
         
         const result: any = await this.provider.select(sql, [ sessionID ]); 
-
         if(result.length === 0) return undefined;
         if(!full) return { identifier: result[0].user_id };
         return { identifier: result[0].user_id, username: result[0].username, mail: result[0].mail };
