@@ -9,7 +9,9 @@ declare global {
         avatar?: string;
     }
     type AccountStatistics = {
-        // TODO
+        quizzes_created: int,
+        games_played: int,
+        total_points: int 
     };
     type AccountDetails = UserIdentifier & AccountCosmetics & AccountStatistics;
 

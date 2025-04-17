@@ -54,3 +54,15 @@ router.get('/updateQuizz', (req, res) => {
 
     getEndpoints().updateQuizz(JSON.stringify(req.query.param), req.query.quizzId as string).then(data => success(res, data));
 });
+/**
+ * Get all user data 
+ */
+router.get('/allUserData', (req, res) => getEndpoints().allUserData().then(data => success(res, data)));
+/**
+ * Get user data from user_if passed in the URL ()
+ */
+router.get('/userData', (req, res) => {
+    if(!req.query.userId) return error(res, 'Missing field \"userId\"');
+
+    getEndpoints().getUserAccountData(req.query.userId as string).then(data => success(res, data));
+});

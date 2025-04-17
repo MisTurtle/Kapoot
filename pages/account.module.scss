@@ -52,74 +52,81 @@
         flex-direction: column;
         margin-left: 10px;
         .accountUsername {
-            font-size: 30px;
+            font-size: $fs-huge;
         }
         .accountEmail {
-            
+            font-size: $fs-big;
         }
     }
 }
 
 
 /* Quizz Section */
-.quizzTitle {
-
-}
-
 .userQuizzContainer {
-display: flex;
-flex-direction: column;
-.quizzContainer {
     display: flex;
     flex-direction: column;
 
-    .quizzData {
-        display: flex;
-        flex-direction: row;
-        margin-bottom: 5px;
-        .editQuizz {
-
-        }
-
-        .removeQuizz {
-            width: 100px;
-            background-color: $dark;
-            color: $lighter;
-            text-align: center;
-            font-size: $fs-small;
-            margin-left: 5px;
-            padding-top: 5px;
-            
-            border: none;
-            border-radius: 0.25rem;
-            box-shadow: 0px 4px 0px $darker;
-            transition: $t-fast;
-        
-            &:hover {
-                cursor: pointer;
-                top: -4px;
-                box-shadow: 0px 2px 0px $darker;
-            }
-        }
+    .quizzContainerTitle {
+        margin-bottom: 15px;
+        font-size: $fs-big;
     }
 
-    .quizzTime {
-        display: flex;
-        flex-direction: row;
-        .dateQuizz {
-    
-        }
-        .updatedQuizz {
-    
-        }
-    }
-
-    .questionContainer {
+    .quizzContainer {
         display: flex;
         flex-direction: column;
-        .question {
+        margin-bottom: 10px;
 
+        .quizzData {
+            display: flex;
+            flex-direction: row;
+            margin-bottom: 5px;
+
+            .editQuizz {
+                font-size: $fs-medium;
+            }
+
+            .removeQuizz {
+                width: 100px;
+                background-color: $dark;
+                color: $lighter;
+                text-align: center;
+                font-size: $fs-small;
+                margin-left: 5px;
+                padding-top: 5px;
+                
+                border: none;
+                border-radius: 0.25rem;
+                box-shadow: 0px 4px 0px $darker;
+                transition: $t-fast;
+            
+                &:hover {
+                    cursor: pointer;
+                    top: -4px;
+                    box-shadow: 0px 2px 0px $darker;
+                }
+            }
         }
-    }
+
+        .quizzTime {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 5px;
+
+            .dateQuizz {
+                margin-right: 5px;
+                font-size: $fs-small;
+            }
+            .updatedQuizz {
+                font-size: $fs-small;
+            }
+        }
+
+        .questionContainer {
+            display: flex;
+            flex-direction: column;
+            .question {
+                font-size: $fs-small;
+            }
+        }
     }
 }

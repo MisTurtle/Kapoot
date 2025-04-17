@@ -62,6 +62,16 @@ export class DatabaseEndpointsContainer
             );`
         );
         await this.provider.execute(
+            // --- Store user_data created by users
+            `CREATE TABLE IF NOT EXISTS user_data(
+                user_id CHAR(36) PRIMARY KEY,
+                quizzes_created INTEGER DEFAULT 0,
+                games_played INTEGER DEFAULT 0,
+                total_points INTEGER DEFAULT 0,
+                FOREIGN KEY (user_id) REFERENCES userAccounts(user_id) ON DELETE CASCADE
+            );`
+        );
+        await this.provider.execute(
             // --- Create trigger to automatically update quizzes last change time (FIXME: SQLITE syntaxe, won't work for MySQL)
             `CREATE TRIGGER IF NOT EXISTS quizz_last_update
              AFTER UPDATE ON quizzes
@@ -70,6 +80,29 @@ export class DatabaseEndpointsContainer
                 UPDATE quizzes SET updated_at=CURRENT_TIMESTAMP WHERE quizz_id=OLD.quizz_id;
              END;`
         );
+        await this.provider.execute(
+            // --- Create trigger to automatically update user_data quizzes created number (+1)
+            `CREATE TRIGGER IF NOT EXISTS quizzes_created_update
+             AFTER INSERT ON quizzes
+             FOR EACH ROW
+             BEGIN
+                UPDATE user_data
+                SET quizzes_created = quizzes_created + 1
+                WHERE user_id = NEW.user_id;
+             END;`
+        );
+        await this.provider.execute(
+            // --- Create trigger to automatically update user_data quizzes created number (-1)
+            `CREATE TRIGGER IF NOT EXISTS quizzes_deleted_update
+             AFTER DELETE ON quizzes
+             FOR EACH ROW
+             BEGIN
+                UPDATE user_data
+                SET quizzes_created = quizzes_created - 1
+                WHERE user_id = OLD.user_id;
+             END;`
+        );
+        
         // statements.push(
         //     // --- Table to store questions (Maybe useless though, we might store everything in quizzes)
         //     `CREATE TABLE IF NOT EXISTS question(
@@ -121,6 +154,8 @@ export class DatabaseEndpointsContainer
         const uuid = uuidv4();
         const sql = "INSERT INTO userAccounts(username, mail, user_id, pwd_hash) VALUES (?, ?, ?, ?)";
         await this.provider.execute(sql, [ username, mail, uuid, pwd_hash ]);
+        const sql_data = "INSERT INTO user_data(user_id, quizzes_created, games_played, total_points) VALUES (?, 0, 0, 0)";
+        await this.provider.execute(sql_data, [ uuid ]);
         return { username: username, identifier: uuid };
     }
 
@@ -137,15 +172,18 @@ export class DatabaseEndpointsContainer
     public async accountDetails(user: UserIdentifier): Promise<AccountDetails | undefined>
     {
         // TODO: Fill in actual information like statistics etc.
-        const sql = "SELECT * FROM userAccounts u WHERE u.user_id = ?;"
+        const sql = "SELECT * FROM user_data WHERE user_id = ?;"
         const result: any[] = await this.provider.select(sql, [ user.identifier ]);
         
         if(result.length === 0) return undefined;
         return { 
             identifier: result[0].user_id,
-            username: result[0].username,
-            mail: result[0].mail,
-            avatar: ""   // TODO
+            username: user.username,
+            mail: user.mail,
+            avatar: `${result[0].user_id}.png`,
+            quizzes_created: result[0].quizzes_created,
+            games_played: result[0].games_played,
+            total_points: result[0].total_points 
         };
     }
 
@@ -296,4 +334,27 @@ export class DatabaseEndpointsContainer
     /**
      * Game creation and management
      */
+
+    /**
+     * User statistics 
+     */
+    public async allUserData(): Promise<any[]>
+    {
+        let sql = "SELECT * FROM user_data";
+        return this.provider.select(sql);
+    }
+    public async getUserAccountData(user_id: string): Promise<AccountDetails | undefined>
+    {
+        const sql = "SELECT * FROM user_data WHERE user_id = ?;"
+        const result: any[] = await this.provider.select(sql, [ user_id ]);
+        
+        if(result.length === 0) return undefined;
+        return { 
+            identifier: result[0].user_id,
+            avatar: `${result[0].user_id}.png`,
+            quizzes_created: result[0].quizzes_created,
+            games_played: result[0].games_played,
+            total_points: result[0].total_points 
+        };
+    }
 }
