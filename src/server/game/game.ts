@@ -17,7 +17,35 @@ export default class Game
         this._players = [];
     }
 
-    getId() { return this._id; }
+    get id() { return this._id; }
+    
+    get everyone(): GamePlayer[]
+    {
+        return this._players.concat([this._owner]);
+    }
+    get players(): GamePlayer[]
+    {
+        return this._players;
+    }
+    get owner(): GamePlayer
+    {
+        return this._owner;
+    }
+
+    get playerSockets(): WebSocket[]
+    {
+        return this._players.map(p => p.sockets ?? []).flatMap(socks => socks ?? []); 
+    }
+
+    get ownerSockets(): WebSocket[]
+    {
+        return this._owner.sockets ?? [];
+    }
+
+    get allSockets(): WebSocket[]
+    {
+        return this.ownerSockets.concat(this.playerSockets);
+    }
 
     equals(p1: GamePlayer, p2: GamePlayer)
     {
@@ -50,19 +78,63 @@ export default class Game
 
         user.currentGame = this._id;
         this._players.push(user);
+        this.broadcast({ 'type': 'player_joined', 'players': this.players });
 
+        return true;
+    }
+
+    addSockets(user: GamePlayer): boolean
+    {
+        var prevUser = this.get(user);
+        if(!prevUser) return false;
+        prevUser.sockets = (prevUser.sockets ?? []).concat(user.sockets ?? []);
         return true;
     }
 
     remove(user: GamePlayer): boolean
     {
         if(!this.get(user)) return false;
+        
         this._players = this._players.filter(p => !this.equals(p, user));
+        this.broadcast({ 'type': 'player_left', 'players': this.everyone });
+
         return true;
     }
 
-    toJSON(): SharedGameValues
+    removeSockets(sockets: WebSocket[])
     {
+        this.everyone.forEach(player => {
+            player.sockets = (player.sockets ?? []).filter(sock => !sockets.includes(sock));
+        });
+    }
+
+    chat(user: GamePlayer, msg: string): boolean
+    {
+        if(!this.get(user)) return false;
+        this.broadcast({ 'type': 'chat_msg', 'from': user, 'cnt': msg });
+        return true;
+    }
+
+    emote(user: GamePlayer, emote: number): boolean
+    {
+        if(!this.get(user)) return false;
+        this.broadcast({ 'type': 'emote', 'emote': emote });
+        return true;
+    }
+
+    broadcast(msg: GameSockMsg): void;
+    broadcast(msg: GameSockMsg, recipients: GamePlayer[]): void;
+    broadcast(msg: GameSockMsg, recipients?: GamePlayer[]): void
+    {
+        const targets = recipients ?? this.everyone;
+        for(const target of targets)
+        {
+            (target.sockets ?? []).forEach(sock => sock.send(JSON.stringify(msg)));
+        }
+    }
+
+    toJSON(): SharedGameValues
+    {  // TODO : Filter out quizz answers and player sockets + player sessions
         return {
             id: this._id,
             owner: this._owner,

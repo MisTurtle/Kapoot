@@ -3,13 +3,17 @@ import { getEndpoints } from '@server/database/database_controller.js';
 import { emptyQuizz, SimpleQuizzComponent } from '@common/quizz_components/components.jsx';
 import { error, success } from '@common/responses';
 import KapootGameManager from '@server/game/game_manager';
+import expressWs, { Application } from 'express-ws';
 
-export const router = express.Router();
+export const router = express.Router() as Application;  // Bait to remove the error saying router isn't compatible with websockets
+expressWs(router);
 
 // --- URL : /api/game/
 
+/// vvv The following are regular api routes. Below are websocket communication routes vvv ///
+
 /**
- * Action: Get the current user's game
+ * Action: Check if the player currently is in a game
  */
 router.get('/', (req, res) => {
     if(!req.gamePlayer) return error(res, 'No game found');  // Shouldn't happen as req.gamePlayer is already filled in no matter what at this point 
@@ -49,4 +53,10 @@ router.put('/:game_id', (req, res) => {
 
     if(!reqGame.add(req.gamePlayer)) return error(res, "You are already in this game");
     return success(res, reqGame.toJSON());
+});
+
+
+/// vvv WebSocket routes vvv ///
+router.ws('/stateProvider', (ws, req) => {
+    console.log(ws, req);
 });

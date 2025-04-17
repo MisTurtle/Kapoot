@@ -1,5 +1,6 @@
 import next from 'next';
 import express from 'express';
+import expressWs from 'express-ws';
 
 // Routers
 import { router as sessionRouter } from './session/session_pipeline.js';
@@ -33,7 +34,8 @@ const PORT: number = parseInt(process.env.PORT || "8000");
  * Start NextJS server alongside express
  */
 app.prepare().then(() => {
-
+    const wsInstance = expressWs(server);
+    
     server.use(express.json());  // Support JSON encoded bodies
     server.use(express.urlencoded({ extended: true }));  // Support URL encoded bodies
     server.use('/favicon.ico', express.static(rootPath('public/images/Logo_Compact.png')));  // Serve favicon

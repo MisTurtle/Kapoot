@@ -14,7 +14,10 @@ declare global {
     type AccountDetails = UserIdentifier & AccountCosmetics & AccountStatistics;
 
     type GamePlayerIdentifier = { sessionId: string, accountId?: string };
-    type GamePlayer = GamePlayerIdentifier & { currentGame?: GameIdentifier } & AccountCosmetics;
+    type GamePlayer = GamePlayerIdentifier & { 
+        currentGame?: GameIdentifier,
+        sockets?: WebSocket[]
+    } & AccountCosmetics;
 }
 
 export {};

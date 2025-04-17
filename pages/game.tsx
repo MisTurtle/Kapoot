@@ -6,20 +6,19 @@ import { ProtectedRoute } from "@components/wrappers/ProtectedRoute";
 import { AuthProvider, useAuth } from "@contexts/AuthContext";
 import { usePopup } from "@contexts/PopupContext";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const GamePageContent = () => {
     const router = useRouter();
     const [ game, setGame ] = useState<SharedGameValues | undefined | null>();
-    
+    const socketRef = useRef<WebSocket | undefined>(undefined);
+
     const { user, loading } = useAuth();
     const { showPopup } = usePopup();
     const isOwner = user && game?.owner.accountId === user?.identifier;
 
     useEffect(() => {
-        fetch('/api/game', {
-            method: 'GET'
-        }).then(async res => handle<SharedGameValues>(
+        fetch('/api/game', { method: 'GET' }).then(async res => handle<SharedGameValues>(
             res,
             (result) => {
                 console.log(result);
@@ -31,6 +30,19 @@ const GamePageContent = () => {
             }
         ))
     }, []);
+
+    useEffect(() => {
+        if(!game || !user) return;
+
+        // TODO : Get socket remote from an environment constant or smth
+        const socket = new WebSocket(`ws://localhost:8000/api/game/stateProvider`);
+        socketRef.current = socket;
+
+        socket.onmessage = (event) => {
+            // const message = JSON.parse() // TODO
+        };
+
+    }, [game, user]);
 
     if(loading || game === undefined) return <Loading />;
     if(game === null) { router.push('/'); return; }
