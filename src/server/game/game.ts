@@ -11,6 +11,7 @@ export default class Game
     constructor(id: GameIdentifier, owner: GamePlayer, quizz: SimpleQuizzComponent, settings: GameSettings)
     {
         this._id = id;
+        owner.currentGame = id;
         this._owner = owner;
         this._quizz = quizz;
         this._settings = settings;
@@ -87,7 +88,7 @@ export default class Game
     {
         var prevUser = this.get(user);
         if(!prevUser) return false;
-        prevUser.sockets = (prevUser.sockets ?? []).concat(user.sockets ?? []);
+        prevUser.sockets = (prevUser.sockets ?? []).concat(user.sockets ?? []).filter((value, index, array) => array.indexOf(value) === index);
         return true;
     }
 
@@ -108,10 +109,10 @@ export default class Game
         });
     }
 
-    chat(user: GamePlayer, msg: string): boolean
+    chat(user: GamePlayer, msg: ChatMessage): boolean
     {
         if(!this.get(user)) return false;
-        this.broadcast({ 'type': 'chat_msg', 'from': user, 'cnt': msg });
+        this.broadcast({ 'type': 'chat_msg', 'msg': { 'user': user, 'cnt': msg.cnt ?? "" }});
         return true;
     }
 
@@ -129,6 +130,7 @@ export default class Game
         const targets = recipients ?? this.everyone;
         for(const target of targets)
         {
+            console.log("Sending ", msg, " to ", target);
             (target.sockets ?? []).forEach(sock => sock.send(JSON.stringify(msg)));
         }
     }

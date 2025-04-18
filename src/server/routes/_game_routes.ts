@@ -1,6 +1,6 @@
 import express from 'express';
 import { getEndpoints } from '@server/database/database_controller.js';
-import { emptyQuizz, SimpleQuizzComponent } from '@common/quizz_components/components.jsx';
+import { SimpleQuizzComponent } from '@common/quizz_components/components.jsx';
 import { error, success } from '@common/responses';
 import KapootGameManager from '@server/game/game_manager';
 import expressWs, { Application } from 'express-ws';
@@ -58,5 +58,34 @@ router.put('/:game_id', (req, res) => {
 
 /// vvv WebSocket routes vvv ///
 router.ws('/stateProvider', (ws, req) => {
-    console.log(ws, req);
+    if(!req.gamePlayer || !req.gamePlayer.currentGame) return;  // TODO : Send error
+    const gamePlayer = req.gamePlayer;
+    let game = KapootGameManager.getGameById(gamePlayer.currentGame);
+    if(!game) return;  // TODO : Send error;
+
+    gamePlayer.sockets = (gamePlayer.sockets ?? []).concat([ws as unknown as WebSocket]);
+    game.addSockets(gamePlayer);
+    
+    // vvv Handle messages sent by this socket vvv //
+    ws.on('message', (msg) => {
+        const packet: GameSockMsg = JSON.parse(msg.toString());
+        switch(packet.type)
+        {
+            case 'player_joined':
+                break;  // TODO : This could be handled here instead of in PUT /:game_id
+            case 'player_left':
+                game.remove(gamePlayer);
+                break;
+            case 'chat_msg':
+                game.chat(gamePlayer, packet.msg ?? {});
+                break;
+            case 'emote':
+                game.emote(gamePlayer, packet.emote ?? 0);
+                break;
+        }
+    });
+    
+    ws.on('close', function() {
+        game.removeSockets([ws as unknown as WebSocket]);
+    });
 });

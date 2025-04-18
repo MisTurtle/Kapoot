@@ -13,6 +13,12 @@ declare global {
 
     type GameSettings = { };
 
+    type ChatMessage = {
+        user?: GamePlayer,
+        cnt: string
+    };
+    type Emote = number;
+
 }
 
 export {};

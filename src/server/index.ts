@@ -1,6 +1,10 @@
 import next from 'next';
 import express from 'express';
 import expressWs from 'express-ws';
+import cookieParser from 'cookie-parser';
+
+import { createServer } from 'http';
+import { parse } from 'url';
 
 // Routers
 import { router as sessionRouter } from './session/session_pipeline.js';
@@ -10,43 +14,55 @@ import { production, rootPath } from '@common/utils.js';
 import { DatabaseController } from './database/database_controller.js';
 import { unless } from './utils/utils.js';
 
-/**
- * Database initiator
- */
-const db = new DatabaseController(rootPath("private", "dev-db.sqlite"), undefined); // TODO : Add MySQL credentials to be used during prod (external file)
+// Database initiator
+const db = new DatabaseController(rootPath("private", "dev-db.sqlite"), undefined);
 await db.endpoints.init();
 
-/**
- * Next and Express App initiator
- */
 const dev = !production;
 const app = next({ dev });
 const handler = app.getRequestHandler();
-const server = express();
+const expressApp = express();
 
-/**
- * Server address
- */
+// Server address
 const HOST = "0.0.0.0";
-const PORT: number = parseInt(process.env.PORT || "8000");
+const PORT = parseInt(process.env.PORT || "8000");
 
-/**
- * Start NextJS server alongside express
- */
-app.prepare().then(() => {
-    const wsInstance = expressWs(server);
-    
-    server.use(express.json());  // Support JSON encoded bodies
-    server.use(express.urlencoded({ extended: true }));  // Support URL encoded bodies
-    server.use('/favicon.ico', express.static(rootPath('public/images/Logo_Compact.png')));  // Serve favicon
-    server.use(unless(["_next/*"], sessionRouter));  // Add a session cookie to the user and try to fetch the associated account
-    server.use("/api", apiRouter);  // Handle api requests before dispatching to Next.js
+// Prepare Next.js
+await app.prepare();
 
-    server.all('*', (req, res) => {
-        return handler(req, res);
-    });  // NextJS handles every request, but we still need express middlewares
-    server.listen(PORT, HOST, () => {
-        console.log(`Server running on port ${HOST}:${PORT}`);
-    });
+// Create HTTP server and bind Express
+const server = createServer(expressApp);
 
+// expressApp.use((req, res, next) => { console.log("Cookie:", req.headers.cookie); next(); });
+
+// Patch expressApp for ws support
+expressWs(expressApp, server);
+
+// Middlewares and routes
+expressApp.use(cookieParser());
+expressApp.use(express.json());
+expressApp.use(express.urlencoded({ extended: true }));
+expressApp.use('/favicon.ico', express.static(rootPath('public/images/Logo_Compact.png')));
+expressApp.use(unless(["_next/*"], sessionRouter));
+expressApp.use("/api", apiRouter);
+
+// All other requests go to Next.js
+expressApp.all('*', (req, res) => {
+    return handler(req, res);
+});
+
+// --- WebSocket Upgrade Handling ---
+server.on('upgrade', (req, socket, head) => {
+    const { pathname } = parse(req.url || '', true);
+
+    // Pass HMR websocket upgrades to Next.js
+    if (pathname?.startsWith('/_next/webpack-hmr')) {  // TODO : This is broken in dev mode, keeps spamming in the console
+        app.getUpgradeHandler()(req, socket, head);
+        return;
+    }
+});
+
+// Start server
+server.listen(PORT, HOST, () => {
+    console.log(`Server running on http://${HOST}:${PORT}`);
 });

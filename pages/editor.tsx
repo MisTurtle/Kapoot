@@ -68,11 +68,9 @@ const EditorContent = () =>  {
     .then(async data => await handle(
       data,
       (data) => {
-        console.log(data);
         router.push("/game");
       },
       (err) => {
-        console.log(err);
         showPopup('error', err, 5.0);
     }))
     .catch(err => showPopup('error', err, 5.0))
@@ -133,7 +131,7 @@ const EditorContent = () =>  {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => { window.removeEventListener("keydown", handleKeyDown); };
-  })
+  }, []);
 
   if(!router.isReady) return <Loading />;
 

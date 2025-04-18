@@ -31,8 +31,9 @@ class GameManager {
         delete this._games[id];
         return true;
     }
-    getGameById(id: GameIdentifier): Game | undefined 
+    getGameById(id: GameIdentifier | undefined): Game | undefined 
     { 
+        if(id === undefined) return undefined;
         return this._games[id]; 
     }
     getAllGames(): Game[] 
