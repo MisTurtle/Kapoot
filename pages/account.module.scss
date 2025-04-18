@@ -1,132 +1,439 @@
 @use "@styles/variables" as *;
 
+ 
 
-/* Header Section */
-.titleSection {
-    display: flex;
-    align-items: center;
-    z-index: 5;  /* Title section is above everything */
-
-    padding: 18px 0;
-    background: linear-gradient(45deg, $accentDarker, $accent);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 1);
-
-    .titlePage {
-        display: flex;
-        color: white;
-        padding: 0 10px;
-        font-size: $fs-bigger;
-    }
-}  
-
-/* Hero Format */
-
-.heroContent {
-    z-index: 0;
-    flex-direction: column !important;
-    justify-content: space-evenly !important;
-}
-
-/* User Data Section */
-.accountTop {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    border: 4px solid white;
-    border-radius: 25px;
-    padding: 10px 0;
-    width: 600px;
-    .accountAvatar {
-        display: flex;
-        img {
-            border: 1px solid black;
-            border-radius: 50%;
-            width: 200px;
-            aspect-ratio: 1/1;
-        }
-    }
-
-    .accountData {
-        display: flex;
-        flex-direction: column;
-        margin-left: 10px;
-        .accountUsername {
-            font-size: $fs-huge;
-        }
-        .accountEmail {
-            font-size: $fs-big;
-        }
-    }
-}
-
-
-/* Quizz Section */
-.userQuizzContainer {
+.accountPage {
     display: flex;
     flex-direction: column;
+    position: relative;
+    z-index: 0; // Au-dessus de HeroPage
+    min-height: 100vh;
+    align-items: center;
+    background: linear-gradient(45deg, $primaryDarker, $primary, $accent, $accentDarker);
+    background-size: 300% 300%;
+    animation: gradientBG 10s ease infinite;
+    font-family: $text;
 
-    .quizzContainerTitle {
-        margin-bottom: 15px;
-        font-size: $fs-big;
-    }
+    @keyframes gradientBG {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+  }
+  /* Header Section */
+    .titleSection {
+        display: flex;
+        align-items: center;
+        z-index: 5;  /* Title section is above everything */
+        width: 100%;
+        padding: 18px 0;
+        background: linear-gradient(45deg, $accentDarker, $accent);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 1);
 
-    .quizzContainer {
+        .titlePage {
+            display: flex;
+            color: white;
+            padding: 0 10px;
+            font-size: $fs-bigger;
+        }
+    } 
+
+  /* User Data Section */
+    .accountTop {
         display: flex;
         flex-direction: column;
-        margin-bottom: 10px;
+        margin: 3% 0;
+        align-items: center;
+        justify-content: center;
 
-        .quizzData {
+        .accountUserInfo {
             display: flex;
             flex-direction: row;
-            margin-bottom: 5px;
+            border-bottom: 4px solid $light;
+            padding: 15px 0 35px 0;
+            margin-bottom: 30px;
+            align-items: center;
+            justify-content: center;
 
-            .editQuizz {
-                font-size: $fs-medium;
+            .accountAvatar {
+                display: flex;
+                img {
+                    border: 1px solid black;
+                    border-radius: 50%;
+                    border: 3px solid $lighter;
+                    width: 200px;
+                    aspect-ratio: 1/1;
+                }
             }
-
-            .removeQuizz {
-                width: 100px;
-                background-color: $dark;
-                color: $lighter;
-                text-align: center;
-                font-size: $fs-small;
-                margin-left: 5px;
-                padding-top: 5px;
-                
-                border: none;
-                border-radius: 0.25rem;
-                box-shadow: 0px 4px 0px $darker;
-                transition: $t-fast;
-            
-                &:hover {
-                    cursor: pointer;
-                    top: -4px;
-                    box-shadow: 0px 2px 0px $darker;
+    
+            .accountData {
+                display: flex;
+                flex-direction: column;
+                margin-left: 20px;
+                color: $darker;
+    
+                .accountUsername {
+                    font-size: $fs-huge;
+                    font-weight: bold;
+                    padding-bottom: 5px;
+                    color: $darker;
+                }
+                .accountEmail {
+                    font-size: $fs-big;
+                    font-weight: 600;
                 }
             }
         }
 
-        .quizzTime {
+        .accountStatsList {
             display: flex;
-            flex-direction: column;
-            margin-bottom: 5px;
+            flex-direction: row;
+            border: 4px solid $light;
+            border-radius: 25px;
+            padding: 10px;
+            margin-bottom: 1%;
+            align-items: center;
+            color: $white;
+            box-shadow: 3px 3px 5px 0px $darker;
+    
+            .accountStatsItem {
+                padding: 5px 13px;
+                font-size: $fs-medium;
+                text-align: center;
+                justify-content: space-between;
+            }
+    
+        }
+        
+    }   
 
-            .dateQuizz {
-                margin-right: 5px;
-                font-size: $fs-small;
-            }
-            .updatedQuizz {
-                font-size: $fs-small;
-            }
+
+    /* Quizz Section */
+    .userQuizzContainer {
+        display: flex;
+        flex-direction: column;
+        border-radius: 25px;
+        width: 70%;
+        align-items: center;
+        margin-bottom: 10px;
+        padding-bottom: 10px;
+
+        .quizzContainerTitle {
+            margin-bottom: 20px;
+            font-size: $fs-bigger;
+            font-family: $title;
+            font-weight: bold;
+            border-bottom: 2px solid black;
         }
 
-        .questionContainer {
+        .quizzContainer {
             display: flex;
             flex-direction: column;
-            .question {
-                font-size: $fs-small;
+            margin-bottom: 20px;
+            border-radius: 25px;
+            width: 95%;
+            align-items: center;
+            font-family: $text;
+
+            .quizzSection {
+                display: flex;
+                flex-direction: row;
+                border: 4px solid $lighter;
+                border-radius: 20px;
+                justify-content: space-between;
+                align-items: center;
+                padding: 2% 5%;
+                width: 90%;
+                box-shadow: 4px 4px 5px 0px $dim;
+
+                .quizzLeft {
+                    display: flex;
+                    flex-direction: row;
+                    margin-bottom: 5px;
+        
+                    .editQuizz {
+                        font-size: $fs-biggest;
+                        color: $darker;
+                        text-decoration: none;
+                    }
+                }
+        
+                .quizzTime {
+                    display: flex;
+                    flex-direction: column;
+                    margin-bottom: 5px;
+        
+                    .dateQuizz {
+                        margin-right: 5px;
+                        font-size: $fs-small;
+                        padding: 2px 0;
+                        color: $dark;
+                        font-weight: bold;
+                    }
+                }
+
+                .quizzQuestions {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+        
+                    .quizzQuestionLabel {
+                        font-size: $fs-medium;
+                        font-weight: 500;
+                        padding: 2px 0;
+                    }
+                    .quizzShowQuestion {
+                        font-size: $fs-smaller;
+                        font-weight: bold;
+                        padding: 2px 0;
+
+                        &:hover {
+                            cursor: pointer;
+                        }
+                    }
+                }
+                .quizzRigth {
+                
+                    .removeQuizz {
+        
+                        width: 100px;
+                        background-color: $dark;
+                        color: $lighter;
+                        text-align: center;
+                        font-size: $fs-small;
+                        margin-left: 5px;
+                        padding-top: 5px;
+                        
+                        border: none;
+                        border-radius: 0.25rem;
+                        box-shadow: 0px 4px 0px $darker;
+                        transition: $t-fast;
+                    
+                        &:hover {
+                            cursor: pointer;
+                            top: -4px;
+                            box-shadow: 0px 2px 0px $darker;
+                        }
+                    }
+                }
+            }
+
+            .questionSection {
+                align-items: center;
+                padding: 2%;
+                margin-top: 20px;
+                width: 60%;
+                border: 3px solid $white;
+                border-radius: 10px;
+                box-shadow: 3px 3px 5px 0px $dim;
+
+                .question {
+                    font-size: $fs-medium;
+                    padding: 2px 0;
+                    color: $darker;
+                }
+            }
+
+            
+        }
+
+        
+    }
+    .noQuizz {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        .noQuizzLabel {
+            font-size: $fs-big;
+            font-weight: bold;
+            color: $white;
+        }
+
+        .quizzCreateParagraph {
+            margin-top: 18px;
+            font-weight: bold;
+            color: $darker;
+            padding-block: 5px;
+            padding-inline: 20px;
+            backdrop-filter: sepia(40%);
+            border-radius: 8px;
+
+            span {
+                color: $accentDarker;
+
+                &:hover {
+                    cursor: pointer;
+                }
             }
         }
     }
 }
+
+@media screen and (max-width: 768px) {
+    .accountPage {
+      .titleSection {
+        .titlePage {
+          font-size: $fs-big;
+          text-align: center;
+        }
+      }
+  
+      .accountTop {
+        .accountUserInfo {
+          .accountAvatar {
+            img {
+              width: 120px;
+            }
+          }
+  
+          .accountData {
+            align-items: center;
+            .accountUsername {
+              font-size: $fs-big;
+            }
+            .accountEmail {
+              font-size: $fs-medium;
+            }
+          }
+        }
+  
+        .accountStatsList {
+            width: 80%;
+            font-size: $fs-small;
+        }
+      }
+  
+      .userQuizzContainer {
+        width: 90%;
+  
+        .quizzContainer {
+          width: 100%;
+  
+          .quizzSection {
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
+  
+            .quizzLeft {
+              flex-direction: column;
+              align-items: center;
+              text-align: center;
+  
+              .editQuizz {
+                font-size: $fs-big;
+              }
+            }
+  
+            .quizzTime {
+              align-items: center;
+              .dateQuizz {
+                font-size: $fs-smaller;
+                text-align: center;
+              }
+            }
+  
+            .quizzQuestions {
+              align-items: center;
+              .quizzQuestionLabel, .quizzShowQuestion {
+                text-align: center;
+              }
+            }
+  
+            .quizzRigth {
+              .removeQuizz {
+                width: 100%;
+                margin-left: 0;
+              }
+            }
+          }
+  
+          .questionSection {
+            width: 90%;
+          }
+        }
+      }
+  
+      .noQuizz {
+        padding: 10px;
+  
+        .noQuizzLabel {
+          font-size: $fs-medium;
+          text-align: center;
+        }
+  
+        .quizzCreateParagraph {
+          font-size: $fs-smaller;
+          text-align: center;
+          padding-inline: 10px;
+        }
+      }
+    }
+  }
+  
+  @media screen and (max-width: 480px) {
+    .accountPage {
+      .titleSection {
+        padding: 12px 0;
+        .titlePage {
+          font-size: $fs-medium;
+        }
+      }
+  
+      .accountTop {
+        margin: 20px 0;
+  
+        .accountUserInfo {
+          padding: 10px 0 20px 0;
+          .accountAvatar img {
+            width: 100px;
+          }
+          .accountUsername {
+            font-size: $fs-medium;
+          }
+          .accountEmail {
+            font-size: $fs-smaller;
+          }
+        }
+  
+        .accountStatsList {
+          padding: 8px;
+          font-size: $fs-smaller;
+          border-radius: 15px;
+        }
+      }
+  
+      .userQuizzContainer {
+        .quizzContainerTitle {
+          font-size: $fs-big;
+          text-align: center;
+        }
+  
+        .quizzContainer {
+          .quizzSection {
+            padding: 5%;
+  
+            .quizzLeft .editQuizz {
+              font-size: $fs-medium;
+            }
+  
+            .quizzRigth .removeQuizz {
+              font-size: $fs-smaller;
+            }
+          }
+        }
+  
+        .questionSection {
+          width: 100%;
+          padding: 10px;
+        }
+      }
+  
+      .noQuizz {
+        .quizzCreateParagraph {
+          font-size: $fs-smaller;
+        }
+      }
+    }
+  }
+  
