@@ -130,7 +130,7 @@ export default class Game
         const targets = recipients ?? this.everyone;
         for(const target of targets)
         {
-            console.log("Sending ", msg, " to ", target);
+            // console.log("Sending ", msg, " to ", target);
             (target.sockets ?? []).forEach(sock => sock.send(JSON.stringify(msg)));
         }
     }

@@ -45,12 +45,13 @@ const EditorContent = () =>  {
   const [ loading, setLoading ] = useState<boolean>(true);
   const [ showSavedMessage, setShowSavedMessage ] = useState(false);
   const [ editorView, setEditorView ] = useState(true);
+  const [ validAnswer, setValidAnswer ] = useState(-1);
 
   const updateRender = () => setVersion(v => v + 1);
-  const updateQuizz = () => {
+  const updateQuizz = (allQuestionsOverride?: QuestionWrapper[]) => {
     if (!quizz) return;
 
-    const newQuestions = [...allQuestions.map(q => q.question)];
+    const newQuestions = [...(allQuestionsOverride ?? allQuestions).map(q => q.question)];
     quizz.children.splice(0, quizz.children.length)
     quizz.children.push(...newQuestions);
     fetch(`/api/editor/quizz/${quizz_id}`, {
@@ -165,6 +166,7 @@ const EditorContent = () =>  {
     setAllQuestions(prev => {
       const wrapper = {id: prev.length, question: question};
       setActiveQuestion(wrapper)
+      updateQuizz([...prev, wrapper]);
       return [...prev, wrapper];
     });
   };
@@ -184,7 +186,9 @@ const EditorContent = () =>  {
         else setActiveQuestion(index !== 0 ? prev[index - 1] : prev[1]);
       }
       prev.splice(index, 1);
-      return prev.map(wrapper => { return { id: wrapper.id < index ? wrapper.id : wrapper.id - 1, question: wrapper.question }});
+      const newQuestions = prev.map(wrapper => { return { id: wrapper.id < index ? wrapper.id : wrapper.id - 1, question: wrapper.question }});
+      updateQuizz(newQuestions);
+      return newQuestions;
     });
   };
 
@@ -240,7 +244,7 @@ const EditorContent = () =>  {
             activeQuestion === undefined ? 
             <>No question selected</> :
             <>
-              { render(activeQuestion.question, editorView, onChangeHook) }
+              { render(activeQuestion.question, editorView, onChangeHook, validAnswer, setValidAnswer) }
             </>
           }
           </HeroPage>

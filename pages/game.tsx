@@ -9,9 +9,8 @@ import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import styles from './game.module.scss';
 import FloatingEmotes from "@components/misc/FloatingEmotes"
+import { emoteChars, getEmoteIcon } from "@client/utils";
 
-
-// TODO : Add this to the socket handler instead of here
 
 const GamePageContent = () => {
     const router = useRouter();
@@ -45,34 +44,7 @@ const GamePageContent = () => {
         setTimeout(() => {
           setFloatingEmotes((prev) => prev.filter((e) => e.id !== id));
         }, 2500);
-      };
-      
-      
-    
-    const getEmoteIcon = (emote: Emote): React.ReactNode => {
-        switch (emote) {
-            case 1:
-                return '❤️'; 
-            case 2:
-                return '👍'; 
-            case 3:
-                return '👏'; 
-            case 4:
-                return '😂';
-            case 5:
-                return 'uWu';
-            case 6:
-                return '🍆';
-        }
     };
-
-    const sendEmotePacket = (emote: number) => {
-        socketRef.current?.send(JSON.stringify({
-            type: "emote",
-            emote: emote
-        }));
-    };
-    
 
     useEffect(() => {
         fetch('/api/game', { method: 'GET' }).then(async res => handle<SharedGameValues>(
@@ -145,8 +117,8 @@ const GamePageContent = () => {
             <div className={styles.emoteButtons}>
                 <p>Send an emote:</p>
                 <div className={styles.emoteButtonList}>
-                {[1, 2, 3, 4, 5, 6].map((emote) => (
-                    <button key={emote} onClick={() => {sendEmotePacket(emote); }} className={styles.emoteButton}>{getEmoteIcon(emote)}</button>
+                {emoteChars.map((emote, i) => (
+                    <button key={emote} onClick={() => {socketHandlerRef.current?.sendEmote(i); }} className={styles.emoteButton}>{emote}</button>
                 ))}
                 </div>
             </div>

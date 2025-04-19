@@ -1,6 +1,7 @@
 import { KapootLeafComponent } from "@common/quizz_components/base";
 import { BinaryAnswerComponent, BinaryQuestionComponent, SimpleAnswerComponent, SimpleQuestionComponent } from "@common/quizz_components/components";
 import { BinaryAnswer, BinaryQuestion, SimpleAnswer, SimpleQuestion } from "@components/quizz/QuizzComponents";
+import { Dispatch, SetStateAction } from "react";
 
 
 export const renderMap = {
@@ -18,10 +19,10 @@ export const renderMap = {
  * @param hook Hook to call on user action (change in editor, pick in quizz session)
  * @returns A render node
  */
-export function render(component: KapootLeafComponent<any>, editor: boolean, hook: (e: any) => void): React.ReactNode
+export function render(component: KapootLeafComponent<any>, editor: boolean, hook: (e: any) => void, validAnswer: number, setValidAnswer: Dispatch<SetStateAction<number>>): React.ReactNode
 {
     const Component = renderMap[component.type];
     if(!Component) return <p>Error: No rendering found for type `{component.type}`</p>;
 
-    return <Component component={component as any} editor={editor} hook={hook} />;  // We need to tell typescript to trust us for once that the passed type is correct
+    return <Component component={component as any} editor={editor} hook={hook} validAnswer={validAnswer} setValidAnswer={setValidAnswer} />;  // We need to tell typescript to trust us for once that the passed type is correct
 }

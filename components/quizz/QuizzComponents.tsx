@@ -1,6 +1,6 @@
 import { KapootComponentContainer, KapootLeafComponent } from "@common/quizz_components/base";
 import { BinaryAnswerComponent, BinaryQuestionComponent, SimpleAnswerComponent, SimpleQuestionComponent } from "@common/quizz_components/components";
-import { FC, useState } from "react";
+import { Dispatch, FC, SetStateAction, useState } from "react";
 import { RGBColor } from "react-color";
 
 import { AlarmClockIcon, ArrowLeftCircle, CheckIcon, ChevronLeftIcon, ChevronRightIcon, PaintRollerIcon, PlusCircleIcon, ShapesIcon, SquareCheckIcon, Trash2Icon } from "lucide-react";
@@ -23,6 +23,10 @@ type ReactQuizzComponent<T extends KapootLeafComponent<any>> = React.HTMLAttribu
 type ReactAnswerComponent<T extends KapootLeafComponent<any>> = ReactQuizzComponent<T> & {
     isCorrect?: boolean;
     setCorrect?: (correct: any) => void;
+};
+type ReactQuestionComponent<T extends KapootLeafComponent<any>> = ReactQuizzComponent<T> & {
+    validAnswer: number;  // TODO : | number[] for mcq
+    setValidAnswer: Dispatch<SetStateAction<number>>;
 };
 
 /**
@@ -124,9 +128,9 @@ export const BinaryQuestion: FC<ReactQuizzComponent<BinaryQuestionComponent>> = 
     </div>);
 };
 
-export const SimpleQuestion: FC<ReactQuizzComponent<SimpleQuestionComponent>> = ({ component, editor, hook }) => {
+export const SimpleQuestion: FC<ReactQuestionComponent<SimpleQuestionComponent>> = ({ component, editor, hook, validAnswer, setValidAnswer }) => {
     const onChange = (prop: keyof SimpleQuestionProps, value: any) => { component.set(prop, value); hook(null); };
-    const [ validAnswer, setValidAnswer ] = useState<number>(component.get('answer') ?? 0);
+    if(validAnswer !== (component.get('answer') ?? 0)) setValidAnswer(component.get('answer') ?? 0);
     return (
         <>
             <div className={styles.questionTimer}>
@@ -153,7 +157,12 @@ export const SimpleQuestion: FC<ReactQuizzComponent<SimpleQuestionComponent>> = 
                 { component.children.map((ans, i) => 
                     <SimpleAnswer key={i} parent={component} component={ans} editor={editor} hook={hook}
                      isCorrect={validAnswer === i}
-                     setCorrect={(correct) => { const newAnswer = correct ? i : -1; component.set('answer', newAnswer); setValidAnswer(newAnswer); hook(null); }}
+                     setCorrect={(correct) => { 
+                        const newAnswer = correct ? i : -1;
+                        component.set('answer', newAnswer);
+                        setValidAnswer(newAnswer); 
+                        hook(null);
+                    }}
                     />)
                 }
                 { editor && component.children.length < 4 && <AddAnswerButton callback={() => { component.addDefault(); hook(null); }} /> }

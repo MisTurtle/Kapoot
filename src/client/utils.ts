@@ -40,3 +40,10 @@ export function handleFormChange(
     setFormData(newFormData);
     setEnabled(valid);
 }
+
+export const emoteChars = ['❤️', '👍', '👏', '😂', 'uWu', '🍆'];
+
+export function getEmoteIcon(emote: Emote) : React.ReactNode 
+{
+    return emoteChars[emote] ?? emoteChars[0];
+}
