@@ -33,12 +33,15 @@ router.post('/', (req, res) => {
     if(!quizz_id) return error(res, 'Missing quizz id');
 
     // TODO : Check this user is the actual owner of the quizz
-    const serializedQuizz = getEndpoints().getSerializedQuizz(quizz_id);
-    if(!serializedQuizz) return error(res, 'Quizz does not exist');
+    getEndpoints().getSerializedQuizz(quizz_id).then(
+        serializedQuizz => {
+            if(!serializedQuizz) return error(res, 'Quizz does not exist');
 
-    const deserializedQuizz = SimpleQuizzComponent.deserialize(serializedQuizz);
-    const game_id = KapootGameManager.createGame(req.gamePlayer!, deserializedQuizz, {});
-    return success(res, { 'game_id': game_id });
+            const deserializedQuizz = SimpleQuizzComponent.deserialize(serializedQuizz);
+            const game_id = KapootGameManager.createGame(req.gamePlayer!, deserializedQuizz, {});
+            return success(res, { 'game_id': game_id });
+        }
+    );
 });
 
 /**
@@ -68,7 +71,7 @@ router.ws('/stateProvider', (ws, req) => {
     
     // vvv Handle messages sent by this socket vvv //
     ws.on('message', (msg) => {
-        const packet: GameSockMsg = JSON.parse(msg.toString());
+        const packet: GameSockMsg | GameOwnerCommandSockMsg = JSON.parse(msg.toString());
         switch(packet.type)
         {
             case 'player_joined':
@@ -81,6 +84,24 @@ router.ws('/stateProvider', (ws, req) => {
                 break;
             case 'emote':
                 game.emote(gamePlayer, packet.emote ?? 0);
+                break;
+            case 'user_answer':
+                console.log("Received user answer");
+                game.answer(gamePlayer, packet.answer);
+                break;
+
+            case 'new_question':
+            case 'leaderboard':
+                break;  // This shouldn't be sent to the server unless some sneaky elf sends whispers it
+            
+            case 'owner_start_game':
+                game.start(gamePlayer);
+                break;
+            case 'owner_next_question':
+                game.nextQuestion(gamePlayer);
+                break;
+            case 'owner_stop_early':
+                game.stopEarly(gamePlayer);
                 break;
         }
     });

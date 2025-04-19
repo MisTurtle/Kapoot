@@ -1,15 +1,18 @@
 import { BaseGameSocketHandler } from "@common/game_socket_handler";
+import { deserialize_component, QuestionComponent } from "@common/quizz_components/components";
 import { Dispatch, RefObject, SetStateAction } from "react";
 
 export default class ClientGameSocketHandler extends BaseGameSocketHandler
 {
-
     constructor(
         private socket: WebSocket,
         private showError: (err: string) => void,
         private setPlayers: Dispatch<SetStateAction<GamePlayer[]>>,
         private setChatMessages: Dispatch<SetStateAction<ChatMessage[]>>,
-        private spawnEmote: (emote: number) => void
+        private spawnEmote: (emote: number) => void,
+        private setShowingLeaderboard: Dispatch<SetStateAction<boolean>>,
+        private setCurrentQuestion: Dispatch<SetStateAction<QuestionComponent<BaseQuestionProps> | undefined>>,
+        private setEnded: Dispatch<SetStateAction<boolean>>
     ) {
         super();
         this.setupSocket();
@@ -30,7 +33,7 @@ export default class ClientGameSocketHandler extends BaseGameSocketHandler
             console.error(err);
         };
     }
-    send(packet: GameSockMsg) { this.socket.send(JSON.stringify(packet)); }
+    send(packet: GameSockMsg | GameOwnerCommandSockMsg) { this.socket.send(JSON.stringify(packet)); }
 
     onPlayerJoin(packet: PlayerJoinSockMsg): void {
         this.setPlayers(packet.players);
@@ -63,4 +66,22 @@ export default class ClientGameSocketHandler extends BaseGameSocketHandler
     sendEmote(emote: Emote): void {
         this.send({ 'type': 'emote', 'emote': emote });
     }
+    
+    onShowLeaderboard(packet: ShowLeaderboardSockMsg): void {
+        this.setPlayers(packet.players);
+        this.setShowingLeaderboard(true);
+        this.setEnded(packet.ended);
+    }
+    onShowNewQuestion(packet: QuestionChangeSockMsg): void {
+        this.setCurrentQuestion(deserialize_component(packet.question) as QuestionComponent<BaseQuestionProps>);
+        this.setShowingLeaderboard(false);
+    }
+
+    // Player Controls //
+    submitAnswer(answer: number) {this.send({ 'type': 'user_answer', 'answer': answer }); }
+
+    // Owner Controls //
+    startGame(): void { this.send({ 'type': 'owner_start_game' }); }
+    nextQuestion(): void { this.send({ 'type': 'owner_next_question' }); }
+    stopEarly(): void { this.send({ 'type': 'owner_stop_early' }); }
 }

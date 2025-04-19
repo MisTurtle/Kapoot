@@ -18,7 +18,7 @@ type ReactQuizzComponent<T extends KapootLeafComponent<any>> = React.HTMLAttribu
     parent?: KapootComponentContainer<any>;
     component: T;
     editor: boolean;
-    hook: (e: any) => void;
+    hook?: (e: any) => void;
 };
 type ReactAnswerComponent<T extends KapootLeafComponent<any>> = ReactQuizzComponent<T> & {
     isCorrect?: boolean;
@@ -27,6 +27,7 @@ type ReactAnswerComponent<T extends KapootLeafComponent<any>> = ReactQuizzCompon
 type ReactQuestionComponent<T extends KapootLeafComponent<any>> = ReactQuizzComponent<T> & {
     validAnswer: number;  // TODO : | number[] for mcq
     setValidAnswer: Dispatch<SetStateAction<number>>;
+    answerHook?: (answerId: number) => void;  // Called when the user clicks an answer in game
 };
 
 /**
@@ -42,13 +43,13 @@ const AddAnswerButton = ({ callback }: { callback: () => void }) => {
 
 const BaseAnswer: FC<ReactAnswerComponent<KapootLeafComponent<BaseProps>>> = ({ parent, component, editor, hook, children, isCorrect, setCorrect }) => {
     const { openMenu, closeMenu } = useContextMenu();
-    const onChange = (prop: keyof BaseProps, value: any) => { component.set(prop, value); hook(null); };
+    const onChange = (prop: keyof BaseProps, value: any) => { component.set(prop, value); if(hook) hook(null); };
     const inlineStyles = { "--color": component.get('background') } as React.CSSProperties;
 
     const deleteSelf = () => {
         const index = parent?.children.indexOf(component);
         if(index !== undefined && index >= 0) parent?.children.splice(index, 1);
-        hook(null);
+        if(hook) hook(null);
         closeMenu();
     };
     const changeBackground = (newColor: RGBColor) => onChange('background', [newColor.r, newColor.g, newColor.b]);
@@ -91,6 +92,7 @@ const BaseAnswer: FC<ReactAnswerComponent<KapootLeafComponent<BaseProps>>> = ({ 
         <div 
             className={styles.answerBase} 
             style={inlineStyles}
+            onClick={() => { if(!editor && hook) hook(null); }}
             onContextMenu={e => editor && handleMainContextMenu(e)}
         >
             <div className={styles.answerIcon}>
@@ -128,8 +130,8 @@ export const BinaryQuestion: FC<ReactQuizzComponent<BinaryQuestionComponent>> = 
     </div>);
 };
 
-export const SimpleQuestion: FC<ReactQuestionComponent<SimpleQuestionComponent>> = ({ component, editor, hook, validAnswer, setValidAnswer }) => {
-    const onChange = (prop: keyof SimpleQuestionProps, value: any) => { component.set(prop, value); hook(null); };
+export const SimpleQuestion: FC<ReactQuestionComponent<SimpleQuestionComponent>> = ({ component, editor, hook, validAnswer, setValidAnswer, answerHook }) => {
+    const onChange = (prop: keyof SimpleQuestionProps, value: any) => { component.set(prop, value); if(hook) hook(null); };
     if(validAnswer !== (component.get('answer') ?? 0)) setValidAnswer(component.get('answer') ?? 0);
     return (
         <>
@@ -155,17 +157,20 @@ export const SimpleQuestion: FC<ReactQuestionComponent<SimpleQuestionComponent>>
             }
             <div className={styles.questionAnswers}>
                 { component.children.map((ans, i) => 
-                    <SimpleAnswer key={i} parent={component} component={ans} editor={editor} hook={hook}
+                    <SimpleAnswer key={i} parent={component} component={ans} editor={editor} hook={() => {
+                        if(!answerHook && hook) hook(null);
+                        else if(answerHook) answerHook(i);
+                    }}
                      isCorrect={validAnswer === i}
                      setCorrect={(correct) => { 
                         const newAnswer = correct ? i : -1;
                         component.set('answer', newAnswer);
                         setValidAnswer(newAnswer); 
-                        hook(null);
+                        if(hook) hook(null);
                     }}
                     />)
                 }
-                { editor && component.children.length < 4 && <AddAnswerButton callback={() => { component.addDefault(); hook(null); }} /> }
+                { editor && component.children.length < 4 && <AddAnswerButton callback={() => { component.addDefault(); if(hook) hook(null); }} /> }
             </div>
         </>
     );

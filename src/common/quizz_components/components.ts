@@ -35,7 +35,9 @@ export class McqAnswerComponent extends KapootLeafComponent<McqAnswerProps>
  * We necessarily have to separate the server and client versions here, because otherwise the client would be able to see the right answers from request data
  * A way to remove answer properties needs to be found before sending them to the client if we want to reuse these classes with a render() function
  */
-export abstract class QuestionComponent<T extends Record<string, any>> extends KapootComponentContainer<T> { }
+export abstract class QuestionComponent<T extends Record<string, any>> extends KapootComponentContainer<T> {
+    abstract checkAnswer(answer: any): boolean;
+}
 
 export class OpenQuestionComponent extends QuestionComponent<OpenQuestionProps>
 {
@@ -56,6 +58,10 @@ export class OpenQuestionComponent extends QuestionComponent<OpenQuestionProps>
 
     public fillChildProps(child: KapootLeafComponent<any>, _: number): void {
         child.setAllIfUndefined({'label': 'Open Answer'});
+    }
+    
+    checkAnswer(answer: any): boolean {
+        throw new Error("Method not implemented.");
     }
 }
 
@@ -81,6 +87,10 @@ export class BinaryQuestionComponent extends QuestionComponent<BinaryQuestionPro
         if(index < 0 || index > 1) throw new Error("Binary question can only have two answer components");
         child.setAllIfUndefined({'label': ['Yes', 'No'][index], 'background': defaultColors[index], iconShape: index});
     }
+    
+    checkAnswer(answer: any): boolean {
+        throw new Error("Method not implemented.");
+    }
 }
 
 export class SimpleQuestionComponent extends QuestionComponent<SimpleQuestionProps>
@@ -103,6 +113,17 @@ export class SimpleQuestionComponent extends QuestionComponent<SimpleQuestionPro
 
     public fillChildProps(child: KapootLeafComponent<any>, index: number): void {
         child.setAllIfUndefined({'label': `Answer #${index}`, 'background': defaultColors[index], 'iconShape': index});
+    }
+
+    static deserialize_component(data: { [FIELD_TYPE]: string, [FIELD_PROPERTIES]: SimpleQuestionProps, [FIELD_CHILDREN]: any[] }): SimpleAnswerComponent
+    {
+        console.log("Question children:", data[FIELD_CHILDREN]);
+        const ans = data[FIELD_CHILDREN].map((props: any) => new SimpleAnswerComponent(props));
+        return new SimpleQuestionComponent(data[FIELD_PROPERTIES], ...ans);
+    }
+    
+    checkAnswer(answer: any): boolean {
+        return answer === this.get('answer');
     }
 }
 
@@ -127,6 +148,10 @@ export class McqQuestionComponent extends QuestionComponent<McqQuestionProps>
     public fillChildProps(child: KapootLeafComponent<any>, index: number): void {
         child.setAllIfUndefined({'label': `Answer #${index}`, 'background': defaultColors[index], 'iconShape': index});
     }
+    
+    checkAnswer(answer: any): boolean {
+        throw new Error("Method not implemented.");
+    }
 }
 
 /**
@@ -144,6 +169,16 @@ export class SimpleQuizzComponent extends QuizzComponent<SimpleQuizzProps>
         super(properties, ...questions);
     }
 
+    static deserialize_component(data: { [FIELD_TYPE]: string, [FIELD_PROPERTIES]: SimpleQuestionProps, [FIELD_CHILDREN]: any[] }): SimpleQuizzComponent {
+        const quizzProperties = data[FIELD_PROPERTIES];
+        const quizzChildren = data[FIELD_CHILDREN];
+        const questions = (quizzChildren ?? []).map(q => deserialize_component(q)) as QuestionComponent<any>[];
+        return new SimpleQuizzComponent(quizzProperties, ...questions);
+    }
+
+    /**
+     * @deprecated Use global components.deserialize_component function instead
+     */
     static deserialize(data: any): SimpleQuizzComponent {
         // TODO : Sanitize values before setting them (format, ranges, ...)
         if(typeof data === 'string') data = JSON.parse(data);
@@ -195,3 +230,29 @@ export class SimpleQuizzComponent extends QuizzComponent<SimpleQuizzProps>
 }
 
 export function emptyQuizz() { return new SimpleQuizzComponent({}); }
+export function deserialize_component(data: any): KapootLeafComponent<any> | undefined
+{
+    if(typeof data === 'string') data = JSON.parse(data);
+    console.log("Deserializing component ", data);
+
+    switch(data[FIELD_TYPE])
+    {
+        case 'a:open':
+        case 'a:bin':
+        case 'a:mcq':
+        case 'a:simple':
+            throw new Error("Not implemented yet.");
+            break;  // TODO : Implement these, but not necessary for a first presentation
+        
+        case 'q:open':
+        case 'q:bin':
+        case 'q:mcq':
+            throw new Error("Not implemented yet.");
+            break;  // TODO : Implement these
+        case 'q:simple':
+            return SimpleQuestionComponent.deserialize_component(data);
+        
+        case 'quizz:simple':
+            return SimpleQuizzComponent.deserialize_component(data);
+    }
+}

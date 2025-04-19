@@ -8,7 +8,9 @@ export abstract class BaseGameSocketHandler
         'player_joined': this.onPlayerJoin.bind(this),
         'player_left': this.onPlayerLeft.bind(this),
         'chat_msg': this.onChatMessage.bind(this),
-        'emote': this.onEmote.bind(this)
+        'emote': this.onEmote.bind(this),
+        'leaderboard': this.onShowLeaderboard.bind(this),
+        'new_question': this.onShowNewQuestion.bind(this)
     };
 
     handle(packet: GameSockMsg): void { this.fnMap[packet.type](packet as any); }
@@ -24,4 +26,7 @@ export abstract class BaseGameSocketHandler
 
     abstract sendEmote(emote: number): void;
     abstract onEmote(packet: EmoteSockMsg): void;
+
+    abstract onShowLeaderboard(packet: ShowLeaderboardSockMsg): void;
+    abstract onShowNewQuestion(packet: QuestionChangeSockMsg): void;
 }

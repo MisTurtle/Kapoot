@@ -11,7 +11,7 @@ import { ArrowLeftIcon, ArrowRightLeftIcon, PlayCircleIcon, SaveIcon } from 'luc
 import styles from './editor.module.scss';
 import { CustomNavBar } from '@components/NavBar';
 import { ReactSortable } from 'react-sortablejs';
-import { render } from '@client/quizz_components/component_render_map';
+import { renderInEditor } from '@client/quizz_components/component_render_map';
 import HeroPage from '@components/wrappers/HeroPage';
 import DeleteButton from '@components/misc/Delete';
 import { ContextMenuProvider } from '@contexts/EditorContextMenus';
@@ -244,7 +244,7 @@ const EditorContent = () =>  {
             activeQuestion === undefined ? 
             <>No question selected</> :
             <>
-              { render(activeQuestion.question, editorView, onChangeHook, validAnswer, setValidAnswer) }
+              { renderInEditor(activeQuestion.question, editorView, onChangeHook, validAnswer, setValidAnswer) }
             </>
           }
           </HeroPage>
