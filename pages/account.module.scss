@@ -93,7 +93,7 @@
             margin-bottom: 1%;
             align-items: center;
             color: $white;
-            box-shadow: 3px 3px 5px 0px $darker;
+            box-shadow: 0px 0px 5px 2px $lighter;
     
             .accountStatsItem {
                 padding: 5px 13px;
@@ -147,20 +147,38 @@
 
                 .quizzLeft {
                     display: flex;
-                    flex-direction: row;
-                    margin-bottom: 5px;
+                    flex-direction: column;
+                    align-items: center;
         
                     .editQuizz {
                         font-size: $fs-biggest;
                         color: $darker;
                         text-decoration: none;
+                        margin-bottom: 10px;
+                    }
+                    .createGame {
+                      width: 120px;
+                      background-color: $white;
+                      color: #ff6969;
+                      text-align: center;
+                      font-size: $fs-small;
+                      font-weight: bold;
+                      padding: 5px;
+                      border: none;
+                      border-radius: 0.25rem;
+                      box-shadow: 0px 0px 4px 3px $lighter;
+                      transition: $t-fast;
+                    
+                      &:hover {
+                        cursor: pointer;
+                        top: -4px;
+                      }
                     }
                 }
         
                 .quizzTime {
                     display: flex;
                     flex-direction: column;
-                    margin-bottom: 5px;
         
                     .dateQuizz {
                         margin-right: 5px;
@@ -192,6 +210,7 @@
                     }
                 }
                 .quizzRigth {
+                  display: flex;
                 
                     .removeQuizz {
         
@@ -200,9 +219,9 @@
                         color: $lighter;
                         text-align: center;
                         font-size: $fs-small;
-                        margin-left: 5px;
                         padding-top: 5px;
-                        
+                        margin-bottom: 10px;
+
                         border: none;
                         border-radius: 0.25rem;
                         box-shadow: 0px 4px 0px $darker;
@@ -213,7 +232,7 @@
                             top: -4px;
                             box-shadow: 0px 2px 0px $darker;
                         }
-                    }
+                    }                    
                 }
             }
 

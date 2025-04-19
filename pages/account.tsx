@@ -146,6 +146,23 @@ const AccountContent = () => {
           );
       };
 
+    const startGame = (quizz_id: string) => {
+        fetch("/api/game", {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ "quizz_id": quizz_id })
+        })
+        .then(async data => await handle(
+          data,
+          (data) => {
+            router.push("/game");
+          },
+          (err) => {
+            showPopup('error', err, 5.0);
+        }))
+        .catch(err => showPopup('error', err, 5.0))
+      };
+
   if(!user) return <Loading />;
   return (
       <>
@@ -176,12 +193,13 @@ const AccountContent = () => {
           </div>
             {quizzes.length > 0 ? (
               <div className={styles.userQuizzContainer}>
-                <span className={styles.quizzContainerTitle}>Your quizzes</span>
+                <span className={styles.quizzContainerTitle}>Your quizz{quizzes.length > 1 ? 'es' : ''}</span>
                 {quizzes.map((quizz, index) => (                      
                   <div className={styles.quizzContainer} key={index}>
                     <div className={styles.quizzSection}>
                       <div className={styles.quizzLeft}>
                         <a className={styles.editQuizz} href={editQuizz(quizzIds[index])}>{quizz.get("label")}</a>
+                        <button className={styles.createGame} onClick={() => startGame(quizzIds[index])}>Create Game</button>
                         {/* <p>{quizz.get("description")}</p> */}
                       </div>
                       <div className={styles.quizzTime}>

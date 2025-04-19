@@ -19,6 +19,15 @@ declare global {
     };
     type Emote = number;
 
+    type EmoteData = {
+        id: number;
+        type: number;
+        left: number;
+        bottom: number;
+        drift: number;
+        rotation: number;
+      };
+
 }
 
 export {};

@@ -1,0 +1,52 @@
+
+.emoteContainer {
+    max-width: 100%; 
+    max-height: 150px; 
+    overflow-y: auto; 
+    display: flex;
+    flex-wrap: wrap; 
+    justify-content: center; 
+    gap: 1rem; 
+    padding: 0.5rem;
+  }
+  
+  .emoteButton {
+    font-size: 1.5rem; 
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    border: none;
+    cursor: pointer;
+    background-color: #eee;
+    transition: background 0.2s ease;
+    margin: 0.2rem;
+  }
+  
+  /* Style des émoticônes flottantes */
+  .floatingEmote {
+    position: fixed;
+    font-size: 2rem;
+    animation: floatUp 2.5s ease-in forwards;
+    pointer-events: none;
+    transition: left 0.5s, bottom 0.5s; /* Animation du déplacement */
+  }
+  
+  @keyframes floatUp {
+    0% {
+      transform: translateY(0);
+    }
+    100% {
+      transform: translateY(-50px); /* L'élément se déplace vers le haut */
+    }
+  }
+  
+  /* Responsivité pour les petits écrans */
+  @media (max-width: 768px) {
+    .emoteContainer {
+      max-height: 120px; /* Moins d'espace sur les petits écrans */
+    }
+  
+    .emoteButton {
+      font-size: 1rem; /* Réduire la taille des boutons sur les petits écrans */
+    }
+  }
+  

@@ -7,6 +7,8 @@ import { AuthProvider, useAuth } from "@contexts/AuthContext";
 import { usePopup } from "@contexts/PopupContext";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
+import styles from './game.module.scss';
+import FloatingEmotes from "@components/misc/FloatingEmotes"
 
 
 // TODO : Add this to the socket handler instead of here
@@ -26,7 +28,50 @@ const GamePageContent = () => {
     const [ chatInput, setChatInput ] = useState("");
 
     const isOwner = user && game?.owner.accountId === user?.identifier;
-    const spawnEmote = (emote: Emote) => console.log("Spawning emote #" + emote.toString());
+    // const spawnEmote = (emote: Emote) => console.log("Spawning emote #" + emote.toString());
+    const [floatingEmotes, setFloatingEmotes] = useState<EmoteData[]>([]);
+
+    const spawnEmote = (type: number) => {
+        const id = Date.now() + Math.random();
+      
+        const left = Math.random() * 80 + 10;
+        const bottom = Math.random() * 30 + 10;
+        const drift = (Math.random() - 0.5) * 100;
+        const rotation = (Math.random() - 0.5) * 60;
+      
+        const newEmote: EmoteData = { id, type, left, bottom, drift, rotation };
+      
+        setFloatingEmotes((prev) => [...prev, newEmote]);
+      
+        setTimeout(() => {
+          setFloatingEmotes((prev) => prev.filter((e) => e.id !== id));
+        }, 2500);
+      };
+      
+      
+    
+    const getEmoteIcon = (emote: Emote): React.ReactNode => {
+        switch (emote) {
+            case 1:
+                return '❤️'; 
+            case 2:
+                return '👍'; 
+            case 3:
+                return '👏'; 
+            case 4:
+                return '😂';
+            case 5:
+                return 'uWu';
+        }
+    };
+
+    const sendEmotePacket = (emote: number) => {
+        socketRef.current?.send(JSON.stringify({
+            type: "emote",
+            emote: emote
+        }));
+    };
+    
 
     useEffect(() => {
         fetch('/api/game', { method: 'GET' }).then(async res => handle<SharedGameValues>(
@@ -60,28 +105,24 @@ const GamePageContent = () => {
 
     return (
         <>
-            { isOwner ? <p>You are the owner of Game #{game!.id}</p> : <p>You are a player in Game #{game!.id}</p>}
-            { /* TODO : Player card component */ }
+            {isOwner ? <p>You are the owner of Game #{game!.id}</p> : <p>You are a player in Game #{game!.id}</p>}
+
             <h2>Players:</h2>
-            {
-                players.map(gamePlayer => (
-                    <p key={gamePlayer.accountId}>{gamePlayer.username ?? "N/A"}</p>
-                ))
-            }
+            {players.map(gamePlayer => (
+                <p key={gamePlayer.accountId}>{gamePlayer.username ?? "N/A"}</p>
+            ))}
 
             <h2>Chat:</h2>
             <div style={{ maxHeight: "300px", overflowY: "auto", border: "1px solid #ccc", padding: "10px", marginBottom: "1rem" }}>
-                {
-                    chatMessages.map((msg, idx) => (
-                        <p key={idx}><strong>{msg.user?.username ?? "Anonymous"}</strong>: {msg.cnt}</p>
-                    ))
-                }
+                {chatMessages.map((msg, idx) => (
+                    <p key={idx}><strong>{msg.user?.username ?? "Anonymous"}</strong>: {msg.cnt}</p>
+                ))}
             </div>
 
             <form
                 onSubmit={(e) => {
                     e.preventDefault();
-                    socketHandlerRef.current?.sendChatMessagePacket(chatInput);  // TODO : This isn't working for non user
+                    socketHandlerRef.current?.sendChatMessagePacket(chatInput);
                     setChatInput("");
                 }}
             >
@@ -94,6 +135,17 @@ const GamePageContent = () => {
                 />
                 <button type="submit" style={{ padding: "8px 12px", marginLeft: "8px" }}>Send</button>
             </form>
+
+            <div className={styles.emoteButtons}>
+                <p>Send an emote:</p>
+                <div className={styles.emoteButtonList}>
+                {[1, 2, 3, 4, 5].map((emote) => (
+                    <button key={emote} onClick={() => {sendEmotePacket(emote); }} className={styles.emoteButton}>{getEmoteIcon(emote)}</button>
+                ))}
+                </div>
+            </div>
+
+            <FloatingEmotes floatingEmotes={floatingEmotes} getEmoteIcon={getEmoteIcon}/>
         </>
     );
 };
