@@ -1,15 +1,6 @@
 import React from "react";
 import styles from "./FloatingEmotes.module.scss";
 
-type EmoteData = {
-  id: number | string;
-  type: number;
-  left: number;
-  bottom: number;
-  drift: number;
-  rotation: number;
-};
-
 type Props = {
   floatingEmotes: EmoteData[];
   getEmoteIcon: (type: number) => React.ReactNode;

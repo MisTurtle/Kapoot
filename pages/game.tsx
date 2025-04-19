@@ -28,7 +28,6 @@ const GamePageContent = () => {
     const [ chatInput, setChatInput ] = useState("");
 
     const isOwner = user && game?.owner.accountId === user?.identifier;
-    // const spawnEmote = (emote: Emote) => console.log("Spawning emote #" + emote.toString());
     const [floatingEmotes, setFloatingEmotes] = useState<EmoteData[]>([]);
 
     const spawnEmote = (type: number) => {
@@ -62,6 +61,8 @@ const GamePageContent = () => {
                 return '😂';
             case 5:
                 return 'uWu';
+            case 6:
+                return '🍆';
         }
     };
 
@@ -105,21 +106,26 @@ const GamePageContent = () => {
 
     return (
         <>
+        <div className={styles.lobbyContainer}>
             {isOwner ? <p>You are the owner of Game #{game!.id}</p> : <p>You are a player in Game #{game!.id}</p>}
 
-            <h2>Players:</h2>
-            {players.map(gamePlayer => (
-                <p key={gamePlayer.accountId}>{gamePlayer.username ?? "N/A"}</p>
-            ))}
+            <div className={styles.playersContainer}>
+                <span className={styles.playerTitle}>Player{players.length > 1 ? 's' : ''} in game</span>
+                <div className={styles.playersList}>
+                {players.map(gamePlayer => (
+                    <span key={gamePlayer.accountId} className={styles.playerUsername}>{gamePlayer.username ?? "N/A"}</span>
+                ))}
+                </div>
+            </div>
 
             <h2>Chat:</h2>
-            <div style={{ maxHeight: "300px", overflowY: "auto", border: "1px solid #ccc", padding: "10px", marginBottom: "1rem" }}>
+            <div className={styles.chatContainer}>
                 {chatMessages.map((msg, idx) => (
                     <p key={idx}><strong>{msg.user?.username ?? "Anonymous"}</strong>: {msg.cnt}</p>
                 ))}
             </div>
 
-            <form
+            <form className={styles.messageForm}
                 onSubmit={(e) => {
                     e.preventDefault();
                     socketHandlerRef.current?.sendChatMessagePacket(chatInput);
@@ -131,21 +137,22 @@ const GamePageContent = () => {
                     value={chatInput}
                     onChange={(e) => setChatInput(e.target.value)}
                     placeholder="Type your message..."
-                    style={{ padding: "8px", width: "80%" }}
+                    className={styles.inputMessage}
                 />
-                <button type="submit" style={{ padding: "8px 12px", marginLeft: "8px" }}>Send</button>
+                <button type="submit" className={styles.sendMessage}>Send</button>
             </form>
 
             <div className={styles.emoteButtons}>
                 <p>Send an emote:</p>
                 <div className={styles.emoteButtonList}>
-                {[1, 2, 3, 4, 5].map((emote) => (
+                {[1, 2, 3, 4, 5, 6].map((emote) => (
                     <button key={emote} onClick={() => {sendEmotePacket(emote); }} className={styles.emoteButton}>{getEmoteIcon(emote)}</button>
                 ))}
                 </div>
             </div>
 
             <FloatingEmotes floatingEmotes={floatingEmotes} getEmoteIcon={getEmoteIcon}/>
+        </div>
         </>
     );
 };
