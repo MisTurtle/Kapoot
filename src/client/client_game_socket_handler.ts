@@ -57,7 +57,6 @@ export default class ClientGameSocketHandler extends BaseGameSocketHandler
     }
 
     onChatMessage(packet: ChatMessageSockMsg): void {
-        console.log("OnChatMessage called.");
         this.setChatMessages(prev => [packet.msg].concat(prev.slice(0, 9)));
     }
     sendChatMessagePacket(cnt: string): boolean {
@@ -81,11 +80,9 @@ export default class ClientGameSocketHandler extends BaseGameSocketHandler
         this.setShowingLeaderboard(true);
     }
     onShowNewQuestion(packet: QuestionChangeSockMsg): void {
-        console.log("Received:", packet.question);
         const q = deserialize_component(packet.question) as QuestionComponent<BaseQuestionProps>;
         if(!q) throw new Error("Quizz deserialization error");
 
-        console.log("Received question:", packet.question, JSON.stringify(packet.question));
         this.setAnswers([]);
         this.setMyAnswer(undefined);
         this.setCorrectAnswer(undefined);

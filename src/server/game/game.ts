@@ -201,9 +201,6 @@ export default class Game
     {
         const question = this.currentQuestion;
         if(!question) return undefined;
-        console.log("Question object:", question);
-        console.log("Question answers:", question.children);
-        console.log("JSONified:", JSON.stringify(question.toJSON()));
         return { 'type': 'new_question', 'question': question.toJSON(), 'time_override': this.getTimeLeft() ? Math.floor(this.getTimeLeft()! / 1000) : undefined };
     }
     /**
@@ -226,7 +223,6 @@ export default class Game
         if(!this.isOwner(user)) return false;
         if(this._state !== GameState.LOBBY) return false;
 
-        console.log("Game started.");
         this._state = GameState.QUESTION_RESULTS;
         this._currentQuestion = -1;
 
@@ -240,10 +236,8 @@ export default class Game
         if(!this.isOwner(user)) return false;
         if(this._state !== GameState.QUESTION_RESULTS) return false;
 
-        console.log("Next question asked.");
         ++this._currentQuestion;
         const packet = this.currentQuestionPacket;
-        console.log(packet);
         if(!packet) { return false; }  // Should never happen
 
         this._state = GameState.QUESTION;
@@ -268,7 +262,6 @@ export default class Game
         if(!this.isOwner(user)) return false;
         if(this._state !== GameState.QUESTION) return false;
 
-        console.log("Results asked early.");
         return this.haltCurrentQuestion();
     }
     haltCurrentQuestion(): boolean
@@ -278,10 +271,6 @@ export default class Game
 
         const packet = this.currentLeaderboardPacket;
         this._state = packet.ended ? GameState.ENDED : GameState.QUESTION_RESULTS;
-
-        if(this._state === GameState.ENDED) console.log("Game ended.");
-        else console.log("Showing results.");
-        console.log("Halt Question:", packet);
 
         this.broadcast(packet);
         return true;

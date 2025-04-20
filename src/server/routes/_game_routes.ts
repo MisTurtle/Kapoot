@@ -96,7 +96,6 @@ router.ws('/stateProvider', (ws, req) => {
                 game.emote(gamePlayer, packet.emote ?? 0);
                 break;
             case 'user_answer':
-                console.log("Received user answer");
                 game.answer(gamePlayer, packet.answer);
                 break;
 

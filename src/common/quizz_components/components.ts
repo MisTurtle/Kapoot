@@ -236,8 +236,7 @@ export function emptyQuizz() { return new SimpleQuizzComponent({}); }
 export function deserialize_component(data: any): KapootLeafComponent<any> | undefined
 {
     if(typeof data === 'string') data = JSON.parse(data);
-    console.log("Deserializing component ", data);
-
+    
     switch(data[FIELD_TYPE])
     {
         case 'a:open':
