@@ -194,6 +194,7 @@ const AccountContent = () => {
             {quizzes.length > 0 ? (
               <div className={styles.userQuizzContainer}>
                 <span className={styles.quizzContainerTitle}>Your quizz{quizzes.length > 1 ? 'es' : ''}</span>
+                <span className={styles.newQuizz} onClick={createQuizz}>Make a new one!</span>
                 {quizzes.map((quizz, index) => (                      
                   <div className={styles.quizzContainer} key={index}>
                     <div className={styles.quizzSection}>
@@ -219,7 +220,8 @@ const AccountContent = () => {
                       {/* <div className={styles.questionsContainer}> */}
                         {quizz.children.length > 0 ? ( quizz.children.map((question, idx) => (
                           <div className={styles.question} key={idx}>
-                            <span>Question {idx+1} : {question.get("label")}</span>
+                            <span className={styles.questionTitle}>Question {idx+1} : {question.get("label")}</span>
+                            <span className={styles.questionDescription}>{question.get("description")}</span>
                           </div>
                           
                           ))
