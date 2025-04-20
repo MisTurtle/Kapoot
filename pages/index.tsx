@@ -40,6 +40,11 @@ const IndexContent = () => {
         e.preventDefault();
         var target: { value: number }[] = e.target as any;
 
+        if(!user) {
+            router.push(`/create-username?gamecode=${target[0].value}`);
+            return;
+        }
+
         fetch(`/api/game/${target[0].value}`, { method: 'PUT' })
         .then(async res => handle(
             res,

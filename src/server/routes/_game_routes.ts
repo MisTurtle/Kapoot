@@ -4,6 +4,7 @@ import { SimpleQuizzComponent } from '@common/quizz_components/components.jsx';
 import { error, success } from '@common/responses';
 import KapootGameManager from '@server/game/game_manager';
 import expressWs, { Application } from 'express-ws';
+import { randomIGN } from "@server/utils/ign";
 
 export const router = express.Router() as Application;  // Bait to remove the error saying router isn't compatible with websockets
 expressWs(router);
@@ -53,6 +54,15 @@ router.put('/:game_id', (req, res) => {
 
     let reqGame = KapootGameManager.getGameById(parseInt(req.params.game_id));
     if(!reqGame) return error(res, "Room doesn't exist");
+
+    const { username } = req.body;
+
+    if (username && username.trim() !== "") {
+        
+        req.gamePlayer.username = username;
+    } else {
+        req.gamePlayer.username = randomIGN(); 
+    }
 
     if(!reqGame.add(req.gamePlayer)) return error(res, "You are already in this game");
     return success(res, reqGame.toJSON());
