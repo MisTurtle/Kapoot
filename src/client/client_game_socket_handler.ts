@@ -76,9 +76,9 @@ export default class ClientGameSocketHandler extends BaseGameSocketHandler
     
     onShowLeaderboard(packet: ShowLeaderboardSockMsg): void {
         this.setPlayers(packet.players);
-        this.setShowingLeaderboard(true);
         this.setCorrectAnswer(packet.prev_answer);
         this.setEnded(packet.ended);
+        this.setShowingLeaderboard(true);
     }
     onShowNewQuestion(packet: QuestionChangeSockMsg): void {
         const q = deserialize_component(packet.question) as QuestionComponent<BaseQuestionProps>;

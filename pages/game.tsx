@@ -177,7 +177,7 @@ const GamePageContent = () => {
         { currentQuestion && showLeaderboard &&
             <>
                 { /* Show correction */ }
-                { correctAnswer && 
+                { correctAnswer !== undefined && 
                     <div className={styles.correctAnswerDisplay}>
                         <h1>Correct Answer</h1>
                         <p>{currentQuestion.children[correctAnswer].get('label')}</p>
@@ -194,7 +194,7 @@ const GamePageContent = () => {
                 </div>
 
                 { /* Continue button */ }
-                { isOwner && <button className={styles.actionButton} onClick={() => socketHandlerRef.current?.nextQuestion()}><ChevronRightIcon />Next Question</button> }
+                { isOwner && !ended && <button className={styles.actionButton} onClick={() => socketHandlerRef.current?.nextQuestion()}><ChevronRightIcon />Next Question</button> }
             </>
             
         }

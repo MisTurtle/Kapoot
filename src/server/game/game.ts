@@ -211,7 +211,7 @@ export default class Game
         return { 
             'type': 'leaderboard',
             'players': this.players,
-            'prev_answer': this.currentQuestion?.get('answer') as number,
+            'prev_answer': (this.currentQuestion?.get('answer') ?? 0) as number,
             'ended': this._currentQuestion === this._quizz.children.length - 1
         };
     }
@@ -278,6 +278,7 @@ export default class Game
 
         if(this._state === GameState.ENDED) console.log("Game ended.");
         else console.log("Showing results.");
+        console.log("Halt Question:", packet);
 
         this.broadcast(packet);
         return true;
