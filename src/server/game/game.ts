@@ -62,6 +62,11 @@ export default class Game
         return this.ownerSockets.concat(this.playerSockets);
     }
 
+    get ended(): boolean
+    {
+        return this._state === GameState.ENDED;
+    }
+
     equals(p1: GamePlayer, p2: GamePlayer)
     {
         return (
@@ -175,8 +180,20 @@ export default class Game
 
     computePoints(): number
     {
-        console.log(this.getTimeLeft());
-        return 100;
+        let timeLeft = this.getTimeLeft();
+        const duration = this._questionDuration;
+        if(timeLeft === undefined || duration === undefined || duration === 0) return 0;
+        
+        timeLeft /= 1000;
+        const elapsed = duration - timeLeft;
+        const maxPoints = 1000;
+        const minPoints = 250;
+
+        if(elapsed < 0.75) return maxPoints;
+        const x = 1 - (elapsed - 0.75) / duration;
+        const points = minPoints - (maxPoints - minPoints) * Math.tanh((x - 1) * 2.5);
+        
+        return Math.floor(Math.min(maxPoints, Math.max(minPoints, points)));
     }
 
     broadcast(msg: GameSockMsg): void;
@@ -268,11 +285,13 @@ export default class Game
     {
         if(this._state !== GameState.QUESTION) return false;
         clearTimeout(this._currentQuestionHaltTask);
+        this._currentQuestionHaltTask = undefined;
 
         const packet = this.currentLeaderboardPacket;
         this._state = packet.ended ? GameState.ENDED : GameState.QUESTION_RESULTS;
 
         this.broadcast(packet);
+        // TODO : Delete game after some time
         return true;
     }
     /**
@@ -303,12 +322,12 @@ export default class Game
     // TODO : Destroy game once ended
     // TODO : Setup a session that joins after the game has already started
 
-    toJSON(): SharedGameValues
+    initiateFor(user: GamePlayer): GamePageInitiatorValues
     {  // TODO : Filter out quizz answers and player sockets + player sessions
         return {
             id: this._id,
             owner: this._owner,
-            quizz: this._quizz,
+            self: user,
             players: this._players
         };
     }

@@ -20,7 +20,7 @@ router.get('/', (req, res) => {
     if(!req.gamePlayer) return error(res, 'No game found');  // Shouldn't happen as req.gamePlayer is already filled in no matter what at this point 
     const game = KapootGameManager.getPlayerGame(req.gamePlayer);
     if(!game) return error(res, 'No game found');
-    return success(res, game.toJSON());
+    return success(res, game.initiateFor(req.gamePlayer));
 });
 
 /**
@@ -65,7 +65,7 @@ router.put('/:game_id', (req, res) => {
     }
 
     if(!reqGame.add(req.gamePlayer)) return error(res, "You are already in this game");
-    return success(res, reqGame.toJSON());
+    return success(res, reqGame.initiateFor(req.gamePlayer));
 });
 
 

@@ -56,7 +56,7 @@ class GameManager {
     }
     getPlayerGame(user: GamePlayerIdentifier): Game | undefined
     {
-        return Object.values(this._games).find(game => game.contains(user));
+        return Object.values(this._games).find(game => !game.ended && game.contains(user));
     }
     isPlaying(user: GamePlayerIdentifier): boolean
     {
