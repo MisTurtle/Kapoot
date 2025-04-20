@@ -117,9 +117,12 @@ export class SimpleQuestionComponent extends QuestionComponent<SimpleQuestionPro
 
     static deserialize_component(data: { [FIELD_TYPE]: string, [FIELD_PROPERTIES]: SimpleQuestionProps, [FIELD_CHILDREN]: any[] }): SimpleAnswerComponent
     {
-        console.log("Question children:", data[FIELD_CHILDREN]);
-        const ans = data[FIELD_CHILDREN].map((props: any) => new SimpleAnswerComponent(props));
-        return new SimpleQuestionComponent(data[FIELD_PROPERTIES], ...ans);
+        const properties = data[FIELD_PROPERTIES];
+        const children: { type: string, properties: SimpleAnswerProps }[] = data[FIELD_CHILDREN];
+        const childProperties: Partial<BaseProps>[] = children.map(child => child.properties);
+
+        const ans = childProperties.map((props: any) => new SimpleAnswerComponent(props));
+        return new SimpleQuestionComponent(properties, ...ans);
     }
     
     checkAnswer(answer: any): boolean {
@@ -233,8 +236,7 @@ export function emptyQuizz() { return new SimpleQuizzComponent({}); }
 export function deserialize_component(data: any): KapootLeafComponent<any> | undefined
 {
     if(typeof data === 'string') data = JSON.parse(data);
-    console.log("Deserializing component ", data);
-
+    
     switch(data[FIELD_TYPE])
     {
         case 'a:open':

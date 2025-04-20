@@ -57,7 +57,6 @@ export default class ClientGameSocketHandler extends BaseGameSocketHandler
     }
 
     onChatMessage(packet: ChatMessageSockMsg): void {
-        console.log("OnChatMessage called.");
         this.setChatMessages(prev => [packet.msg].concat(prev.slice(0, 9)));
     }
     sendChatMessagePacket(cnt: string): boolean {
@@ -77,6 +76,8 @@ export default class ClientGameSocketHandler extends BaseGameSocketHandler
     onShowLeaderboard(packet: ShowLeaderboardSockMsg): void {
         this.setPlayers(packet.players);
         this.setCorrectAnswer(packet.prev_answer);
+        clearInterval(this.timer);
+        this.setTimerValue(0);
         this.setEnded(packet.ended);
         this.setShowingLeaderboard(true);
     }
@@ -112,5 +113,5 @@ export default class ClientGameSocketHandler extends BaseGameSocketHandler
     // Owner Controls //
     startGame(): void { this.send({ 'type': 'owner_start_game' }); }
     nextQuestion(): void { this.send({ 'type': 'owner_next_question' }); }
-    stopEarly(): void { this.send({ 'type': 'owner_stop_early' }); }
+    stopEarly(): void { this.send({ 'type': 'owner_stop_early' }); clearInterval(this.timer); }
 }

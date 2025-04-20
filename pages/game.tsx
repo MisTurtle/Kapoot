@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import FloatingEmotes from "@components/misc/FloatingEmotes"
 import { emoteChars, getEmoteIcon } from "@client/utils";
-import { CheckCheck, ChevronRightIcon, CrossIcon, Users, X, XCircle } from "lucide-react";
+import { CheckCheck, ChevronRightIcon, CrossIcon, Home, Users, X, XCircle } from "lucide-react";
 import { QuestionComponent } from "@common/quizz_components/components";
 import { renderInEditor, renderInGame } from "@client/quizz_components/component_render_map";
 import { ContextMenuProvider } from "@contexts/EditorContextMenus";
@@ -28,7 +28,7 @@ const GamePageContent = () => {
     const socketRef = useRef<WebSocket | undefined>(undefined);
     const socketHandlerRef = useRef<ClientGameSocketHandler | null>(null);
 
-    const [ game, setGame ] = useState<SharedGameValues | undefined | null>();
+    const [ game, setGame ] = useState<GamePageInitiatorValues | undefined | null>();
     const [ players, setPlayers ] = useState<GamePlayer[]>([]);
 
     const [ showLeaderboard, setShowLeaderboard ] = useState(false);
@@ -68,7 +68,7 @@ const GamePageContent = () => {
      * First check to see if the game exists and perform a first render
      */
     useEffect(() => {
-        fetch('/api/game', { method: 'GET' }).then(async res => handle<SharedGameValues>(
+        fetch('/api/game', { method: 'GET' }).then(async res => handle<GamePageInitiatorValues>(
             res,
             (result) => {
                 setGame(result);
@@ -111,6 +111,10 @@ const GamePageContent = () => {
     if(loading || game === undefined) return <Loading />;
     if(game === null) { router.push('/'); return; }
 
+    const playersWithoutSelf = players.slice();
+    const selfIndex = playersWithoutSelf.findIndex(q => q.username === game.self.username);
+    if(selfIndex >= 0) playersWithoutSelf.splice(selfIndex, 1);
+
     return (
         <HeroPage className={styles.heroPage}>
         
@@ -124,8 +128,9 @@ const GamePageContent = () => {
                 <div className={styles.playersContainer}>
                     <h1>{players.length} player{players.length > 1 ? 's' : ''}</h1>
                     <div className={styles.playersList}>
-                        {players.map((gamePlayer, idx) => (
-                            <span key={idx} className={styles.playerUsername}>{gamePlayer.username ?? "N/A"}</span>
+                        { !isOwner && <div className={styles.selfPlayerCard}>{game.self.username}</div> }
+                        {(isOwner ? players : playersWithoutSelf).map((gamePlayer, idx) => (
+                            <div key={idx} className={styles.playerCard}>{gamePlayer.username ?? "N/A"}</div>
                         ))}
                     </div>
                 </div>
@@ -178,23 +183,45 @@ const GamePageContent = () => {
             <>
                 { /* Show correction */ }
                 { correctAnswer !== undefined && 
-                    <div className={styles.correctAnswerDisplay}>
-                        <h1>Correct Answer</h1>
-                        <p>{currentQuestion.children[correctAnswer].get('label')}</p>
+                    <div className={`${styles.correctAnswerDisplay} ${(isOwner || myAnswer === correctAnswer) ? styles.correct : styles.incorrect}`}>
+                        {!isOwner && <h1>{(myAnswer && myAnswer === correctAnswer) ? 'Amazing' : 'Woopsie !'}</h1>}
+                        { isOwner && <h1>Correct Answer</h1>}
+                        
+                        {myAnswer && myAnswer !== correctAnswer ? (
+                            <div>
+                                <p className={`${styles.incorrectAnswer}`}>{currentQuestion.children[myAnswer].get('label')}</p>
+                                <p className={`${styles.correctAnswer}`}>{currentQuestion.children[correctAnswer].get('label')}</p>
+                            </div>
+                        ) : (
+                            <p>{currentQuestion.children[correctAnswer].get('label')}</p>
+                        )}
                     </div>
                 }
 
                 { /* Show leaderboard */ }
                 <div className={styles.leaderboardDisplay}>
                     { 
-                        players.sort((a, b) => (a.points ?? 0) - (b.points ?? 0)).map(
-                            (p, idx) => <p key={idx}>{p.username} ({p.points})</p>
-                        )
+                        players.sort((a, b) => (b.points ?? 0) - (a.points ?? 0)).slice(0, 8).map((p, idx) => {
+                            let rankClass = '';
+                            if (idx === 0) rankClass = styles.gold;
+                            else if (idx === 1) rankClass = styles.silver;
+                            else if (idx === 2) rankClass = styles.bronze;
+                            else rankClass = styles.regular;
+                            
+                            return (
+                                <div key={idx} className={rankClass}>
+                                    <span>{p.username}</span>
+                                    <span className={styles.points}>{p.points ?? 0}</span>
+                                </div>
+                            );
+                        })
                     }
                 </div>
-
                 { /* Continue button */ }
                 { isOwner && !ended && <button className={styles.actionButton} onClick={() => socketHandlerRef.current?.nextQuestion()}><ChevronRightIcon />Next Question</button> }
+                { /* Home button */ }
+                { isOwner && ended && <button className={styles.actionButton} onClick={() => router.push('/account')}><X /> Finish</button> }
+                { !isOwner && ended && <button className={styles.actionButton} onClick={() => router.push('/')}><Home /> Home</button> }
             </>
             
         }
