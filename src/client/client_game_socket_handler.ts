@@ -12,7 +12,8 @@ export default class ClientGameSocketHandler extends BaseGameSocketHandler
         private spawnEmote: (emote: number) => void,
         private setShowingLeaderboard: Dispatch<SetStateAction<boolean>>,
         private setCurrentQuestion: Dispatch<SetStateAction<QuestionComponent<BaseQuestionProps> | undefined>>,
-        private setEnded: Dispatch<SetStateAction<boolean>>
+        private setEnded: Dispatch<SetStateAction<boolean>>,
+        private setAnswers: Dispatch<SetStateAction<number[]>>
     ) {
         super();
         this.setupSocket();
@@ -73,8 +74,16 @@ export default class ClientGameSocketHandler extends BaseGameSocketHandler
         this.setEnded(packet.ended);
     }
     onShowNewQuestion(packet: QuestionChangeSockMsg): void {
+        this.setAnswers([]);
         this.setCurrentQuestion(deserialize_component(packet.question) as QuestionComponent<BaseQuestionProps>);
         this.setShowingLeaderboard(false);
+    }
+
+    onUserAnswers(packet: PlayerAnswerSockMsg): void {
+        throw new Error("This packet should not be received by a client.");
+    }
+    addOneAnswer(packet: SomeUserAnsweredSockMsg): void {
+        this.setAnswers(packet.answers);
     }
 
     // Player Controls //

@@ -11,6 +11,7 @@ export default class Game
     private _players: GamePlayer[];
     private _state: GameState;
     private _currentQuestion: number;
+    private _answeredPlayers: GamePlayer[];
 
     private _currentQuestionHaltTask: NodeJS.Timeout | undefined;
     private _questionStart: number | undefined;
@@ -26,6 +27,7 @@ export default class Game
         this._settings = settings;
 
         this._players = [];
+        this._answeredPlayers = [];
         this._state = GameState.LOBBY;
         this._currentQuestion = 0;
     }
@@ -78,11 +80,12 @@ export default class Game
         return this.get(user) !== undefined;
     }
 
-    get(user: GamePlayerIdentifier): GamePlayer | undefined
+    get(user: GamePlayerIdentifier): GamePlayer | undefined;
+    get(user: GamePlayerIdentifier, among: GamePlayer[]): GamePlayer | undefined;
+    get(user: GamePlayerIdentifier, among?: GamePlayer[]): GamePlayer | undefined
     {
         if(this.isOwner(user)) return this._owner;
-
-        return this._players.find(p => this.equals(user, p));
+        return (among ?? this._players).find(p => this.equals(user, p));
     }
 
     add(user: GamePlayer): boolean
@@ -142,15 +145,19 @@ export default class Game
         const gamePlayer = this.get(user);
 
         if(!gamePlayer) return false;
-        if(this.isOwner(user)) return false; // Owner can't answer
+        if(this.isOwner(user)) return false;  // Owner can't answer
         if(this._state !== GameState.QUESTION) return false;
+        if(this.get(gamePlayer, this._answeredPlayers)) return false;  // Already answered
+
+        // Register the user's answer
+        gamePlayer.lastAnswer = answer;
+        this._answeredPlayers.push(gamePlayer);
 
         // Add one answer on the owner's view
-        this.broadcast({ 'type': 'add_one_answer' }, [this.owner]);
-        // Register the answer and add the points
         if(this.currentQuestion?.checkAnswer(answer))
             gamePlayer.points = (gamePlayer.points ?? 0) + this.computePoints();
 
+        this.broadcast({ 'type': 'update_answer_count', answers: this._answeredPlayers.map(p => p.lastAnswer!) }, [this.owner]);
         return true;
     }
 
@@ -176,10 +183,7 @@ export default class Game
     {
         const targets = recipients ?? this.everyone;
         for(const target of targets)
-        {
-            // console.log("Sending ", msg, " to ", target);
             (target.sockets ?? []).forEach(sock => sock.send(JSON.stringify(msg)));
-        }
     }
 
     get currentQuestion(): QuestionComponent<BaseQuestionProps> | undefined
@@ -238,6 +242,10 @@ export default class Game
         this._questionStart = Date.now();
         this._questionDuration = delay;
 
+        // Reset answers
+        this._answeredPlayers = [];
+        this.everyone.forEach(p => p.lastAnswer = undefined);
+
         this.broadcast(packet);
         return true;
     }
@@ -288,6 +296,8 @@ export default class Game
         packets.forEach(p => { if(p) this.broadcast(p, to) });
     }
 
+    // TODO : Add one answer on the owner's view
+    // TODO : Change view when user answers
     // TODO : Destroy game once ended
     // TODO : Setup a session that joins after the game has already started
 

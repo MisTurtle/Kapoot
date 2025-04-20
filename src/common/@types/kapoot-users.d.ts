@@ -19,6 +19,7 @@ declare global {
     type GamePlayer = GamePlayerIdentifier & { 
         currentGame?: GameIdentifier,
         points?: number,
+        lastAnswer?: number,
         sockets?: WebSocket[]
     } & AccountCosmetics;
 }

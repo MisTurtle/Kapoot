@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import FloatingEmotes from "@components/misc/FloatingEmotes"
 import { emoteChars, getEmoteIcon } from "@client/utils";
-import { ChevronRightIcon, CrossIcon, XCircle } from "lucide-react";
+import { ChevronRightIcon, CrossIcon, Users, XCircle } from "lucide-react";
 import { QuestionComponent } from "@common/quizz_components/components";
 import { renderInEditor, renderInGame } from "@client/quizz_components/component_render_map";
 import { ContextMenuProvider } from "@contexts/EditorContextMenus";
@@ -23,6 +23,7 @@ const GamePageContent = () => {
     const { user, loading } = useAuth();
     const { showPopup } = usePopup();
 
+    const answerCountRef = useRef<HTMLDivElement | null>(null);
     const socketRef = useRef<WebSocket | undefined>(undefined);
     const socketHandlerRef = useRef<ClientGameSocketHandler | null>(null);
 
@@ -30,11 +31,12 @@ const GamePageContent = () => {
     const [ players, setPlayers ] = useState<GamePlayer[]>([]);
     const [ showLeaderboard, setShowLeaderboard ] = useState(false);
     const [ currentQuestion, setCurrentQuestion ] = useState<QuestionComponent<BaseQuestionProps> | undefined>(undefined);
+    const [ answers, setAnswers ] = useState<number[]>([]);
     const [ ended, setEnded ] = useState<boolean>(false);
 
     const [ chatInput, setChatInput ] = useState("");
     const [ chatMessages, setChatMessages ] = useState<ChatMessage[]>([]);
-    const [ expanded, setExpanded ] = useState(false);
+    const [ emotesExpanded, setEmotesExpanded ] = useState(false);
     const [ floatingEmotes, setFloatingEmotes ] = useState<EmoteData[]>([]);
 
     const isOwner = user && game?.owner.accountId === user?.identifier;
@@ -84,16 +86,27 @@ const GamePageContent = () => {
         socketRef.current = socket;
 
         const showError = (err: string) => showPopup('error', err, 5.0);
-        socketHandlerRef.current = new ClientGameSocketHandler( socket, showError, setPlayers, setChatMessages, spawnEmote, setShowLeaderboard, setCurrentQuestion, setEnded );
+        socketHandlerRef.current = new ClientGameSocketHandler( socket, showError, setPlayers, setChatMessages, spawnEmote, setShowLeaderboard, setCurrentQuestion, setEnded, setAnswers );
 
         return () => socket.close();
     }, [game, user]);
+
+    /**
+     * Animate the answer count everytime someone submits an answer
+     */
+    useEffect(() => {
+        const el = answerCountRef.current;
+        if (!el) return;
+        el.classList.remove(styles.updated);
+        void el.offsetWidth;
+        el.classList.add(styles.updated);
+    }, [answers.length]);
 
     if(loading || game === undefined) return <Loading />;
     if(game === null) { router.push('/'); return; }
 
     return (
-        <HeroPage className={styles.previewSection}>
+        <HeroPage className={styles.heroPage}>
         
         { /* Lobby Specific elements */ }
         { currentQuestion === undefined && 
@@ -144,12 +157,21 @@ const GamePageContent = () => {
             socketHandlerRef.current?.submitAnswer(answer);
         })}
 
+        {isOwner && currentQuestion && !showLeaderboard && (
+            <div ref={answerCountRef} className={`${styles.answerStatus} ${styles.updated}`}>
+                <Users />
+                <p className={styles.answerCount}>
+                    {answers.length} / {players.length}
+                </p>
+            </div>
+        )}
+
         { /* Constant accross all views */ }
         <div
-            className={`${styles.emoteButtons} ${expanded ? styles.expanded : ''}`}
-            onClick={() => setExpanded(prev => !prev)}
+            className={`${styles.emoteButtons} ${emotesExpanded ? styles.expanded : ''}`}
+            onClick={() => setEmotesExpanded(prev => !prev)}
         >
-            { !expanded && <span>{getEmoteIcon(0)}</span> }
+            { !emotesExpanded && <span>{getEmoteIcon(0)}</span> }
 
             <div className={styles.emoteButtonList}>
             {emoteChars.map((emote, i) => (

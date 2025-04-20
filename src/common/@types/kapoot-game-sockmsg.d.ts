@@ -14,7 +14,7 @@ declare global {
     /** Game Events */
     type QuestionChangeSockMsg = { type: "new_question", question: QuestionComponent };
     type ShowLeaderboardSockMsg = { type: "leaderboard", players: GamePlayer[], ended: boolean };
-    type SomeUserAnsweredSockMsg = { type: "add_one_answer" };
+    type SomeUserAnsweredSockMsg = { type: "update_answer_count", answers: number[] };
 
     type GameSockMsg = PlayerJoinSockMsg | PlayerLeftSockMsg | ChatMessageSockMsg | EmoteSockMsg | PlayerAnswerSockMsg | QuestionChangeSockMsg | ShowLeaderboardSockMsg | SomeUserAnsweredSockMsg;
 

@@ -16,10 +16,10 @@
     display: flex;
     align-items: center;
 
-    background-color: rgba($lighter, 0.25);
-    border-radius: 1rem;
-    border: 3px solid $dark;
-    box-shadow: 2px 2px 4px $darker;
+    background-color: rgba($lighter, 0.75);
+    border-radius: 1.5rem;
+    border: 2px solid $accent;
+    box-shadow: 2px 2px 4px rgba($darker, 0.15);
     padding: 0.5rem 1rem;
     margin: 1rem;
     gap: 1rem;

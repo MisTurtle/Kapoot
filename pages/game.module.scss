@@ -1,5 +1,13 @@
 @use "@styles/variables" as *;
 
+.heroPage {
+  position: relative !important;
+  height: 100vh;
+  z-index: 0;
+  flex-direction: column !important;
+  justify-content: space-evenly !important;
+}
+
 .lobbyContainer {
     display: flex;
     flex-direction: column;
@@ -68,14 +76,6 @@
         }
       }
 }
-
-.previewSection {
-  position: relative !important;
-  height: 100vh;
-  z-index: 0;
-  flex-direction: column !important;
-  justify-content: space-evenly !important;
-}
   
 .emoteButtons {
   display: flex;
@@ -86,8 +86,8 @@
   min-height: 60px;
   max-height: 60px;
   border-radius: 50%;
-  border: 3px solid $accent;
-  background-color: $lighter;
+  border: 2px solid $accent;
+  background-color: rgba($lighter, 0.75);
   box-shadow: 0 4px 12px rgba($darker, 0.15);
   cursor: pointer;
   overflow: hidden;
@@ -114,7 +114,6 @@
     opacity: 0;
     overflow: hidden;
     transition: all 0.5s ease;
-    gap: 0.5rem;
   }
 
   &.expanded {
@@ -151,3 +150,41 @@
     }
   }
 }
+
+.answerStatus {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  background-color: rgba($lighter, 0.75);
+  color: $darker;
+  font-size: 2rem;
+  font-weight: bold;
+  border: 2px solid $accent;
+  border-radius: 1.5rem;
+  box-shadow: 2px 2px 4px rgba($darker, 0.15);
+  transition: transform 0.2s ease;
+
+  &.updated {
+    animation: pop 0.3s ease;
+  }
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+

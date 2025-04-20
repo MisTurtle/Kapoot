@@ -10,7 +10,9 @@ export abstract class BaseGameSocketHandler
         'chat_msg': this.onChatMessage.bind(this),
         'emote': this.onEmote.bind(this),
         'leaderboard': this.onShowLeaderboard.bind(this),
-        'new_question': this.onShowNewQuestion.bind(this)
+        'new_question': this.onShowNewQuestion.bind(this),
+        'user_answer': this.onUserAnswers.bind(this),
+        'update_answer_count': this.addOneAnswer.bind(this)
     };
 
     handle(packet: GameSockMsg): void { this.fnMap[packet.type](packet as any); }
@@ -29,4 +31,7 @@ export abstract class BaseGameSocketHandler
 
     abstract onShowLeaderboard(packet: ShowLeaderboardSockMsg): void;
     abstract onShowNewQuestion(packet: QuestionChangeSockMsg): void;
+
+    abstract onUserAnswers(packet: PlayerAnswerSockMsg): void;
+    abstract addOneAnswer(packet: SomeUserAnsweredSockMsg): void;
 }
