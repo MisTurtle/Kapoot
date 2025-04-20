@@ -1,4 +1,5 @@
 @use "@styles/variables" as *;
+@use 'sass:color';
 
 .heroPage {
   position: relative !important;
@@ -9,74 +10,265 @@
 }
 
 .lobbyContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .playersContainer {
     display: flex;
     flex-direction: column;
     align-items: center;
 
-    .playersContainer {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-
-        .playerTitle {
-            font-size: $fs-huge;
-            font-family: $title;
-            font-weight: bold;
-        }
-
-        .playersList {
-            display: flex;
-
-            .playerUsername {
-                padding: 5px;
-                border: 4px solid $lighter;
-                box-shadow: 4px 4px 5px 0px $dim;
-            }
-        }
+    .playerTitle {
+      font-size: $fs-huge;
+      font-family: $title;
+      font-weight: bold;
     }
 
-    .chatContainer {
-        display: flex;
-        flex-direction: column-reverse;
-        max-height: 300px; 
-        overflow-y: auto; 
-        border: 1px solid #ccc; 
-        padding: 10px; 
-        margin-bottom: 1rem;
+    .playersList {
+      display: flex;
 
-        p {
-            font-size: $fs-small;
-        }
+      .playerUsername {
+        padding: 5px;
+        border: 4px solid $lighter;
+        box-shadow: 4px 4px 5px 0px $dim;
+      }
+    }
+  }
+  
+
+  /* Responsivité pour les petits écrans */
+  @media (max-width: 768px) {
+    .emoteContainer {
+      max-height: 120px;
+      /* Moins d'espace sur les petits écrans */
+    }
+
+    .emoteButton {
+      font-size: 1rem;
+      /* Réduire la taille des boutons sur les petits écrans */
+    }
+  }
+
+  @keyframes moveShadow {
+    0% {
+      box-shadow: 8px 8px 0px rgba(0, 0, 0, 1);
+    }
+
+    50% {
+      box-shadow: -8px 8px 0px rgba(0, 0, 0, 0.7);
+    }
+
+    100% {
+      box-shadow: 8px 8px 0px rgba(0, 0, 0, 1);
+    }
+  }
+
+  @keyframes moveContainer {
+    0% {
+      transform: skew(-10deg);
+    }
+
+    50% {
+      transform: skew(-10deg) translateX(8px);
+    }
+
+    100% {
+      transform: skew(-10deg);
+    }
+  }
+
+  .pinContainer {
+    position: absolute;
+    top: 2rem;
+    background: $lighter;
+    padding: 1.5rem 3rem;
+    display: inline-block;
+    border: 8px solid $accent;
+    border-radius: 0.5rem;
+    margin: 2rem auto;
+    text-align: center;
+    animation: moveShadow 5s ease-in-out infinite, moveContainer 5s ease-in-out infinite;
+  }
+
+  .gamePin {
+    transform: skew(10deg);
+    font-size: 3rem;
+    font-weight: 900;
+    color: $darker;
+    letter-spacing: 0.15rem;
+    margin: 0;
+  }
+}
+
+.actionButton {
+  position: absolute;
+  bottom: 1rem;
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  font-size: $fs-medium;
+  background-color: rgba($lighter, 0.75);
+  border: 3px solid $accent;
+  border-radius: 1rem;
+  cursor: pointer;
+  transition: all $t-medium ease-in-out;
+
+  font-family: $text;
+  font-weight: bold;
+  color: $accentDarker;
+
+  svg {
+    margin-right: 0.8rem;
+    color: $accentDarker;
+    stroke-width: 6px;
+    width: 24px;
+    height: 24px;
+    transition: all $t-medium ease-in-out;
+  }
+
+  &:hover {
+    background-color: $lighter;
+    color: $primaryDarker;
+    border-color: $primaryDarker;
+    svg {
+      color: $primaryDarker;
+      margin-right: 1rem;
+    }
+  }
+
+  &:focus {
+    outline: none; /* Remove outline on focus */
+    border-color: $primary; /* Keep the green border when focused */
+  }
+
+  &:active {
+    background-color: color.adjust($lighter, $lightness: -10%); /* Darker background when active */
+  }
+}
+
+
+.chatWrapper {
+  position: absolute;
+  left: 2rem;
+  bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 100%; /* Full width by default */
+  width: 100%; /* Allow it to stretch fully on small screens */
+  max-width: 300px; /* Max width for larger screens */
+  margin: 0 auto;
+
+  .chatContainer {
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 1rem;
+    background-color: $lighter;
+    border-radius: 1.5rem 1.5rem 0 0;
+    font-size: 1rem;
+    width: 100%;
+  
+    p {
+      margin: 0.5rem 0;
+      color: $darker;
+      line-height: 1.5;
+    }
+  
+    strong {
+      color: $primaryDarker;
+    }
+  }
+
+  .messageForm {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    background-color: $lighter;
+    border-radius: 0 0 1.5rem 1.5rem;
+    transition: all 0.3s ease-in-out;
+    width: 100%;
+  }
+
+  .inputMessage {
+    width: 80%;
+    padding: 0.8rem 1rem;
+    font-size: 1rem;
+    border: 1px solid $darker;
+    border-radius: 1rem;
+    outline: none;
+    transition: border-color 0.3s ease-in-out;
+    background-color: $lighter;
+    color: $darker;
+
+    &::placeholder {
+      color: $darker;
+    }
+
+    &:focus {
+      border-color: $primary;
+    }
+  }
+
+  .sendMessage {
+    padding: 0.8rem 1.2rem;
+    margin-left: 1rem;
+    font-size: 1rem;
+    color: $lighter;
+    background-color: $accent;
+    border: none;
+    border-radius: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+
+    &:hover {
+      background-color: $accentDarker;
+    }
+
+    &:active {
+      background-color: color.adjust($accent, $lightness: -20%);
+    }
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  .chatContainer p {
+    word-wrap: break-word;
+    white-space: normal;
+  }
+
+  @media (max-width: 480px) {
+    display: none;
+    max-width: 100%; /* Allow full width */
+    left: 1rem;
+    bottom: 1rem;
+    padding: 0.8rem;
+
+    .chatContainer {
+      max-height: 250px;
+      font-size: 0.85rem;
     }
 
     .messageForm {
-        display: flex;
-        flex-direction: row;
-
-        .inputMessage {
-            padding: 8px;
-            width: 80%;
-        }
-    
-        .sendMessage {
-            padding: 8px 12px; 
-            margin-left: 8px;
-            color: red;
-        }
+      padding: 0.6rem;
     }
-      
-      /* Responsivité pour les petits écrans */
-      @media (max-width: 768px) {
-        .emoteContainer {
-          max-height: 120px; /* Moins d'espace sur les petits écrans */
-        }
-      
-        .emoteButton {
-          font-size: 1rem; /* Réduire la taille des boutons sur les petits écrans */
-        }
-      }
+
+    .inputMessage {
+      width: 60%; /* Further reduce input width for mobile */
+      font-size: 0.85rem;
+    }
+
+    .sendMessage {
+      padding: 0.7rem 1rem;
+      font-size: 0.85rem;
+    }
+  }
 }
-  
+
+
 .emoteButtons {
   display: flex;
   position: fixed;
@@ -180,11 +372,12 @@
   0% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.15);
   }
+
   100% {
     transform: scale(1);
   }
 }
-

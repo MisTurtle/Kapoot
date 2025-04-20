@@ -156,13 +156,15 @@ export default class Game
         // Add one answer on the owner's view
         if(this.currentQuestion?.checkAnswer(answer))
             gamePlayer.points = (gamePlayer.points ?? 0) + this.computePoints();
-
+        
         this.broadcast({ 'type': 'update_answer_count', answers: this._answeredPlayers.map(p => p.lastAnswer!) }, [this.owner]);
+        if(this._answeredPlayers.length === this.players.length) this.haltCurrentQuestion();
+        
         return true;
     }
 
-    getTimeLeft(): number {
-        if (this._currentQuestionHaltTask === undefined || this._questionStart === undefined || this._questionDuration === undefined) return 0;
+    getTimeLeft(): number | undefined {
+        if (this._currentQuestionHaltTask === undefined || this._questionStart === undefined || this._questionDuration === undefined) return undefined;
 
         const now = Date.now();
         const elapsed = now - this._questionStart;
@@ -186,7 +188,8 @@ export default class Game
             (target.sockets ?? []).forEach(sock => sock.send(JSON.stringify(msg)));
     }
 
-    get currentQuestion(): QuestionComponent<BaseQuestionProps> | undefined
+    // TODO : Change that with new question types
+    get currentQuestion(): QuestionComponent<SimpleQuestionProps> | undefined
     {
         if(this._currentQuestion >= this._quizz.children.length) return undefined;
         return this._quizz.children[this._currentQuestion] as QuestionComponent<any>;
@@ -198,14 +201,19 @@ export default class Game
     {
         const question = this.currentQuestion;
         if(!question) return undefined;
-        return { 'type': 'new_question', 'question': question.toJSON() };
+        return { 'type': 'new_question', 'question': question.toJSON(), 'time_override': this.getTimeLeft() ? Math.floor(this.getTimeLeft()! / 1000) : undefined };
     }
     /**
      * Build the packet to display the leaderboard
      */
     get currentLeaderboardPacket(): ShowLeaderboardSockMsg
     {
-        return { 'type': 'leaderboard', 'players': this.players, 'ended': this._currentQuestion === this._quizz.children.length - 1 };
+        return { 
+            'type': 'leaderboard',
+            'players': this.players,
+            'prev_answer': this.currentQuestion?.get('answer') as number,
+            'ended': this._currentQuestion === this._quizz.children.length - 1
+        };
     }
     /**
      * Owner wants to start the game
@@ -287,6 +295,7 @@ export default class Game
             case GameState.ENDED:  // TODO : Send leaderboard
                 break;
             case GameState.QUESTION_RESULTS:
+                packets.push(this.currentQuestionPacket);
                 packets.push(this.currentLeaderboardPacket);
                 break;
             case GameState.QUESTION:  // Send question data

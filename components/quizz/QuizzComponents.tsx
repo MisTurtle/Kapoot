@@ -135,13 +135,6 @@ export const SimpleQuestion: FC<ReactQuestionComponent<SimpleQuestionComponent>>
     if(validAnswer !== (component.get('answer') ?? 0)) setValidAnswer(component.get('answer') ?? 0);
     return (
         <>
-            <div className={styles.questionTimer}>
-                <AlarmClockIcon size={34} />
-                { editor ?
-                    <input className={styles.timerValue} value={component.get('time_limit')} onChange={(e) => onChange('time_limit', e.target.value)} /> :
-                    <p className={styles.timerValue}>{component.get('time_limit')}</p>
-                }
-            </div>
             <div className={styles.questionHeader}>
                 { editor ?
                     <input className={styles.questionTitle} value={component.get('label')} onChange={(e) => onChange('label', e.target.value)} /> :

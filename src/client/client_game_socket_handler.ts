@@ -1,9 +1,11 @@
 import { BaseGameSocketHandler } from "@common/game_socket_handler";
 import { deserialize_component, QuestionComponent } from "@common/quizz_components/components";
-import { Dispatch, RefObject, SetStateAction } from "react";
+import { Dispatch, SetStateAction } from "react";
 
 export default class ClientGameSocketHandler extends BaseGameSocketHandler
 {
+    private timer?: NodeJS.Timeout;
+
     constructor(
         private socket: WebSocket,
         private showError: (err: string) => void,
@@ -13,7 +15,10 @@ export default class ClientGameSocketHandler extends BaseGameSocketHandler
         private setShowingLeaderboard: Dispatch<SetStateAction<boolean>>,
         private setCurrentQuestion: Dispatch<SetStateAction<QuestionComponent<BaseQuestionProps> | undefined>>,
         private setEnded: Dispatch<SetStateAction<boolean>>,
-        private setAnswers: Dispatch<SetStateAction<number[]>>
+        private setAnswers: Dispatch<SetStateAction<number[]>>,
+        private setTimerValue: Dispatch<SetStateAction<number>>,
+        private setMyAnswer: Dispatch<SetStateAction<number | undefined>>,
+        private setCorrectAnswer: Dispatch<SetStateAction<number | undefined>>
     ) {
         super();
         this.setupSocket();
@@ -27,6 +32,7 @@ export default class ClientGameSocketHandler extends BaseGameSocketHandler
                 this.handle(message);
             } catch(err) {
                 this.showError(`Invalid socket message '${message.type}'`);
+                console.error(err);
             }
         };
         this.socket.onerror = (err) => {
@@ -71,12 +77,23 @@ export default class ClientGameSocketHandler extends BaseGameSocketHandler
     onShowLeaderboard(packet: ShowLeaderboardSockMsg): void {
         this.setPlayers(packet.players);
         this.setShowingLeaderboard(true);
+        this.setCorrectAnswer(packet.prev_answer);
         this.setEnded(packet.ended);
     }
     onShowNewQuestion(packet: QuestionChangeSockMsg): void {
+        const q = deserialize_component(packet.question) as QuestionComponent<BaseQuestionProps>;
+        if(!q) throw new Error("Quizz deserialization error");
+
         this.setAnswers([]);
-        this.setCurrentQuestion(deserialize_component(packet.question) as QuestionComponent<BaseQuestionProps>);
+        this.setMyAnswer(undefined);
+        this.setCorrectAnswer(undefined);
+
+        this.setCurrentQuestion(q);
         this.setShowingLeaderboard(false);
+        this.setTimerValue(packet.time_override ?? q.get('time_limit') ?? 15);
+        
+        clearInterval(this.timer);
+        this.timer = setInterval(() => { this.setTimerValue(prev => prev - 1) }, 1000);
     }
 
     onUserAnswers(packet: PlayerAnswerSockMsg): void {
@@ -87,7 +104,10 @@ export default class ClientGameSocketHandler extends BaseGameSocketHandler
     }
 
     // Player Controls //
-    submitAnswer(answer: number) {this.send({ 'type': 'user_answer', 'answer': answer }); }
+    submitAnswer(answer: number) {
+        this.setMyAnswer(answer);
+        this.send({ 'type': 'user_answer', 'answer': answer });
+    }
 
     // Owner Controls //
     startGame(): void { this.send({ 'type': 'owner_start_game' }); }

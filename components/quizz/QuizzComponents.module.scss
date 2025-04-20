@@ -1,39 +1,9 @@
 @use "@styles/variables" as *;
 
-/**
- * Quizz
- */
-
-
 
 /**
  * Questions
  */
-.questionTimer {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    display: flex;
-    align-items: center;
-
-    background-color: rgba($lighter, 0.75);
-    border-radius: 1.5rem;
-    border: 2px solid $accent;
-    box-shadow: 2px 2px 4px rgba($darker, 0.15);
-    padding: 0.5rem 1rem;
-    margin: 1rem;
-    gap: 1rem;
-
-    * {
-        text-align: center;
-        font-size: $fs-medium;
-    }
-    .timerValue {
-        width: 60px; 
-        margin: 0;
-        padding: 0;
-    }
-}
 .questionHeader {
     display: flex;
     flex: 1;

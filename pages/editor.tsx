@@ -6,7 +6,7 @@ import { SimpleQuizzComponent, QuestionComponent } from '@common/quizz_component
 import { uuidChecker } from '@common/sanitizers';
 import { handle } from '@common/responses';
 import { usePopup } from '@contexts/PopupContext';
-import { ArrowLeftIcon, ArrowRightLeftIcon, PlayCircleIcon, SaveIcon } from 'lucide-react';
+import { AlarmClockIcon, ArrowLeftIcon, ArrowRightLeftIcon, PlayCircleIcon, SaveIcon } from 'lucide-react';
 
 import styles from './editor.module.scss';
 import { CustomNavBar } from '@components/NavBar';
@@ -15,6 +15,7 @@ import { renderInEditor } from '@client/quizz_components/component_render_map';
 import HeroPage from '@components/wrappers/HeroPage';
 import DeleteButton from '@components/misc/Delete';
 import { ContextMenuProvider } from '@contexts/EditorContextMenus';
+import QuestionTimer from '@components/quizz/TimerComponent';
 
 type QuestionWrapper = {
   id: number;  // The identifier in the editor
@@ -244,6 +245,14 @@ const EditorContent = () =>  {
             activeQuestion === undefined ? 
             <>No question selected</> :
             <>
+              <QuestionTimer
+                editable={editorView}
+                value={activeQuestion.question.get('time_limit')}
+                onChange={(val) => {
+                  activeQuestion.question.set('time_limit', val);
+                  onChangeHook(null);
+                }}
+              />
               { renderInEditor(activeQuestion.question, editorView, onChangeHook, validAnswer, setValidAnswer) }
             </>
           }

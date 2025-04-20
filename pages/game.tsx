@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import FloatingEmotes from "@components/misc/FloatingEmotes"
 import { emoteChars, getEmoteIcon } from "@client/utils";
-import { ChevronRightIcon, CrossIcon, Users, XCircle } from "lucide-react";
+import { CheckCheck, ChevronRightIcon, CrossIcon, Users, X, XCircle } from "lucide-react";
 import { QuestionComponent } from "@common/quizz_components/components";
 import { renderInEditor, renderInGame } from "@client/quizz_components/component_render_map";
 import { ContextMenuProvider } from "@contexts/EditorContextMenus";
@@ -17,6 +17,7 @@ import HeroPage from "@components/wrappers/HeroPage";
 
 
 import styles from './game.module.scss';
+import QuestionTimer from "@components/quizz/TimerComponent";
 
 const GamePageContent = () => {
     const router = useRouter();
@@ -29,9 +30,14 @@ const GamePageContent = () => {
 
     const [ game, setGame ] = useState<SharedGameValues | undefined | null>();
     const [ players, setPlayers ] = useState<GamePlayer[]>([]);
+
     const [ showLeaderboard, setShowLeaderboard ] = useState(false);
+    const [ correctAnswer, setCorrectAnswer ] = useState<number | undefined>(undefined);
+    
     const [ currentQuestion, setCurrentQuestion ] = useState<QuestionComponent<BaseQuestionProps> | undefined>(undefined);
     const [ answers, setAnswers ] = useState<number[]>([]);
+    const [ timerValue, setTimerValue ] = useState<number>(0);
+    const [ myAnswer, setMyAnswer ] = useState<number | undefined>(0);
     const [ ended, setEnded ] = useState<boolean>(false);
 
     const [ chatInput, setChatInput ] = useState("");
@@ -86,7 +92,7 @@ const GamePageContent = () => {
         socketRef.current = socket;
 
         const showError = (err: string) => showPopup('error', err, 5.0);
-        socketHandlerRef.current = new ClientGameSocketHandler( socket, showError, setPlayers, setChatMessages, spawnEmote, setShowLeaderboard, setCurrentQuestion, setEnded, setAnswers );
+        socketHandlerRef.current = new ClientGameSocketHandler( socket, showError, setPlayers, setChatMessages, spawnEmote, setShowLeaderboard, setCurrentQuestion, setEnded, setAnswers, setTimerValue, setMyAnswer, setCorrectAnswer );
 
         return () => socket.close();
     }, [game, user]);
@@ -111,60 +117,99 @@ const GamePageContent = () => {
         { /* Lobby Specific elements */ }
         { currentQuestion === undefined && 
             <div className={styles.lobbyContainer}>
-                {isOwner ? <p>You are the owner of Game #{game!.id}</p> : <p>You are a player in Game #{game!.id}</p>}
+                <div className={styles.pinContainer}>
+                    <p className={styles.gamePin}>{game.id}</p>
+                </div>
 
                 <div className={styles.playersContainer}>
-                    <span className={styles.playerTitle}>Player{players.length > 1 ? 's' : ''} in game</span>
+                    <h1>{players.length} player{players.length > 1 ? 's' : ''}</h1>
                     <div className={styles.playersList}>
-                    {players.map(gamePlayer => (
-                        <span key={gamePlayer.accountId} className={styles.playerUsername}>{gamePlayer.username ?? "N/A"}</span>
-                    ))}
+                        {players.map((gamePlayer, idx) => (
+                            <span key={idx} className={styles.playerUsername}>{gamePlayer.username ?? "N/A"}</span>
+                        ))}
                     </div>
                 </div>
 
-                <h2>Chat:</h2>
-                <div className={styles.chatContainer}>
-                    {chatMessages.map((msg, idx) => (
-                        <p key={idx}><strong>{msg.user?.username ?? "Anonymous"}</strong>: {msg.cnt}</p>
-                    ))}
+                <div className={styles.chatWrapper}>
+                    <div className={styles.chatContainer}>
+                        {chatMessages.map((msg, idx) => (
+                            <p key={idx}><strong>{msg.user?.username ?? "Anonymous"}</strong>: {msg.cnt}</p>
+                        ))}
+                    </div>
+                    <form className={styles.messageForm}
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            socketHandlerRef.current?.sendChatMessagePacket(chatInput);
+                            setChatInput("");
+                        }}
+                    >
+                        <input
+                            type="text"
+                            value={chatInput}
+                            onChange={(e) => setChatInput(e.target.value)}
+                            placeholder="Type your message..."
+                            className={styles.inputMessage}
+                        />
+                        <button type="submit" className={styles.sendMessage}>Send</button>
+                    </form>
                 </div>
 
-                <form className={styles.messageForm}
-                    onSubmit={(e) => {
-                        e.preventDefault();
-                        socketHandlerRef.current?.sendChatMessagePacket(chatInput);
-                        setChatInput("");
-                    }}
-                >
-                    <input
-                        type="text"
-                        value={chatInput}
-                        onChange={(e) => setChatInput(e.target.value)}
-                        placeholder="Type your message..."
-                        className={styles.inputMessage}
-                    />
-                    <button type="submit" className={styles.sendMessage}>Send</button>
-                </form>
-
-                { isOwner && <button onClick={() => socketHandlerRef.current?.startGame()}><ChevronRightIcon />Start</button> }
+                { isOwner && <button className={styles.actionButton} onClick={() => socketHandlerRef.current?.startGame()}><ChevronRightIcon />Start</button> }
             </div>
         }
 
         { /* Question display. */ }
-        { currentQuestion && renderInGame(currentQuestion, (answer) => {
-            // TODO : Change the view to show the user already has answered
-            console.log("Sending ", answer);
-            socketHandlerRef.current?.submitAnswer(answer);
-        })}
+        { currentQuestion && !showLeaderboard && !isOwner && myAnswer !== undefined && 
+            <h1><CheckCheck strokeWidth={4} width={24} height={24} /> Answer Submitted</h1>
+        }
+        { currentQuestion && !showLeaderboard &&
+            <QuestionTimer editable={false} value={timerValue} />
+        }
+        { currentQuestion && !showLeaderboard && (isOwner || myAnswer === undefined) &&
+            renderInGame(currentQuestion, (answer) => {
+                // TODO : Change the view to show the user already has answered
+                setMyAnswer(answer);
+                socketHandlerRef.current?.submitAnswer(answer);
+            })
+        }
 
-        {isOwner && currentQuestion && !showLeaderboard && (
+        { /* Leaderboard display */}
+        { currentQuestion && showLeaderboard &&
+            <>
+                { /* Show correction */ }
+                { correctAnswer && 
+                    <div className={styles.correctAnswerDisplay}>
+                        <h1>Correct Answer</h1>
+                        <p>{currentQuestion.children[correctAnswer].get('label')}</p>
+                    </div>
+                }
+
+                { /* Show leaderboard */ }
+                <div className={styles.leaderboardDisplay}>
+                    { 
+                        players.sort((a, b) => (a.points ?? 0) - (b.points ?? 0)).map(
+                            (p, idx) => <p key={idx}>{p.username} ({p.points})</p>
+                        )
+                    }
+                </div>
+
+                { /* Continue button */ }
+                { isOwner && <button className={styles.actionButton} onClick={() => socketHandlerRef.current?.nextQuestion()}><ChevronRightIcon />Next Question</button> }
+            </>
+            
+        }
+
+        {isOwner && currentQuestion && !showLeaderboard && 
+        <>
             <div ref={answerCountRef} className={`${styles.answerStatus} ${styles.updated}`}>
                 <Users />
                 <p className={styles.answerCount}>
                     {answers.length} / {players.length}
                 </p>
             </div>
-        )}
+            <button className={styles.actionButton} onClick={() => socketHandlerRef.current?.stopEarly()}><X />Show Results</button>
+        </>
+        }
 
         { /* Constant accross all views */ }
         <div
