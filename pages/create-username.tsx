@@ -5,12 +5,14 @@ import { usePopup } from "@contexts/PopupContext";
 import { randomIGN } from "@server/utils/ign";
 import styles from "./create-username.module.scss";
 import HeroPage from "@components/wrappers/HeroPage";
+import { usernameChecker, usernameRegex } from "@common/sanitizers";
 
 const EnterUsername = () => {
     const router = useRouter();
     const { showPopup } = usePopup();
     const [code, setCode] = useState<string | undefined>(undefined);
     const [username, setUsername] = useState<string>("");
+    const [ error, setError ] = useState<string>("");
 
     const random_username = randomIGN();
 
@@ -51,10 +53,17 @@ const EnterUsername = () => {
             <span className={styles.title}>ENTER YOUR PSEUDONYM</span>
             <input className={styles.enterCode}
                 type="text"
+                pattern={usernameRegex.source}
                 value={username}  
-                onChange={(e) => setUsername(e.target.value)} 
+                onChange={(e) => {
+                    setUsername(e.target.value)
+                    const err = usernameChecker(e.target.value);
+                    if(!err.valid && err.message) setError(err.message);
+                    else setError('');
+                }} 
                 placeholder={random_username}  
             />
+            { error && <p className={styles.errorMessage}>{error}</p> }
             <button className={styles.startButton} type="submit">Join the game</button>
         </form>
         </HeroPage>

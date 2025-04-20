@@ -33,6 +33,7 @@ const GamePageContent = () => {
 
     const [ showLeaderboard, setShowLeaderboard ] = useState(false);
     const [ correctAnswer, setCorrectAnswer ] = useState<number | undefined>(undefined);
+    const [ currentRank, setCurrentRank ] = useState<number | undefined>(undefined);
     
     const [ currentQuestion, setCurrentQuestion ] = useState<QuestionComponent<BaseQuestionProps> | undefined>(undefined);
     const [ answers, setAnswers ] = useState<number[]>([]);
@@ -92,7 +93,7 @@ const GamePageContent = () => {
         socketRef.current = socket;
 
         const showError = (err: string) => showPopup('error', err, 5.0);
-        socketHandlerRef.current = new ClientGameSocketHandler( socket, showError, setPlayers, setChatMessages, spawnEmote, setShowLeaderboard, setCurrentQuestion, setEnded, setAnswers, setTimerValue, setMyAnswer, setCorrectAnswer );
+        socketHandlerRef.current = new ClientGameSocketHandler( socket, showError, setPlayers, setChatMessages, spawnEmote, setShowLeaderboard, setCurrentQuestion, setEnded, setAnswers, setTimerValue, setMyAnswer, setCorrectAnswer, setCurrentRank );
 
         return () => socket.close();
     }, [game, user]);
@@ -114,7 +115,8 @@ const GamePageContent = () => {
     const playersWithoutSelf = players.slice();
     const selfIndex = playersWithoutSelf.findIndex(q => q.username === game.self.username);
     if(selfIndex >= 0) playersWithoutSelf.splice(selfIndex, 1);
-
+    const sortedPlayers = players.sort((a, b) => (b.points ?? 0) - (a.points ?? 0));
+    
     return (
         <HeroPage className={styles.heroPage}>
         
@@ -199,9 +201,14 @@ const GamePageContent = () => {
                 }
 
                 { /* Show leaderboard */ }
+                { currentRank !== undefined && currentRank > -1 && 
+                    <div className={styles.rankDisplay}>
+                        <h1>You are #{currentRank + 1} with {sortedPlayers[currentRank].points ?? 0} points</h1>
+                    </div>
+                }
                 <div className={styles.leaderboardDisplay}>
                     { 
-                        players.sort((a, b) => (b.points ?? 0) - (a.points ?? 0)).slice(0, 8).map((p, idx) => {
+                        sortedPlayers.slice(0, 8).map((p, idx) => {
                             let rankClass = '';
                             if (idx === 0) rankClass = styles.gold;
                             else if (idx === 1) rankClass = styles.silver;
@@ -221,7 +228,7 @@ const GamePageContent = () => {
                 { isOwner && !ended && <button className={styles.actionButton} onClick={() => socketHandlerRef.current?.nextQuestion()}><ChevronRightIcon />Next Question</button> }
                 { /* Home button */ }
                 { isOwner && ended && <button className={styles.actionButton} onClick={() => router.push('/account')}><X /> Finish</button> }
-                { !isOwner && ended && <button className={styles.actionButton} onClick={() => router.push('/')}><Home /> Home</button> }
+                { !isOwner && ended && <button className={styles.actionButton} onClick={() => router.push('/')}><Home style={{strokeWidth: '3px'}}/> Home</button> }
             </>
             
         }

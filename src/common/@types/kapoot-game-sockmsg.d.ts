@@ -13,7 +13,7 @@ declare global {
 
     /** Game Events */
     type QuestionChangeSockMsg = { type: "new_question", question: QuestionComponent, time_override?: number };
-    type ShowLeaderboardSockMsg = { type: "leaderboard", players: GamePlayer[], prev_answer: number, ended: boolean };
+    type ShowLeaderboardSockMsg = { type: "leaderboard", players: GamePlayer[], rank?: number, prev_answer: number, ended: boolean };
     type SomeUserAnsweredSockMsg = { type: "update_answer_count", answers: number[] };
 
     type GameSockMsg = PlayerJoinSockMsg | PlayerLeftSockMsg | ChatMessageSockMsg | EmoteSockMsg | PlayerAnswerSockMsg | QuestionChangeSockMsg | ShowLeaderboardSockMsg | SomeUserAnsweredSockMsg;

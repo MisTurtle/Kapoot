@@ -61,3 +61,12 @@
         }
     }
 }
+
+
+.errorMessage {
+    color: $error;
+    display: flex;
+    align-items: center;
+    margin-bottom: 0;
+    font-size: $fs-smaller;
+}

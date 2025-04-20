@@ -227,10 +227,16 @@ export default class Game
     {
         return { 
             'type': 'leaderboard',
-            'players': this.players,
+            'players': this.players.sort((a, b) => (b.points ?? 0) - (a.points ?? 0)),
             'prev_answer': (this.currentQuestion?.get('answer') ?? 0) as number,
             'ended': this._currentQuestion === this._quizz.children.length - 1
         };
+    }
+    getCurrentLeaderboardFor(user: GamePlayer): ShowLeaderboardSockMsg
+    {
+        const pk = this.currentLeaderboardPacket;
+        pk.rank = pk.players.findIndex(u => u === user);
+        return pk;
     }
     /**
      * Owner wants to start the game
@@ -290,7 +296,8 @@ export default class Game
         const packet = this.currentLeaderboardPacket;
         this._state = packet.ended ? GameState.ENDED : GameState.QUESTION_RESULTS;
 
-        this.broadcast(packet);
+        this.players.forEach(player => this.broadcast(this.getCurrentLeaderboardFor(player), [player]));
+        this.broadcast(packet, [this.owner]);
         // TODO : Delete game after some time
         return true;
     }
@@ -299,22 +306,25 @@ export default class Game
      */
     sendStateUpdate(...to: GamePlayer[])
     {
-        let packets = [];
-        switch(this._state)
-        {
-            case GameState.LOBBY:  // Nothing more to do
-                break;
-            case GameState.ENDED:  // TODO : Send leaderboard
-                break;
-            case GameState.QUESTION_RESULTS:
-                packets.push(this.currentQuestionPacket);
-                packets.push(this.currentLeaderboardPacket);
-                break;
-            case GameState.QUESTION:  // Send question data
-                packets.push(this.currentQuestionPacket);  // TODO : Fix timing
-                break;
-        }
-        packets.forEach(p => { if(p) this.broadcast(p, to) });
+        to.forEach(player => {
+            let packets = [];
+            switch(this._state)
+            {
+                case GameState.LOBBY:  // Nothing more to do
+                    break;
+                case GameState.ENDED:  // TODO : Send leaderboard
+                    break;
+                case GameState.QUESTION_RESULTS:
+                    packets.push(this.currentQuestionPacket);
+                    packets.push(this.getCurrentLeaderboardFor(player));
+                    break;
+                case GameState.QUESTION:  // Send question data
+                    packets.push(this.currentQuestionPacket);  // TODO : Fix timing
+                    break;
+            }
+
+            packets.forEach(p => { if(p) this.broadcast(p, [player]) });
+        });
     }
 
     // TODO : Add one answer on the owner's view

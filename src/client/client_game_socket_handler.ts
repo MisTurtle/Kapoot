@@ -18,7 +18,8 @@ export default class ClientGameSocketHandler extends BaseGameSocketHandler
         private setAnswers: Dispatch<SetStateAction<number[]>>,
         private setTimerValue: Dispatch<SetStateAction<number>>,
         private setMyAnswer: Dispatch<SetStateAction<number | undefined>>,
-        private setCorrectAnswer: Dispatch<SetStateAction<number | undefined>>
+        private setCorrectAnswer: Dispatch<SetStateAction<number | undefined>>,
+        private setCurrentRank: Dispatch<SetStateAction<number | undefined>>
     ) {
         super();
         this.setupSocket();
@@ -79,6 +80,7 @@ export default class ClientGameSocketHandler extends BaseGameSocketHandler
         clearInterval(this.timer);
         this.setTimerValue(0);
         this.setEnded(packet.ended);
+        if(packet.rank !== undefined) this.setCurrentRank(packet.rank);
         this.setShowingLeaderboard(true);
     }
     onShowNewQuestion(packet: QuestionChangeSockMsg): void {
