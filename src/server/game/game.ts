@@ -201,6 +201,9 @@ export default class Game
     {
         const question = this.currentQuestion;
         if(!question) return undefined;
+        console.log("Question object:", question);
+        console.log("Question answers:", question.children);
+        console.log("JSONified:", JSON.stringify(question.toJSON()));
         return { 'type': 'new_question', 'question': question.toJSON(), 'time_override': this.getTimeLeft() ? Math.floor(this.getTimeLeft()! / 1000) : undefined };
     }
     /**
