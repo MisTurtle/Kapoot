@@ -6,6 +6,7 @@ import { randomIGN } from "@server/utils/ign";
 import styles from "./create-username.module.scss";
 import HeroPage from "@components/wrappers/HeroPage";
 import { usernameChecker, usernameRegex } from "@common/sanitizers";
+import Head from "next/head";
 
 const EnterUsername = () => {
     const router = useRouter();
@@ -47,7 +48,10 @@ const EnterUsername = () => {
         ));
     };
 
-    return (
+    return <>
+        <Head>
+            <title>Kapoot | Join Game</title>
+        </Head>
         <HeroPage className={styles.heroContent}>
         <form className={styles.codeInput} onSubmit={handleSubmit}>
             <span className={styles.title}>ENTER YOUR PSEUDONYM</span>
@@ -67,7 +71,7 @@ const EnterUsername = () => {
             <button className={styles.startButton} type="submit">Join the game</button>
         </form>
         </HeroPage>
-    );
+    </>;
 };
 
 export default EnterUsername;

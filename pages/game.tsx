@@ -18,6 +18,7 @@ import HeroPage from "@components/wrappers/HeroPage";
 
 import styles from './game.module.scss';
 import QuestionTimer from "@components/quizz/TimerComponent";
+import Head from "next/head";
 
 const GamePageContent = () => {
     const router = useRouter();
@@ -123,7 +124,10 @@ const GamePageContent = () => {
     if(selfIndex >= 0) playersWithoutSelf.splice(selfIndex, 1);
     const sortedPlayers = players.sort((a, b) => (b.points ?? 0) - (a.points ?? 0));
     
-    return (
+    return <>
+        <Head>
+            <title>Kapoot | Game</title>
+        </Head>
         <HeroPage className={styles.heroPage}>
         
         { /* Lobby Specific elements */ }
@@ -278,7 +282,8 @@ const GamePageContent = () => {
 
         <FloatingEmotes floatingEmotes={floatingEmotes} getEmoteIcon={getEmoteIcon}/>
         </HeroPage>
-    );
+    
+    </>;
 };
 
 const GamePage = () => {

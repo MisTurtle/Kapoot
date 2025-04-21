@@ -11,6 +11,7 @@ import HeroPage from "@components/wrappers/HeroPage";
 import { CustomNavBar } from '@components/NavBar';
 import { usePopup } from "@contexts/PopupContext";
 import Loading from "@components/misc/Loading";
+import Head from "next/head";
 
 const AccountContent = () => {
   const router = useRouter();
@@ -166,7 +167,9 @@ const AccountContent = () => {
   if(!user) return <Loading />;
   return (
       <>
-        
+        <Head>
+          <title>Kapoot | Account</title>
+        </Head>
         <div className={styles.accountPage}> 
           <header className={styles.titleSection}>
             <h1 className={styles.titlePage}>Your account</h1>

@@ -10,6 +10,7 @@ import { NavLink, UserNavBar } from "@components/NavBar";
 import HeroPage from "@components/wrappers/HeroPage"; // Import the Hero Background Component
 import HeroLogo from "@components/misc/HeroLogo";
 import { PlayCircleIcon } from "lucide-react";
+import Head from "next/head";
 
 const IndexContent = () => {
     const router = useRouter();
@@ -78,6 +79,9 @@ const IndexContent = () => {
 
     return (
         <>
+            <Head>
+                <title>Kapoot | Index</title>
+            </Head>
             <UserNavBar links={navLinks} />
             <HeroPage className={styles.heroContent}>
                 <HeroLogo />

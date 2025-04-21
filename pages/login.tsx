@@ -9,6 +9,7 @@ import HeroPage from '@components/wrappers/HeroPage';
 
 import styles from './login.module.scss';
 import HeroLogo from '@components/misc/HeroLogo';
+import Head from 'next/head';
 
 
 const LoginContent = () => {
@@ -31,6 +32,9 @@ const LoginContent = () => {
     
     return (
         <>
+            <Head>
+                <title>Kapoot | Login</title>
+            </Head>
             { navbar }
             { content }
         </>

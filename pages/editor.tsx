@@ -16,6 +16,7 @@ import HeroPage from '@components/wrappers/HeroPage';
 import DeleteButton from '@components/misc/Delete';
 import { ContextMenuProvider } from '@contexts/EditorContextMenus';
 import QuestionTimer from '@components/quizz/TimerComponent';
+import Head from 'next/head';
 
 type QuestionWrapper = {
   id: number;  // The identifier in the editor
@@ -193,7 +194,10 @@ const EditorContent = () =>  {
     });
   };
 
-  return (
+  return <>
+    <Head>
+      <title>Kapoot | Editor</title>
+    </Head>
     <div className={styles.editorContainer}>
       { /* Debug interface to test functionnalities */ }
       { loading && <Loading /> }
@@ -261,7 +265,7 @@ const EditorContent = () =>  {
         </div>
       </>}
     </div>
-  );
+  </>;
 }
 
 const CreateQuizzPage = () => {
