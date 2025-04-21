@@ -41,7 +41,7 @@ export function handleFormChange(
     setEnabled(valid);
 }
 
-export const emoteChars = ['❤️', '👍', '👏', '😂', 'uWu', '🍆'];
+export const emoteChars = ['🐎', '🐐', '🐢', '🍀', '❤️', '👏', '🍆'];
 
 export function getEmoteIcon(emote: Emote) : React.ReactNode 
 {
