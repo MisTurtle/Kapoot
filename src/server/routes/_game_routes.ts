@@ -24,6 +24,15 @@ router.get('/', (req, res) => {
 });
 
 /**
+ * Action: Check if a game with this id exists
+ */
+router.get('/:game_id', (req, res) => {
+    const game = KapootGameManager.getGameById(parseInt(req.params.game_id));
+    if(!game || game.ended) return error(res, 'Room does not exist');
+    return success(res);
+});
+
+/**
  * Action: Create a game
  */
 router.post('/', (req, res) => {

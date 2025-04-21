@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  kapoot:
+    build:
+      context: .
+    container_name: kapoot_site
+    expose:
+      - "4000"
+    environment:
+      - NODE_ENV=production
+    networks:
+      - shared-net
+    restart: unless-stopped
+
+networks:
+  shared-net:
+    external: true

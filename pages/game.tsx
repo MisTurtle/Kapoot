@@ -88,8 +88,14 @@ const GamePageContent = () => {
     useEffect(() => {
         if(!game) return;
 
-        // TODO : Get socket remote address from an environment constant or smth
-        const socket = new WebSocket(`ws://127.0.0.1:8000/api/game/stateProvider`);
+        const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+        const hostname = window.location.hostname;
+        const port = window.location.port ? `:${window.location.port}` : '';
+        const wsUrl = `${protocol}://${hostname}${port}/api/game/stateProvider`; // Adjust path if needed
+      
+        console.log("Socket on " + wsUrl);
+        const socket = new WebSocket(wsUrl);
+        // const socket = new WebSocket(`ws://127.0.0.1:8000/api/game/stateProvider`);
         socketRef.current = socket;
 
         const showError = (err: string) => showPopup('error', err, 5.0);

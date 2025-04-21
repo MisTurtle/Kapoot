@@ -1,4 +1,4 @@
-import React, { FormEvent } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { AuthProvider, useAuth } from "@contexts/AuthContext";
 import { useRouter } from "next/router";
@@ -6,14 +6,16 @@ import { usePopup } from "@contexts/PopupContext";
 import { handle } from "@common/responses";
 import styles from "./index.module.scss";
 
-import { UserNavBar } from "@components/NavBar";
+import { NavLink, UserNavBar } from "@components/NavBar";
 import HeroPage from "@components/wrappers/HeroPage"; // Import the Hero Background Component
 import HeroLogo from "@components/misc/HeroLogo";
+import { PlayCircleIcon } from "lucide-react";
 
 const IndexContent = () => {
     const router = useRouter();
     const { showPopup } = usePopup();
     const { user } = useAuth();
+    const [ canRejoin, setCanRejoin ] = useState(false);
 
     const createQuizz = () => {
         if(!user) {
@@ -39,27 +41,44 @@ const IndexContent = () => {
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         var target: { value: number }[] = e.target as any;
+        const pin = target[0].value;
 
         if(!user) {
-            router.push(`/create-username?gamecode=${target[0].value}`);
-            return;
+            // Check the game exists before asking for a username
+            fetch(`/api/game/${pin}`, { method: 'GET' })
+            .then(async res => handle(
+                res,
+                (result) => router.push(`/create-username?gamecode=${target[0].value}`),
+                (error) => showPopup('error', error, 5.0)
+            ))
+        }else{
+            // Try to join directly
+            fetch(`/api/game/${pin}`, { method: 'PUT' })
+            .then(async res => handle(
+                res,
+                (result) => router.push('/game'),
+                (error) => showPopup('error', error, 5.0)
+            ));
         }
-
-        fetch(`/api/game/${target[0].value}`, { method: 'PUT' })
-        .then(async res => handle(
-            res,
-            (result) => {
-                router.push('/game');
-            },
-            (error) => {
-                showPopup('error', error, 5.0);
-            }
-        ));
     };
+
+    useEffect(() => {
+        fetch("/api/game")
+            .then(res =>
+                handle(
+                    res,
+                    () => setCanRejoin(true),
+                    () => {}
+                )
+            );
+    }, []);
+
+    const navLinks: (string | NavLink)[] = ['logout'];
+    if(canRejoin) navLinks.push({ 'icon': PlayCircleIcon, 'label': 'Rejoin', 'target': () => router.push('/game') });
 
     return (
         <>
-            <UserNavBar links={['logout']} />
+            <UserNavBar links={navLinks} />
             <HeroPage className={styles.heroContent}>
                 <HeroLogo />
                 <form className={styles.codeInput} onSubmit={handleSubmit}>
