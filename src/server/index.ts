@@ -42,7 +42,7 @@ expressWs(expressApp, server);
 expressApp.use(cookieParser());
 expressApp.use(express.json());
 expressApp.use(express.urlencoded({ extended: true }));
-expressApp.use('/favicon.ico', express.static(rootPath('public/images/Logo_Compact.png')));
+// expressApp.use('/favicon.ico', express.static(rootPath('public/images/Logo_Compact.png')));
 expressApp.use(unless(["_next/*"], sessionRouter));
 expressApp.use("/api", apiRouter);
 
