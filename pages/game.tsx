@@ -189,12 +189,14 @@ const GamePageContent = () => {
         { /* Leaderboard display */}
         { currentQuestion && showLeaderboard &&
             <>
+                <h1 className={styles.questionLabel}>{currentQuestion.get('label')}</h1>
+                
                 { /* Show correction */ }
                 { correctAnswer !== undefined && 
                     <div className={`${styles.correctAnswerDisplay} ${(isOwner || myAnswer === correctAnswer) ? styles.correct : styles.incorrect}`}>
                         {!isOwner && <h1>{(myAnswer && myAnswer === correctAnswer) ? 'Amazing' : 'Woopsie !'}</h1>}
                         { isOwner && <h1>Correct Answer</h1>}
-                        
+    
                         {myAnswer && myAnswer !== correctAnswer ? (
                             <div>
                                 <p className={`${styles.incorrectAnswer}`}>{currentQuestion.children[myAnswer].get('label')}</p>

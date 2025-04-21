@@ -24,8 +24,8 @@ $success: rgb(83, 235, 75);
 $successHover: rgb(75, 213, 68);
 
 /* Fonts */
-$text: "Arial";
-$title: "Consolas";
+$text: "CreatoDisplay";
+$title: "Stanberry";
 $fs-huge: 28pt;
 $fs-bigger: 24pt;
 $fs-big: 20pt;
@@ -34,6 +34,15 @@ $fs-medium: 16pt;
 $fs-small: 12pt;
 $fs-smaller: 10pt;
 $fs-tiny: 8pt;
+
+@font-face {
+    font-family: "Stanberry";
+    src: url("/fonts/Stanberry.ttf");
+}
+@font-face {
+    font-family: "CreatoDisplay";
+    src: url("/fonts/CreatoDisplay.otf");
+}
 
 /* Transition speeds */
 $t-faster: 0.05s;
