@@ -5,7 +5,7 @@ export const production = process.env.NODE_ENV === 'production';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const __root_path = path.join(__dirname, "..", "..", production ? ".." : "");
+const __root_path = path.join(__dirname, "..", "..", production ? "" : "");
 
 
 export function rootPath(...rel_path: string[]): string

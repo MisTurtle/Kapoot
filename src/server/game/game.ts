@@ -184,15 +184,16 @@ export default class Game
         const duration = this._questionDuration;
         if(timeLeft === undefined || duration === undefined || duration === 0) return 0;
         
-        timeLeft /= 1000;
         const elapsed = duration - timeLeft;
         const maxPoints = 1000;
         const minPoints = 250;
-
-        if(elapsed < 0.75) return maxPoints;
+        
+        if(elapsed < 500) return maxPoints;  // ms
         const x = 1 - (elapsed - 0.75) / duration;
         const points = minPoints - (maxPoints - minPoints) * Math.tanh((x - 1) * 2.5);
-        
+
+        // console.log(timeLeft, duration, elapsed, 1 - (elapsed - 0.75) / duration, minPoints - (maxPoints - minPoints) * Math.tanh((x - 1) * 2.5));
+
         return Math.floor(Math.min(maxPoints, Math.max(minPoints, points)));
     }
 
