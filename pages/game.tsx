@@ -28,6 +28,7 @@ const GamePageContent = () => {
     const answerCountRef = useRef<HTMLDivElement | null>(null);
     const socketRef = useRef<WebSocket | undefined>(undefined);
     const socketHandlerRef = useRef<ClientGameSocketHandler | null>(null);
+    const reconnectIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
     const [ game, setGame ] = useState<GamePageInitiatorValues | undefined | null>();
     const [ players, setPlayers ] = useState<GamePlayer[]>([]);
@@ -86,23 +87,31 @@ const GamePageContent = () => {
     /**
      * Establish a websocket connection
      */
-    useEffect(() => {
-        if(!game) return;
+    const reconnectSocket = () => {
+        if(!game || socketHandlerRef.current !== null) return;
 
         const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
         const hostname = window.location.hostname;
         const port = window.location.port ? `:${window.location.port}` : '';
         const wsUrl = `${protocol}://${hostname}${port}/api/game/stateProvider`; // Adjust path if needed
       
-        console.log("Socket on " + wsUrl);
+        console.log("Reconnecting to socket at " + wsUrl);
         const socket = new WebSocket(wsUrl);
         // const socket = new WebSocket(`ws://127.0.0.1:8000/api/game/stateProvider`);
         socketRef.current = socket;
 
         const showError = (err: string) => showPopup('error', err, 5.0);
         socketHandlerRef.current = new ClientGameSocketHandler( socket, showError, setPlayers, setChatMessages, spawnEmote, setShowLeaderboard, setCurrentQuestion, setEnded, setAnswers, setTimerValue, setMyAnswer, setCorrectAnswer, setCurrentRank );
-
-        return () => socket.close();
+        socket.onclose = (event) => { 
+            if(!reconnectIntervalRef.current)
+                reconnectIntervalRef.current = setInterval(reconnectSocket, 1000);
+            socketHandlerRef.current = null;
+        };
+    };
+    useEffect(() => {
+        if(!game) return
+        reconnectSocket();
+        return () => { if(socketRef.current) socketRef.current.close(); };
     }, [game, user]);
 
     /**
