@@ -189,7 +189,7 @@ export default class Game
         const minPoints = 250;
         
         if(elapsed < 500) return maxPoints;  // ms
-        const x = 1 - (elapsed - 0.75) / duration;
+        const x = (elapsed - 500) / (duration - 500);
         const points = minPoints - (maxPoints - minPoints) * Math.tanh((x - 1) * 2.5);
 
         // console.log(timeLeft, duration, elapsed, 1 - (elapsed - 0.75) / duration, minPoints - (maxPoints - minPoints) * Math.tanh((x - 1) * 2.5));
