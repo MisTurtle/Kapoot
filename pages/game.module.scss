@@ -28,6 +28,14 @@
     .playersList {
       margin-top: 1rem;
       display: flex;
+      max-width: 95vw;
+      overflow: scroll;
+      
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+      &::-webkit-scrollbar {
+        display: none;
+      }
     }
   }
   

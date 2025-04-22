@@ -37,7 +37,7 @@ export default class ClientGameSocketHandler extends BaseGameSocketHandler
             }
         };
         this.socket.onerror = (err) => {
-            this.showError("Websocket error occurred");
+            // this.showError("Websocket error occurred");
             console.error(err);
         };
     }
