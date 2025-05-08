@@ -16,10 +16,12 @@ class GameManager {
      */
     createGame(owner: GamePlayer, quizz: SimpleQuizzComponent, settings: GameSettings): GameIdentifier
     {
-        let gameId;
+        let gameId, associatedGame;
         do{
             gameId = Math.floor(MIN_GAME_ID + Math.random() * (MAX_GAME_ID - MIN_GAME_ID));
-        }while(this.getGameById(gameId) !== undefined);
+            associatedGame = this.getGameById(gameId);
+            if(associatedGame?.ended) this.removeGame(associatedGame.id);
+        }while(associatedGame !== undefined && !associatedGame.ended);
 
         let game = new Game(gameId, owner, quizz, settings);
         this._games[gameId] = game;

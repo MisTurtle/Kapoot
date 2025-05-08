@@ -183,7 +183,6 @@ export class SimpleQuizzComponent extends QuizzComponent<SimpleQuizzProps>
      * @deprecated Use global components.deserialize_component function instead
      */
     static deserialize(data: any): SimpleQuizzComponent {
-        // TODO : Sanitize values before setting them (format, ranges, ...)
         if(typeof data === 'string') data = JSON.parse(data);
 
         const quizzProperties = data[FIELD_PROPERTIES] ?? {};

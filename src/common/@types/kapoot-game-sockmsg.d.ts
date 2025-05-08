@@ -5,15 +5,15 @@ declare global {
     type BaseGameSockMsg = { type: string };
 
     /** Player Events */
-    type PlayerJoinSockMsg = { type: "player_joined", players: GamePlayer[] };
-    type PlayerLeftSockMsg = { type: "player_left", players: GamePlayer[] };
+    type PlayerJoinSockMsg = { type: "player_joined", players: SharedGamePlayer[] };
+    type PlayerLeftSockMsg = { type: "player_left", players: SharedGamePlayer[] };
     type ChatMessageSockMsg = { type: "chat_msg", msg: ChatMessage };
     type EmoteSockMsg = { type: "emote", emote: Emote };
     type PlayerAnswerSockMsg = { type: "user_answer", answer: number };
 
     /** Game Events */
     type QuestionChangeSockMsg = { type: "new_question", question: QuestionComponent, time_override?: number };
-    type ShowLeaderboardSockMsg = { type: "leaderboard", players: GamePlayer[], rank?: number, prev_answer: number, ended: boolean };
+    type ShowLeaderboardSockMsg = { type: "leaderboard", players: SharedGamePlayer[], rank?: number, prev_answer: number, ended: boolean };
     type SomeUserAnsweredSockMsg = { type: "update_answer_count", answers: number[] };
 
     type GameSockMsg = PlayerJoinSockMsg | PlayerLeftSockMsg | ChatMessageSockMsg | EmoteSockMsg | PlayerAnswerSockMsg | QuestionChangeSockMsg | ShowLeaderboardSockMsg | SomeUserAnsweredSockMsg;

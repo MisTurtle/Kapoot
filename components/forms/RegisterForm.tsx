@@ -10,9 +10,6 @@ import { handle } from '@common/responses';
 import { usePopup } from '@contexts/PopupContext';
 
 const RegisterForm = () => {
-    // TODO : Accept some redirection parameter to redirect the user once logged in
-    // TODO : Redirect to the page if the user is already logged in
-    
     const router = useRouter();
     const { showPopup } = usePopup();
     const [ formData, setFormData ] = useState({ username: "", mail: "", password: "", passwordVerif: "" });

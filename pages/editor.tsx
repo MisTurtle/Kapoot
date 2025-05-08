@@ -104,9 +104,9 @@ const EditorContent = () =>  {
           setLoading(false);
         },
         (err) => {
-          // TODO : Handle error with some redirection, maybe
           showPopup('error', err, 5.0);
           setLoading(false);
+          router.push('/');
         }
       ))
   }, [router.query]);
@@ -114,8 +114,7 @@ const EditorContent = () =>  {
   /**
    * Automatic quizz saving when questions change
    */
-  // useEffect(() => { updateQuizz(); }, [allQuestions, version]);  // TODO : This is a lot of requests, maybe try to reduce the amount of patches by refining the dependencies
-
+  
   /**
    * Additional one shot setup
    */
@@ -140,7 +139,7 @@ const EditorContent = () =>  {
 
   const quizz_id = router.query.quizz;
   if(!quizz_id || typeof quizz_id !== 'string' || !uuidChecker(quizz_id).valid) {
-    return <p>No quizz ID entered (TODO: Add a default view here or smth)</p>;
+      return router.push('/account');
   }
 
   /**

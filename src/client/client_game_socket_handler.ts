@@ -9,7 +9,7 @@ export default class ClientGameSocketHandler extends BaseGameSocketHandler
     constructor(
         private socket: WebSocket,
         private showError: (err: string) => void,
-        private setPlayers: Dispatch<SetStateAction<GamePlayer[]>>,
+        private setPlayers: Dispatch<SetStateAction<SharedGamePlayer[]>>,
         private setChatMessages: Dispatch<SetStateAction<ChatMessage[]>>,
         private spawnEmote: (emote: number) => void,
         private setShowingLeaderboard: Dispatch<SetStateAction<boolean>>,

@@ -42,8 +42,7 @@ router.post('/', (req, res) => {
     if(KapootGameManager.isPlaying(req.gamePlayer!)) return error(res, 'You are already assigned to a game');
     if(!quizz_id) return error(res, 'Missing quizz id');
 
-    // TODO : Check this user is the actual owner of the quizz
-    getEndpoints().getSerializedQuizz(quizz_id).then(
+    getEndpoints().getSerializedQuizz(req.user, quizz_id).then(
         serializedQuizz => {
             if(!serializedQuizz) return error(res, 'Quizz does not exist');
 
@@ -80,10 +79,10 @@ router.put('/:game_id', (req, res) => {
 
 /// vvv WebSocket routes vvv ///
 router.ws('/stateProvider', (ws, req) => {
-    if(!req.gamePlayer || !req.gamePlayer.currentGame) return;  // TODO : Send error
+    if(!req.gamePlayer || !req.gamePlayer.currentGame) return;
     const gamePlayer = req.gamePlayer;
     let game = KapootGameManager.getGameById(gamePlayer.currentGame);
-    if(!game) return;  // TODO : Send error;
+    if(!game) return;
 
     gamePlayer.sockets = (gamePlayer.sockets ?? []).concat([ws as unknown as WebSocket]);
     game.addSockets(gamePlayer);
@@ -94,7 +93,7 @@ router.ws('/stateProvider', (ws, req) => {
         switch(packet.type)
         {
             case 'player_joined':
-                break;  // TODO : This could be handled here instead of in PUT /:game_id
+                break;  // This could be handled here instead of in PUT /:game_id
             case 'player_left':
                 game.remove(gamePlayer);
                 break;

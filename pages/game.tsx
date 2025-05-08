@@ -1,5 +1,3 @@
-// TODO : Check if the user is in game (admin or player). If not, redirect to the home page
-
 import ClientGameSocketHandler from "@client/client_game_socket_handler";
 import { handle } from "@common/responses";
 import Loading from "@components/misc/Loading";
@@ -31,7 +29,7 @@ const GamePageContent = () => {
     const reconnectIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
     const [ game, setGame ] = useState<GamePageInitiatorValues | undefined | null>();
-    const [ players, setPlayers ] = useState<GamePlayer[]>([]);
+    const [ players, setPlayers ] = useState<SharedGamePlayer[]>([]);
 
     const [ showLeaderboard, setShowLeaderboard ] = useState(false);
     const [ correctAnswer, setCorrectAnswer ] = useState<number | undefined>(undefined);
@@ -109,7 +107,7 @@ const GamePageContent = () => {
         };
     };
     useEffect(() => {
-        if(!game) return
+        if(!game) return;
         reconnectSocket();
         return () => { if(socketRef.current) socketRef.current.close(); };
     }, [game, user]);

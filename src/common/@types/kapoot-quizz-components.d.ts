@@ -60,7 +60,7 @@ declare global {
      * TYPE FOR QUIZZ PROPERTIES
      */
     type SimpleQuizzProps = BaseContainerProps & {
-        // TODO : Maybe nothing more? I don't know
+        
     };
 }
 

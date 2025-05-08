@@ -22,7 +22,7 @@ router.get('/', (req, res) => {
 router.post('/', (req, res) => {
     const fields = [ 'username', 'mail', 'password' ];
     if(req.user) return error(res, 'Already logged in');  // User already logged in
-    if(fields.some((field) => req.body[field] === undefined)) return error(res, 'Incomplete post body for account creation request');  // Bad request (TODO : Error page)
+    if(fields.some((field) => req.body[field] === undefined)) return error(res, 'Incomplete post body for account creation request');
     
     // Check formats
     const checkers: FormInputChecker[] = [ usernameChecker, emailChecker, passwordChecker ];

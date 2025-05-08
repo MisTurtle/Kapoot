@@ -54,7 +54,13 @@ const IndexContent = () => {
             ))
         }else{
             // Try to join directly
-            fetch(`/api/game/${pin}`, { method: 'PUT' })
+            fetch(`/api/game/${pin}`, { 
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username: user.username })
+            })
             .then(async res => handle(
                 res,
                 (result) => router.push('/game'),

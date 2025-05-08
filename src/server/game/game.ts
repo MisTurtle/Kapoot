@@ -1,6 +1,7 @@
 import { QuestionComponent, SimpleQuizzComponent } from "@common/quizz_components/components";
 import GameState from "./game_state";
 import { clearTimeout } from "node:timers";
+import { getEndpoints } from "@server/database/database_controller";
 
 export default class Game
 {
@@ -30,6 +31,11 @@ export default class Game
         this._answeredPlayers = [];
         this._state = GameState.LOBBY;
         this._currentQuestion = 0;
+    }
+
+    public sharePlayer(gp: GamePlayer): SharedGamePlayer
+    {
+        return { 'avatar': gp.avatar, 'username': gp.username, 'points': gp.points ?? 0 };
     }
 
     get id() { return this._id; }
@@ -99,7 +105,7 @@ export default class Game
 
         user.currentGame = this._id;
         this._players.push(user);
-        this.broadcast({ 'type': 'player_joined', 'players': this.players });
+        this.broadcast({ 'type': 'player_joined', 'players': this.players.map(this.sharePlayer) });
         this.sendStateUpdate(user);
 
         return true;
@@ -119,7 +125,7 @@ export default class Game
         if(!this.get(user)) return false;
         
         this._players = this._players.filter(p => !this.equals(p, user));
-        this.broadcast({ 'type': 'player_left', 'players': this.everyone });
+        this.broadcast({ 'type': 'player_left', 'players': this.everyone.map(this.sharePlayer) });
 
         return true;
     }
@@ -228,7 +234,7 @@ export default class Game
     {
         return { 
             'type': 'leaderboard',
-            'players': this.players.sort((a, b) => (b.points ?? 0) - (a.points ?? 0)),
+            'players': this.players.sort((a, b) => (b.points ?? 0) - (a.points ?? 0)).map(this.sharePlayer),
             'prev_answer': (this.currentQuestion?.get('answer') ?? 0) as number,
             'ended': this._currentQuestion === this._quizz.children.length - 1
         };
@@ -299,7 +305,16 @@ export default class Game
 
         this.players.forEach(player => this.broadcast(this.getCurrentLeaderboardFor(player), [player]));
         this.broadcast(packet, [this.owner]);
-        // TODO : Delete game after some time
+
+        if(this._state === GameState.ENDED)
+        { // Game is automatically removed from the game manager when its ID is about to be used
+            // Update logged players stats
+            for(const player of this.players)
+            {
+                if(!player.accountId) continue;
+                getEndpoints().addGameStats({ identifier: player.accountId }, 1, player.points ?? 0);
+            }
+        }
         return true;
     }
     /**
@@ -311,16 +326,15 @@ export default class Game
             let packets = [];
             switch(this._state)
             {
-                case GameState.LOBBY:  // Nothing more to do
-                    break;
-                case GameState.ENDED:  // TODO : Send leaderboard
+                case GameState.LOBBY:
+                case GameState.ENDED:  // Nothing more to do
                     break;
                 case GameState.QUESTION_RESULTS:
                     packets.push(this.currentQuestionPacket);
                     packets.push(this.getCurrentLeaderboardFor(player));
                     break;
                 case GameState.QUESTION:  // Send question data
-                    packets.push(this.currentQuestionPacket);  // TODO : Fix timing
+                    packets.push(this.currentQuestionPacket);
                     break;
             }
 
@@ -328,18 +342,13 @@ export default class Game
         });
     }
 
-    // TODO : Add one answer on the owner's view
-    // TODO : Change view when user answers
-    // TODO : Destroy game once ended
-    // TODO : Setup a session that joins after the game has already started
-
     initiateFor(user: GamePlayer): GamePageInitiatorValues
-    {  // TODO : Filter out quizz answers and player sockets + player sessions
+    {
         return {
             id: this._id,
             owner: this._owner,
             self: user,
-            players: this._players
+            players: this._players.map(this.sharePlayer)
         };
     }
 }

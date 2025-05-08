@@ -22,6 +22,10 @@ declare global {
         lastAnswer?: number,
         sockets?: WebSocket[]
     } & AccountCosmetics;
+
+    type SharedGamePlayer = {
+        points: number
+    } & AccountCosmetics;
 }
 
 export {};

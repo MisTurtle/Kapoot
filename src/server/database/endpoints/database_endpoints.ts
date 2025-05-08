@@ -152,8 +152,6 @@ export class DatabaseEndpointsContainer
         cleanup();
     }
 
-    // --- TODO : Tests for all the functions below
-
     /**
      * User accounts listing, registration and deletion
      */
@@ -185,7 +183,6 @@ export class DatabaseEndpointsContainer
 
     public async accountDetails(user: UserIdentifier): Promise<AccountDetails | undefined>
     {
-        // TODO: Fill in actual information like statistics etc.
         const sql = "SELECT * FROM user_data WHERE user_id = ?;"
         const result: any[] = await this.provider.select(sql, [ user.identifier ]);
         
@@ -313,10 +310,12 @@ export class DatabaseEndpointsContainer
      * @param quizz_id An identifier to the quizz
      * @returns The serialized data to reconstruct the quizz
      */
-    public async getSerializedQuizz(quizz_id: QuizzIdentifier): Promise<string | undefined>
+    public async getSerializedQuizz(user: UserIdentifier, quizz_id: QuizzIdentifier): Promise<string | undefined>
     {
-        const sql = "SELECT params FROM quizzes WHERE quizz_id=? LIMIT 1";
-        const result: any[] = await this.provider.select(sql, [ quizz_id ]);
+        if(!user.identifier) return undefined;
+
+        const sql = "SELECT params FROM quizzes WHERE user_id=? AND quizz_id=? LIMIT 1";
+        const result: any[] = await this.provider.select(sql, [ user.identifier, quizz_id ]);
 
         if(result.length === 0) return undefined;
         return result[0].params;
@@ -328,15 +327,19 @@ export class DatabaseEndpointsContainer
         return result;
     }
 
-    public async deleteQuizz(quizz_id: QuizzIdentifier): Promise<void>
+    public async deleteQuizz(owner: UserIdentifier, quizz_id: QuizzIdentifier): Promise<void>
     {        
-        const sql = "DELETE FROM quizzes WHERE quizz_id =?";
-        return this.provider.execute(sql, [ quizz_id ]);
+        if(!owner.identifier) return;
+        
+        const sql = "DELETE FROM quizzes WHERE quizz_id=? AND user_id=?";
+        return this.provider.execute(sql, [ quizz_id, owner.identifier ]);
     }
-    public async updateQuizz(params: string, quizz_id: QuizzIdentifier): Promise<void>
+    public async updateQuizz(owner: UserIdentifier, params: string, quizz_id: QuizzIdentifier): Promise<void>
     {
-        const sql = "UPDATE quizzes SET params=?, updated_at=CURRENT_TIMESTAMP WHERE quizz_id=?";
-        return await this.provider.execute(sql, [ params, quizz_id ]);
+        if(!owner.identifier) return;
+
+        const sql = "UPDATE quizzes SET params=?, updated_at=CURRENT_TIMESTAMP WHERE user_id=? AND quizz_id=?";
+        return await this.provider.execute(sql, [ params, owner.identifier, quizz_id ]);
     }
     public async allQuizzes(): Promise<{ user_id: string; quizz_id: string; params: string; }[]>
     {        
@@ -345,8 +348,20 @@ export class DatabaseEndpointsContainer
     }
 
     /**
-     * Game creation and management
+     * Game statistics
      */
+    public async addGameStats(user: UserIdentifier, n_games: number, n_points: number) {
+        if(!user.identifier) return;
+        const stats = await this.getUserAccountData(user.identifier);
+        if(!stats) return;  // This never happens
+
+        const sql = "UPDATE user_data SET games_played=?, total_points=? WHERE user_id=?";
+        return await this.provider.execute(sql, [ 
+            stats.games_played + n_games,
+            stats.total_points + n_points,
+            user.identifier
+         ]);
+    }
 
     /**
      * User statistics 

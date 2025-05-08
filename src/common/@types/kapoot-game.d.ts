@@ -8,7 +8,7 @@ declare global {
         id: GameIdentifier;
         owner: GamePlayer;
         self: GamePlayer;
-        players: GamePlayer[];
+        players: SharedGamePlayer[];
     };
 
     type GameSettings = { };

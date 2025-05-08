@@ -19,7 +19,7 @@ router.post('/quizz', (req, res) => {
 
     const template: string | undefined = req.body.template;
     if(template) {
-        /* TODO : Fetch a quizz template */
+        /* TODO : Here could be implemented quizz templates / forks of quizzes */
         quizz = emptyQuizz();
     }
 
@@ -37,7 +37,7 @@ router.get('/quizz/:id', (req, res) => {
     if(!quizz_id) return error(res, 'Incomplete request data (Missing quizz id).');
     if(!uuidChecker(quizz_id).valid) return error(res, 'Invalid quizz ID.');
 
-    getEndpoints().getSerializedQuizz(quizz_id).then((params) => {
+    getEndpoints().getSerializedQuizz(req.user, quizz_id).then((params) => {
         if(!params) return error(res, 'Quizz does not exist.');
         return success(res, params);
     });
@@ -56,9 +56,7 @@ router.patch('/quizz/:id', (req, res) => {
     try{
         const quizz = SimpleQuizzComponent.deserialize_component(req.body);
         
-        console.log(quizz);
-        // TODO : Check the user actually owns the quizz ^^ (Pass the user id to deleteQuizz so it only removes it if a rows with user_id && quizz_id exists)
-        getEndpoints().updateQuizz(JSON.stringify(quizz), quizz_id)
+        getEndpoints().updateQuizz(req.user, JSON.stringify(quizz), quizz_id)
         .then(() => success(res))
         .catch(() => error(res, 'Failed to update quizz'));
     }catch(err) {
@@ -77,10 +75,8 @@ router.delete('/quizz/:id', (req, res) => {
     if(!quizz_id) return error(res, 'Incomplete request data (Missing quizz id)');
     if(!uuidChecker(quizz_id).valid) return error(res, 'Invalid quizz ID');
 
-    // TODO : Check the user actually owns the quizz ^^ (Pass the user id to deleteQuizz so it only removes it if a rows with user_id && quizz_id exists)
-    
     try {
-        getEndpoints().deleteQuizz(quizz_id)
+        getEndpoints().deleteQuizz(req.user, quizz_id)
         .then(result => success(res, result))
         .catch(() => error(res, 'Failed to delete quizz'));
     } catch (err) {

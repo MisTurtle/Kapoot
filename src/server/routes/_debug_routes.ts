@@ -41,19 +41,19 @@ router.get('/quizzes', (req, res) => getEndpoints().allQuizzes().then(data => su
 /**
  * Delete a quizz from parameters passed in the URL ()
  */
-router.get('/deleteQuizz', (req, res) => {
-    if(!req.query.quizzId) return error(res, 'Missing field \"quizzId\"');
-    getEndpoints().deleteQuizz(req.query.quizzId as string).then(data => success(res, data));
-});
+// router.get('/deleteQuizz', (req, res) => {
+//     if(!req.query.quizzId) return error(res, 'Missing field \"quizzId\"');
+//     getEndpoints().deleteQuizz(req.query.quizzId as string).then(data => success(res, data));
+// });
 /**
  * Update a quizz from parameters passed in the URL ()
  */
-router.get('/updateQuizz', (req, res) => {
-    if(!req.query.quizzId) return error(res, 'Missing field \"quizzId\"');
-    if(!req.query.param) return error(res, 'Missing field \"param\"');
+// router.get('/updateQuizz', (req, res) => {
+//     if(!req.query.quizzId) return error(res, 'Missing field \"quizzId\"');
+//     if(!req.query.param) return error(res, 'Missing field \"param\"');
 
-    getEndpoints().updateQuizz(JSON.stringify(req.query.param), req.query.quizzId as string).then(data => success(res, data));
-});
+//     getEndpoints().updateQuizz(JSON.stringify(req.query.param), req.query.quizzId as string).then(data => success(res, data));
+// });
 /**
  * Get all user data 
  */

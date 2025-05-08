@@ -66,7 +66,7 @@ server.on('upgrade', (req, socket, head) => {
     const { pathname } = parse(req.url || '', true);
 
     // Pass HMR websocket upgrades to Next.js
-    if (pathname?.startsWith('/_next/webpack-hmr')) {  // TODO : This is broken in dev mode, keeps spamming in the console
+    if (pathname?.startsWith('/_next/webpack-hmr')) return; {  // TODO : This is broken in dev mode, keeps spamming in the console
         app.getUpgradeHandler()(req, socket, head);
         return;
     }
