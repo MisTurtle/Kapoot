@@ -12,6 +12,7 @@ export class SqliteDataProvider implements DataProvider
         this.sourcePath = sourcePath;
     }
 
+    get path(): string { return this.sourcePath; }
     get connected(): boolean { return this.source !== undefined; }
     get dialect(): string { return DIALECT_SQLITE; }
 
@@ -39,5 +40,10 @@ export class SqliteDataProvider implements DataProvider
     async execute(query: string, params?: any[]): Promise<any> {
         if(!this.connected) throw new Error('Executing query on closed provider');
         return await this.source!.run(query, params);
+    }
+    
+    async query(query: string): Promise<any> {
+        if(!this.connected) throw new Error('Executing query on closed provider');
+        return await this.source!.exec(query);
     }
 }

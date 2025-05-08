@@ -14,9 +14,19 @@ import { production, rootPath } from '@common/utils.js';
 import { DatabaseController } from './database/database_controller.js';
 import { unless } from './utils/utils.js';
 
+// Database logins
+import mysql_credentials from "../../mysql_host.json";
+
 // Database initiator
-const db = new DatabaseController(rootPath("private", "dev-db.sqlite"), undefined);
-await db.endpoints.init();
+const db = new DatabaseController(rootPath("private", "dev-db.sqlite"), mysql_credentials);
+
+try {
+    await db.endpoints.init();
+} catch(err) {
+    const e = err as Error;
+    console.error(`${e.name} : ${e.message}\n${db.description}`);
+    process.exit(1);
+}
 
 const dev = !production;
 const app = next({ dev });
@@ -65,4 +75,5 @@ server.on('upgrade', (req, socket, head) => {
 // Start server
 server.listen(PORT, HOST, () => {
     console.log(`Server running on http://${HOST}:${PORT}`);
+    console.log(DatabaseController.getInstance().description);
 });

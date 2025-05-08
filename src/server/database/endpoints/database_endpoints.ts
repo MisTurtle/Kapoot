@@ -71,18 +71,28 @@ export class DatabaseEndpointsContainer
                 FOREIGN KEY (user_id) REFERENCES userAccounts(user_id) ON DELETE CASCADE
             );`
         );
-        await this.provider.execute(
-            // --- Create trigger to automatically update quizzes last change time (FIXME: SQLITE syntaxe, won't work for MySQL)
-            `CREATE TRIGGER IF NOT EXISTS quizz_last_update
-             AFTER UPDATE ON quizzes
-             FOR EACH ROW
-             BEGIN
-                UPDATE quizzes SET updated_at=CURRENT_TIMESTAMP WHERE quizz_id=OLD.quizz_id;
-             END;`
+
+        // vvv The following trigger works with SQLITE (because of serialized mode), but breaks with MySQL vvv
+        // await this.provider.query(
+        //     // --- Remove previous trigger to take changes into account
+        //     `DROP TRIGGER IF EXISTS quizz_last_update`
+        // );
+        // await this.provider.query(
+        //     // --- Create trigger to automatically update quizzes last change time (FIXME: SQLITE syntaxe, won't work for MySQL)
+        //     `CREATE TRIGGER quizz_last_update
+        //      AFTER UPDATE ON quizzes
+        //      FOR EACH ROW
+        //      BEGIN
+        //         UPDATE quizzes SET updated_at=CURRENT_TIMESTAMP WHERE quizz_id=OLD.quizz_id;
+        //      END;`
+        // );
+        await this.provider.query(
+            // --- Remove previous trigger to take changes into account
+            `DROP TRIGGER IF EXISTS quizzes_created_update`
         );
-        await this.provider.execute(
+        await this.provider.query(
             // --- Create trigger to automatically update user_data quizzes created number (+1)
-            `CREATE TRIGGER IF NOT EXISTS quizzes_created_update
+            `CREATE TRIGGER quizzes_created_update
              AFTER INSERT ON quizzes
              FOR EACH ROW
              BEGIN
@@ -91,9 +101,13 @@ export class DatabaseEndpointsContainer
                 WHERE user_id = NEW.user_id;
              END;`
         );
-        await this.provider.execute(
+        await this.provider.query(
+            // --- Remove previous trigger to take changes into account
+            `DROP TRIGGER IF EXISTS quizzes_deleted_update`
+        );
+        await this.provider.query(
             // --- Create trigger to automatically update user_data quizzes created number (-1)
-            `CREATE TRIGGER IF NOT EXISTS quizzes_deleted_update
+            `CREATE TRIGGER quizzes_deleted_update
              AFTER DELETE ON quizzes
              FOR EACH ROW
              BEGIN
@@ -129,7 +143,7 @@ export class DatabaseEndpointsContainer
             sql = "DELETE FROM allSessions WHERE created_at < DATETIME('now', ?);";
             args = [`-${Math.floor(sessionCookieLifetime / 1000)} seconds`];
         } else {
-            sql = "DELETE FROM allSessions WHERE created_at < NOW - INTERVAL ? SECOND;";
+            sql = "DELETE FROM allSessions WHERE created_at < NOW() - INTERVAL ? SECOND;";
             args = [Math.floor(sessionCookieLifetime / 1000)];
         }
 
@@ -163,7 +177,7 @@ export class DatabaseEndpointsContainer
     {
         const sql = "SELECT username, user_id, mail FROM userAccounts WHERE UPPER(username)=UPPER(?) OR UPPER(user_id)=UPPER(?) OR UPPER(mail)=UPPER(?) LIMIT 1";
     
-        const result: any[] = await this.provider.select(sql, [ user.username, user.identifier, user.mail ]);
+        const result: any[] = await this.provider.select(sql, [ user.username ?? null, user.identifier ?? null, user.mail ?? null ]);
          
         if(result.length === 0) return undefined;
         return { username: result[0].username, identifier: result[0].user_id };
@@ -190,13 +204,13 @@ export class DatabaseEndpointsContainer
     public async deleteAccount(user: UserIdentifier): Promise<any>
     {
         const sql = "DELETE FROM userAccounts WHERE UPPER(username)=UPPER(?) OR UPPER(user_id)=UPPER(?) OR UPPER(mail)=UPPER(?)";
-        return this.provider.execute(sql, [ user.username, user.identifier, user.mail ]);
+        return this.provider.execute(sql, [ user.username ?? null, user.identifier ?? null, user.mail ?? null ]);
     }
 
     public async verifyLogin(user: UserIdentifier, raw_password: string): Promise<UserIdentifier | undefined>
     {
         const sql = "SELECT user_id, username, mail, pwd_hash FROM userAccounts WHERE user_id=? OR username=? OR mail=?";
-        const result: any[] = await this.provider.select(sql, [ user.identifier, user.username, user.mail ]);
+        const result: any[] = await this.provider.select(sql, [ user.identifier ?? null, user.username ?? null, user.mail ?? null ]);
        
         if(result.length !== 1) return undefined;
         const valid = await verify(raw_password, result[0].pwd_hash);
@@ -319,10 +333,9 @@ export class DatabaseEndpointsContainer
         const sql = "DELETE FROM quizzes WHERE quizz_id =?";
         return this.provider.execute(sql, [ quizz_id ]);
     }
-    public async updateQuizz(params: string,quizz_id: QuizzIdentifier): Promise<void>
-    {        
-        const sql = "UPDATE quizzes SET params=?, updated_at=current_timestamp WHERE quizz_id=?";
-
+    public async updateQuizz(params: string, quizz_id: QuizzIdentifier): Promise<void>
+    {
+        const sql = "UPDATE quizzes SET params=?, updated_at=CURRENT_TIMESTAMP WHERE quizz_id=?";
         return await this.provider.execute(sql, [ params, quizz_id ]);
     }
     public async allQuizzes(): Promise<{ user_id: string; quizz_id: string; params: string; }[]>

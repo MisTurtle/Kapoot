@@ -54,8 +54,9 @@ router.patch('/quizz/:id', (req, res) => {
     if (!uuidChecker(quizz_id).valid) return error(res, 'Invalid quizz ID');
 
     try{
-        const quizz = SimpleQuizzComponent.deserialize(req.body);
+        const quizz = SimpleQuizzComponent.deserialize_component(req.body);
         
+        console.log(quizz);
         // TODO : Check the user actually owns the quizz ^^ (Pass the user id to deleteQuizz so it only removes it if a rows with user_id && quizz_id exists)
         getEndpoints().updateQuizz(JSON.stringify(quizz), quizz_id)
         .then(() => success(res))

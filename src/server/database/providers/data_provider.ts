@@ -10,5 +10,6 @@ export interface DataProvider
     disconnect(): Promise<void>;
     select<T>(query: string, params?: any[]): Promise<T[]>;
     execute(query: string, params?: any[]): Promise<any>;
+    query(query: string): Promise<any>; // Doesn't support parameters
     // TODO : Might be useful --> async bulk(query: string, generator: Callable)
 }

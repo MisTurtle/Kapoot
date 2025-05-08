@@ -95,7 +95,7 @@ export class BinaryQuestionComponent extends QuestionComponent<BinaryQuestionPro
 
 export class SimpleQuestionComponent extends QuestionComponent<SimpleQuestionProps>
 {
-    public defaultProperties: SimpleQuestionProps = { };
+    public defaultProperties: SimpleQuestionProps = { 'answer': 0 };
     public static type: string = 'q:simple';
 
     constructor(properties: SimpleQuestionProps, ...answers: SimpleAnswerComponent[])

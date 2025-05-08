@@ -193,9 +193,10 @@ const GamePageContent = () => {
         }
         { currentQuestion && !showLeaderboard && (isOwner || myAnswer === undefined) &&
             renderInGame(currentQuestion, (answer) => {
-                // TODO : Change the view to show the user already has answered
-                setMyAnswer(answer);
-                socketHandlerRef.current?.submitAnswer(answer);
+                if(!isOwner) {
+                    setMyAnswer(answer);
+                    socketHandlerRef.current?.submitAnswer(answer);
+                }
             })
         }
 
@@ -207,10 +208,10 @@ const GamePageContent = () => {
                 { /* Show correction */ }
                 { correctAnswer !== undefined && 
                     <div className={`${styles.correctAnswerDisplay} ${(isOwner || myAnswer === correctAnswer) ? styles.correct : styles.incorrect}`}>
-                        {!isOwner && <h1>{(myAnswer && myAnswer === correctAnswer) ? 'Amazing' : 'Woopsie !'}</h1>}
+                        {!isOwner && <h1>{(myAnswer !== undefined && myAnswer === correctAnswer) ? 'Amazing' : 'Woopsie !'}</h1>}
                         { isOwner && <h1>Correct Answer</h1>}
     
-                        {myAnswer && myAnswer !== correctAnswer ? (
+                        {myAnswer !== undefined && myAnswer !== correctAnswer ? (
                             <div>
                                 <p className={`${styles.incorrectAnswer}`}>{currentQuestion.children[myAnswer].get('label')}</p>
                                 <p className={`${styles.correctAnswer}`}>{currentQuestion.children[correctAnswer].get('label')}</p>
