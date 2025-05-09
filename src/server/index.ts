@@ -25,6 +25,7 @@ try {
 } catch(err) {
     const e = err as Error;
     console.error(`${e.name} : ${e.message}\n${db.description}`);
+    console.info(`If you wish to switch database modes, you can enable/disable MySQL from the 'mysql_host.json' config file.`);
     process.exit(1);
 }
 

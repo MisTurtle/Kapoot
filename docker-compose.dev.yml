@@ -4,9 +4,9 @@ services:
       context: .
     container_name: kapoot_site
     volumes:
-      - /home/kapoot/private:/build/private
+      - ./private:/build/private
     ports:
-      - 8000:8000
+      - "8000:8000"
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
     restart: unless-stopped

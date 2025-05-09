@@ -4,9 +4,11 @@ WORKDIR /build
 COPY package*.json ./
 
 RUN npm install
+
 COPY . .
+RUN chmod +x /build/docker_entrypoint.sh
 
-EXPOSE 4000
+EXPOSE 8000
 
-CMD ["npm", "run", "prod"]
+CMD ["/build/docker_entrypoint.sh"]
 

@@ -179,7 +179,7 @@ const AccountContent = () => {
             
             <div className={styles.accountUserInfo}>
               <div className={styles.accountAvatar}>
-                <img src={ '/public/images/users' + userData?.avatar} alt="Avatar"></img>
+                <img src={ '/images/users/' + (userData?.avatar ?? 'default.png') } alt="Avatar"></img>
               </div>
               <div className={styles.accountData}>
                 <span className={styles.accountUsername}>{user.username}</span>

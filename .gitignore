@@ -6,3 +6,6 @@
 **/dist/
 tsconfig.tsbuildinfo
 package-lock.json
+
+public/images/users/*
+!public/images/users/default.png
